@@ -69,54 +69,51 @@ namespace Parsing
             case Lexing::TokenType::Error:
                 std::cerr << "Found unknown symbol. Terminating program.\n"; // TODO: Error properly
                 std::exit(1);
+            
             case Lexing::TokenType::DBInst:
-                parseDBInst();
+                parseDeclInst<char>();
                 break;
             case Lexing::TokenType::DWInst:
-                parseDWInst();
+                parseDeclInst<short>();
                 break;
             case Lexing::TokenType::DDInst:
-                parseDDInst();
+                parseDeclInst<int>();
                 break;
             case Lexing::TokenType::DQInst:
-                parseDQInst();
+                parseDeclInst<long>();
                 break;
+
+            case Lexing::TokenType::TimesStatement:
+                parseTimesStatement();
+                break;
+
             default:
                 std::cerr << "Expected statement. Found " << current().getText() << ". Terminating program.\n"; // TODO: Error properly
                 std::exit(1);
         }
     }
 
-    void Parser::parseDBInst()
+    template<typename T>
+    void Parser::parseDeclInst()
     {
         consume();
-        
-        char value = parseExpression();
+
+        T value = parseExpression();
         mOutput.write(value, mSection);
     }
 
-    void Parser::parseDWInst()
+    void Parser::parseTimesStatement()
     {
         consume();
 
-        short value = parseExpression();
-        mOutput.write(value, mSection);
-    }
+        long long iterations = parseExpression();
 
-    void Parser::parseDDInst()
-    {
-        consume();
-
-        int value = parseExpression();
-        mOutput.write(value, mSection);
-    }
-
-    void Parser::parseDQInst()
-    {
-        consume();
-
-        long value = parseExpression();
-        mOutput.write(value, mSection);
+        int position = mPosition;
+        while (--iterations)
+        {
+            parseStatement();
+            mPosition = position;
+        }
     }
 
     long long Parser::parseExpression(int precedence)

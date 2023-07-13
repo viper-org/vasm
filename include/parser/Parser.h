@@ -18,6 +18,9 @@ namespace Codegen
 
 namespace Parsing
 {
+    template<typename T>
+    concept Integral = std::is_integral_v<T>;
+
     class Parser
     {
     public:
@@ -42,10 +45,10 @@ namespace Parsing
         
         void parseStatement();
 
-        void parseDBInst();
-        void parseDWInst();
-        void parseDDInst();
-        void parseDQInst();
+        template<typename T>
+        void parseDeclInst();
+
+        void parseTimesStatement();
 
         long long parseExpression(int precedence = 1);
         long long parseImmediate();

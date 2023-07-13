@@ -15,6 +15,7 @@ namespace Lexing
         { "dw", TokenType::DWInst },
         { "dd", TokenType::DDInst },
         { "dq", TokenType::DQInst },
+        { "times", TokenType::TimesStatement },
     };
 
     std::vector<Token> Lexer::lex()

@@ -19,7 +19,9 @@ namespace Lexing
         
         Immediate,
 
-        DBInst, DWInst, DDInst, DQInst
+        DBInst, DWInst, DDInst, DQInst,
+
+        TimesStatement,
     };
 
     class Token
