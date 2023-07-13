@@ -169,6 +169,8 @@ namespace Lexing
 
             case ',':
                 return Token(TokenType::Comma);
+            case ':':
+                return Token(TokenType::Colon);
             
             default:
                 return Token(TokenType::Error); // Unknown character

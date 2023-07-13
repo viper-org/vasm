@@ -41,6 +41,16 @@ namespace Codegen
         return 0;
     }
 
+    void BinaryFormat::addSymbol(const std::string& name, long long value)
+    {
+        mSymbols[name] = value;
+    }
+
+    long long BinaryFormat::getSymbol(const std::string& name)
+    {
+        return mSymbols.at(name);
+    }
+
     void BinaryFormat::print(std::ostream& stream)
     {
         stream.write(mBuffer.view().data(), mBuffer.view().length());

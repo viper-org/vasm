@@ -13,7 +13,7 @@ namespace Lexing
 
         Plus, Minus,
         LParen, RParen,
-        Comma,
+        Comma, Colon,
 
         Identifier,
         

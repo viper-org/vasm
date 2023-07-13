@@ -25,6 +25,9 @@ namespace Codegen
         virtual int getPosition() = 0;
         virtual int getSectionStart(Section const section) = 0;
 
+        virtual void addSymbol(const std::string& name, long long value) = 0;
+        virtual long long getSymbol(const std::string& name) = 0;
+
         virtual void print(std::ostream& stream) = 0;
     };
 }

@@ -1,9 +1,10 @@
-mov ah, 0xe
-mov al, 65
+_start:
+    mov ah, 0xe
+    mov al, 65
 
-int 0x10
+    int 0x10
 
-jmp $
+    jmp _start
 
 times 510 - ($ - $$) db 0
 dw 0xaa55

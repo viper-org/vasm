@@ -33,14 +33,16 @@ namespace Parsing
         Codegen::Section mSection;
 
 
-        Lexing::Token current();
-        Lexing::Token consume();
-        Lexing::Token peek(int offset);
+        Lexing::Token& current();
+        Lexing::Token& consume();
+        Lexing::Token& peek(int offset);
         void expectToken(Lexing::TokenType tokenType);
         int getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const;
         bool isImmediate(Lexing::TokenType tokenType) const;
         
         void parseStatement();
+
+        void parseLabel();
 
         template<typename T>
         void parseDeclInst();

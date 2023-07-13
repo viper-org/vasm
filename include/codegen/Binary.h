@@ -1,3 +1,4 @@
+#include <unordered_map>
 #ifndef VASM_CODEGEN_BINARY_H
 #define VASM_CODEGEN_BINARY_H 1
 
@@ -26,9 +27,13 @@ namespace Codegen
         int getPosition() override;
         int getSectionStart(Section const section) override;
 
+        void addSymbol(const std::string& name, long long value) override;
+        long long getSymbol(const std::string& name) override;
+
         void print(std::ostream& stream) override;
     private:
         std::stringstream mBuffer;
+        std::unordered_map<std::string, long long> mSymbols;
     };
 }
 

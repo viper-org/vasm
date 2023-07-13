@@ -51,6 +51,8 @@ namespace Lexing
                 return "RParen";
             case TokenType::Comma:
                 return "Comma";
+            case TokenType::Colon:
+                return "Colon";
 
             case TokenType::Identifier:
                 return "Identifier";

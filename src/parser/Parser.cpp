@@ -19,17 +19,17 @@ namespace Parsing
     {
     }
     
-    Lexing::Token Parser::current()
+    Lexing::Token& Parser::current()
     {
         return mTokens[mPosition];
     }
 
-    Lexing::Token Parser::consume()
+    Lexing::Token& Parser::consume()
     {
         return mTokens[mPosition++];
     }
 
-    Lexing::Token Parser::peek(int offset)
+    Lexing::Token& Parser::peek(int offset)
     {
         return mTokens[mPosition + offset];
     }
@@ -59,7 +59,7 @@ namespace Parsing
 
     bool Parser::isImmediate(Lexing::TokenType tokenType) const
     {
-        return tokenType == Lexing::TokenType::Immediate || tokenType == Lexing::TokenType::Dollar || tokenType == Lexing::TokenType::DollarDollar;
+        return tokenType == Lexing::TokenType::Immediate || tokenType == Lexing::TokenType::Identifier || tokenType == Lexing::TokenType::Dollar || tokenType == Lexing::TokenType::DollarDollar;
     }
 
     void Parser::parse()
@@ -77,6 +77,10 @@ namespace Parsing
             case Lexing::TokenType::Error:
                 std::cerr << "Found unknown symbol. Terminating program.\n"; // TODO: Error properly
                 std::exit(1);
+
+            case Lexing::TokenType::Identifier:
+                parseLabel();
+                break;
             
             case Lexing::TokenType::DBInst:
                 parseDeclInst<unsigned char>();
@@ -111,6 +115,16 @@ namespace Parsing
                 std::cerr << "Expected statement. Found " << current().getText() << ". Terminating program.\n"; // TODO: Error properly
                 std::exit(1);
         }
+    }
+
+    void Parser::parseLabel()
+    {
+        const std::string& name = consume().getText();
+
+        expectToken(Lexing::TokenType::Colon);
+        consume();
+
+        mOutput.addSymbol(name, mOutput.getPosition());
     }
 
     template<typename T>
@@ -271,6 +285,10 @@ namespace Parsing
         {
             consume();
             return mOutput.getSectionStart(mSection);
+        }
+        else if (current().getTokenType() == Lexing::TokenType::Identifier)
+        {
+            return mOutput.getSymbol(consume().getText());
         }
         
         else
