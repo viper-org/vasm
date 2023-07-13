@@ -8,6 +8,7 @@ namespace Codegen
     {
     }
 
+
     void BinaryFormat::write(char const data, Section const)
     {
         mBuffer.write((char*)&data, sizeof(data));
@@ -26,6 +27,17 @@ namespace Codegen
     void BinaryFormat::write(long const data, Section const)
     {
         mBuffer.write((char*)&data, sizeof(data));
+    }
+
+
+    int BinaryFormat::getPosition()
+    {
+        return mBuffer.view().length();
+    }
+
+    int BinaryFormat::getSectionStart(Section const)
+    {
+        return 0;
     }
 
     void BinaryFormat::print(std::ostream& stream)

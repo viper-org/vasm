@@ -22,6 +22,9 @@ namespace Codegen
         virtual void write(int   const data, Section const section) = 0;
         virtual void write(long  const data, Section const section) = 0;
 
+        virtual int getPosition() = 0;
+        virtual int getSectionStart(Section const section) = 0;
+
         virtual void print(std::ostream& stream) = 0;
     };
 }

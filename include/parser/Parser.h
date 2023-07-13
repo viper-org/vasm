@@ -1,6 +1,7 @@
 #ifndef VASM_PARSER_PARSER_H
 #define VASM_PARSER_PARSER_H 1
 
+#include <string>
 #include <vector>
 
 namespace Lexing
@@ -43,6 +44,8 @@ namespace Parsing
         void parseDWInst();
         void parseDDInst();
         void parseDQInst();
+
+        long long parseImmediate();
     };
 }
 

@@ -77,10 +77,8 @@ namespace Parsing
     void Parser::parseDBInst()
     {
         consume();
-
-        expectToken(Lexing::TokenType::Immediate);
-
-        char value = std::stoi(consume().getText(), 0, 0);
+        
+        char value = parseImmediate();
         mOutput.write(value, mSection);
     }
 
@@ -88,9 +86,7 @@ namespace Parsing
     {
         consume();
 
-        expectToken(Lexing::TokenType::Immediate);
-
-        short value = std::stoi(consume().getText(), 0, 0);
+        short value = parseImmediate();
         mOutput.write(value, mSection);
     }
 
@@ -98,9 +94,7 @@ namespace Parsing
     {
         consume();
 
-        expectToken(Lexing::TokenType::Immediate);
-
-        int value = std::stoi(consume().getText(), 0, 0);
+        int value = parseImmediate();
         mOutput.write(value, mSection);
     }
 
@@ -108,9 +102,28 @@ namespace Parsing
     {
         consume();
 
-        expectToken(Lexing::TokenType::Immediate);
-
-        long value = std::stol(consume().getText(), 0, 0);
+        long value = parseImmediate();
         mOutput.write(value, mSection);
+    }
+
+    long long Parser::parseImmediate()
+    {
+        if (current().getTokenType() == Lexing::TokenType::Immediate)
+            return std::stoll(consume().getText(), 0, 0);
+
+        else if (current().getTokenType() == Lexing::TokenType::Dollar)
+        {
+            consume();
+            return mOutput.getPosition();
+        }
+        else if (current().getTokenType() == Lexing::TokenType::DollarDollar)
+        {
+            consume();
+            return mOutput.getSectionStart(mSection);
+        }
+        
+        else
+            expectToken(Lexing::TokenType::Immediate);
+        return -1;
     }
 }

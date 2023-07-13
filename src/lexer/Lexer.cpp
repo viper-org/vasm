@@ -120,6 +120,16 @@ namespace Lexing
             return Token(TokenType::Immediate, std::move(text));
         }
 
+        if (current() == '$')
+        {
+            if (peek(1) == '$')
+            {
+                consume();
+                return Token(TokenType::DollarDollar);
+            }
+            return Token(TokenType::Dollar);
+        }
+
         return Token(TokenType::Error); // Unknown character
     }
 }

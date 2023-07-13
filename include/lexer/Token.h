@@ -9,6 +9,8 @@ namespace Lexing
     {
         Error,
 
+        Dollar, DollarDollar,
+
         Identifier,
         
         Immediate,

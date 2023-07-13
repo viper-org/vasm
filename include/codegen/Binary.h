@@ -23,6 +23,9 @@ namespace Codegen
         void write(int   const data, Section const section) override;
         void write(long  const data, Section const section) override;
 
+        int getPosition() override;
+        int getSectionStart(Section const section) override;
+
         void print(std::ostream& stream) override;
     private:
         std::stringstream mBuffer;
