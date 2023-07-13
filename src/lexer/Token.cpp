@@ -66,6 +66,9 @@ namespace Lexing
             case TokenType::DQInst:
                 return "DQInst";
 
+            case TokenType::JumpInst:
+                return "JumpInst";
+
             case TokenType::TimesStatement:
                 return "TimesStatement";
         }

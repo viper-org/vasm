@@ -48,6 +48,8 @@ namespace Parsing
         template<typename T>
         void parseDeclInst();
 
+        void parseJumpInst();
+
         void parseTimesStatement();
 
         long long parseExpression(int precedence = 1);

@@ -21,6 +21,8 @@ namespace Lexing
 
         DBInst, DWInst, DDInst, DQInst,
 
+        JumpInst,
+
         TimesStatement,
     };
 

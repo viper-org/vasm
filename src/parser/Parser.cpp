@@ -83,6 +83,10 @@ namespace Parsing
                 parseDeclInst<long>();
                 break;
 
+            case Lexing::TokenType::JumpInst:
+                parseJumpInst();
+                break;
+
             case Lexing::TokenType::TimesStatement:
                 parseTimesStatement();
                 break;
@@ -99,6 +103,16 @@ namespace Parsing
         consume();
 
         T value = parseExpression();
+        mOutput.write(value, mSection);
+    }
+
+    void Parser::parseJumpInst()
+    {
+        consume();
+
+        unsigned char const value = parseExpression() - 2; // Subtract size of the instruction itself
+
+        mOutput.write((char const)0xEB, mSection);
         mOutput.write(value, mSection);
     }
 
