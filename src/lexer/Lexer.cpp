@@ -18,6 +18,7 @@ namespace Lexing
         { "dq", TokenType::DQInst },
         { "jmp", TokenType::JumpInst },
         { "mov", TokenType::MovInst },
+        { "int", TokenType::IntInst },
         { "times", TokenType::TimesStatement },
     };
 

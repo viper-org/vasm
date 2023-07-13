@@ -99,6 +99,10 @@ namespace Parsing
                 parseMovInst();
                 break;
 
+            case Lexing::TokenType::IntInst:
+                parseIntInst();
+                break;
+
             case Lexing::TokenType::TimesStatement:
                 parseTimesStatement();
                 break;
@@ -192,6 +196,16 @@ namespace Parsing
             }
             mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
         }
+    }
+
+    void Parser::parseIntInst()
+    {
+        consume();
+
+        unsigned char vector = parseExpression();
+
+        mOutput.write(Codegen::INT, mSection);
+        mOutput.write(vector, mSection);
     }
 
     void Parser::parseTimesStatement()

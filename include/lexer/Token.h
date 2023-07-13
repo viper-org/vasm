@@ -27,6 +27,8 @@ namespace Lexing
 
         MovInst,
 
+        IntInst,
+
         TimesStatement,
     };
 

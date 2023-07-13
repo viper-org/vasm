@@ -76,6 +76,9 @@ namespace Lexing
             case TokenType::MovInst:
                 return "MovInst";
 
+            case TokenType::IntInst:
+                return "IntInst";
+
             case TokenType::TimesStatement:
                 return "TimesStatement";
         }

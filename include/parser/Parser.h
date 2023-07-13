@@ -49,6 +49,8 @@ namespace Parsing
 
         void parseMovInst();
 
+        void parseIntInst();
+
         void parseTimesStatement();
 
         long long parseExpression(int precedence = 1);
