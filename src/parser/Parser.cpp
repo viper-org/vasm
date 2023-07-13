@@ -152,8 +152,7 @@ namespace Parsing
                     mOutput.write((int)immediate, mSection);
                     break;
                 case 3: // QUAD
-                    mOutput.write(Codegen::REX::W, mSection);
-                    mOutput.write((char)(0xB8 + reg.first), mSection);
+                    mOutput.write((char)(Codegen::REX::W + 0xB8 + reg.first), mSection);
                     mOutput.write((long)immediate, mSection);
                     break;
             }
