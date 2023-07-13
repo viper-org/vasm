@@ -41,6 +41,19 @@ namespace Parsing
         }
     }
 
+    int Parser::getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const
+    {
+        switch(tokenType)
+        {
+            case Lexing::TokenType::Plus:
+            case Lexing::TokenType::Minus:
+                return 35;
+            
+            default:
+                return 0;
+        }
+    }
+
     void Parser::parse()
     {
         while (mPosition < mTokens.size())
@@ -78,7 +91,7 @@ namespace Parsing
     {
         consume();
         
-        char value = parseImmediate();
+        char value = parseExpression();
         mOutput.write(value, mSection);
     }
 
@@ -86,7 +99,7 @@ namespace Parsing
     {
         consume();
 
-        short value = parseImmediate();
+        short value = parseExpression();
         mOutput.write(value, mSection);
     }
 
@@ -94,7 +107,7 @@ namespace Parsing
     {
         consume();
 
-        int value = parseImmediate();
+        int value = parseExpression();
         mOutput.write(value, mSection);
     }
 
@@ -102,8 +115,34 @@ namespace Parsing
     {
         consume();
 
-        long value = parseImmediate();
+        long value = parseExpression();
         mOutput.write(value, mSection);
+    }
+
+    long long Parser::parseExpression(int precedence)
+    {
+        long long lhs = parseImmediate();
+        while(mPosition < mTokens.size())
+        {
+            int binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType());
+            if (binaryOperatorPrecedence < precedence)
+                break;
+
+            Lexing::TokenType operatorToken = consume().getTokenType();
+            long long rhs = parseImmediate();
+            switch(operatorToken)
+            {
+                case Lexing::TokenType::Plus:
+                    lhs += rhs;
+                    break;
+                case Lexing::TokenType::Minus:
+                    lhs -= rhs;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return lhs;
     }
 
     long long Parser::parseImmediate()

@@ -37,6 +37,8 @@ namespace Parsing
         Lexing::Token peek(int offset);
 
         void expectToken(Lexing::TokenType tokenType);
+
+        int getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const;
         
         void parseStatement();
 
@@ -45,6 +47,7 @@ namespace Parsing
         void parseDDInst();
         void parseDQInst();
 
+        long long parseExpression(int precedence = 1);
         long long parseImmediate();
     };
 }
