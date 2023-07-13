@@ -1,6 +1,7 @@
 #include <lexer/Lexer.h>
 #include <lexer/Token.h>
 
+#include <array>
 #include <unordered_map>
 
 namespace Lexing
@@ -16,7 +17,21 @@ namespace Lexing
         { "dd", TokenType::DDInst },
         { "dq", TokenType::DQInst },
         { "jmp", TokenType::JumpInst },
+        { "mov", TokenType::MovInst },
         { "times", TokenType::TimesStatement },
+    };
+
+    using namespace std::literals;
+    
+    constexpr std::array registers = {
+        "al"sv, "ah"sv, "ax"sv, "eax"sv, "rax"sv,
+        "bl"sv, "bh"sv, "bx"sv, "ebx"sv, "rbx"sv,
+        "cl"sv, "ch"sv, "cx"sv, "ecx"sv, "rcx"sv,
+        "dl"sv, "dh"sv, "dx"sv, "edx"sv, "rdx"sv,
+        "spl"sv, "sp"sv, "esp"sv, "rsp"sv,
+        "bpl"sv, "bp"sv, "ebp"sv, "rbp"sv,
+        "sil"sv, "si"sv, "esi"sv, "rsi"sv,
+        "dil"sv, "di"sv, "edi"sv, "rdi"sv,
     };
 
     std::vector<Token> Lexer::lex()
@@ -142,6 +157,9 @@ namespace Lexing
                 return Token(TokenType::LParen);
             case ')':
                 return Token(TokenType::RParen);
+
+            case ',':
+                return Token(TokenType::Comma);
             
             default:
                 return Token(TokenType::Error); // Unknown character

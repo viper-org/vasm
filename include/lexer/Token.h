@@ -12,16 +12,20 @@ namespace Lexing
         Dollar, DollarDollar,
 
         Plus, Minus,
-
         LParen, RParen,
+        Comma,
 
         Identifier,
         
         Immediate,
 
+        Register,
+
         DBInst, DWInst, DDInst, DQInst,
 
         JumpInst,
+
+        MovInst,
 
         TimesStatement,
     };

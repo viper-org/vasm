@@ -18,8 +18,7 @@ namespace Codegen
 
 namespace Parsing
 {
-    template<typename T>
-    concept Integral = std::is_integral_v<T>;
+    using RegisterSize = int;
 
     class Parser
     {
@@ -38,10 +37,9 @@ namespace Parsing
         Lexing::Token current();
         Lexing::Token consume();
         Lexing::Token peek(int offset);
-
         void expectToken(Lexing::TokenType tokenType);
-
         int getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const;
+        bool isImmediate(Lexing::TokenType tokenType) const;
         
         void parseStatement();
 
@@ -50,10 +48,14 @@ namespace Parsing
 
         void parseJumpInst();
 
+        void parseMovInst();
+
         void parseTimesStatement();
 
         long long parseExpression(int precedence = 1);
         long long parseImmediate();
+        
+        std::pair<long long, RegisterSize> parseRegister();
     };
 }
 

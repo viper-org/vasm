@@ -6,6 +6,14 @@
 
 namespace Codegen
 {
+    enum REX : char
+    {
+        B = 0b0100 | 1 << 0,
+        X = 0b0100 | 1 << 1,
+        R = 0b0100 | 1 << 2,
+        W = 0b0100 | 1 << 3,
+    };
+
     enum class Section
     {
         Text,

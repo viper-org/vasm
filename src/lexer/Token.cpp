@@ -45,17 +45,21 @@ namespace Lexing
                 return "Plus";
             case TokenType::Minus:
                 return "Minus";
-
             case TokenType::LParen:
                 return "LParen";
             case TokenType::RParen:
                 return "RParen";
+            case TokenType::Comma:
+                return "Comma";
 
             case TokenType::Identifier:
                 return "Identifier";
 
             case TokenType::Immediate:
                 return "Immediate";
+
+            case TokenType::Register:
+                return "Register";
 
             case TokenType::DBInst:
                 return "DBInst";
@@ -68,6 +72,9 @@ namespace Lexing
 
             case TokenType::JumpInst:
                 return "JumpInst";
+
+            case TokenType::MovInst:
+                return "MovInst";
 
             case TokenType::TimesStatement:
                 return "TimesStatement";

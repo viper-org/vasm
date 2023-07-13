@@ -54,6 +54,11 @@ namespace Parsing
         }
     }
 
+    bool Parser::isImmediate(Lexing::TokenType tokenType) const
+    {
+        return tokenType == Lexing::TokenType::Immediate || tokenType == Lexing::TokenType::Dollar || tokenType == Lexing::TokenType::DollarDollar;
+    }
+
     void Parser::parse()
     {
         while (mPosition < mTokens.size())
@@ -87,6 +92,10 @@ namespace Parsing
                 parseJumpInst();
                 break;
 
+            case Lexing::TokenType::MovInst:
+                parseMovInst();
+                break;
+
             case Lexing::TokenType::TimesStatement:
                 parseTimesStatement();
                 break;
@@ -110,10 +119,45 @@ namespace Parsing
     {
         consume();
 
-        unsigned char const value = parseExpression() - 2; // Subtract size of the instruction itself
+        unsigned char const value = parseExpression() - mOutput.getPosition() - 2; // Subtract size of the instruction itself
 
         mOutput.write((char const)0xEB, mSection);
         mOutput.write(value, mSection);
+    }
+
+    void Parser::parseMovInst()
+    {
+        consume();
+
+        std::pair<long long, RegisterSize> reg = parseRegister();
+
+        expectToken(Lexing::TokenType::Comma);
+        consume();
+
+        if (isImmediate(current().getTokenType()))
+        {
+            long long immediate = parseExpression();
+            switch (reg.second)
+            {
+                case 0: // BYTE
+                    mOutput.write((char)(0xB0 + reg.first), mSection);
+                    mOutput.write((char)immediate, mSection);
+                    break;
+                case 1: // WORD
+                    mOutput.write((char)(0xB8 + reg.first), mSection);
+                    mOutput.write((short)immediate, mSection);
+                    break;
+                case 2: // LONG
+                    mOutput.write((char)(0xB8 + reg.first), mSection);
+                    mOutput.write((int)immediate, mSection);
+                    break;
+                case 3: // QUAD
+                    mOutput.write(Codegen::REX::W, mSection);
+                    mOutput.write((char)(0xB8 + reg.first), mSection);
+                    mOutput.write((long)immediate, mSection);
+                    break;
+            }
+        }
     }
 
     void Parser::parseTimesStatement()
@@ -184,5 +228,32 @@ namespace Parsing
         else
             expectToken(Lexing::TokenType::Immediate);
         return -1;
+    }
+
+    std::pair<long long, RegisterSize> Parser::parseRegister()
+    {
+        using namespace std::literals;
+        constexpr std::array const registers = {
+            "al"sv, "ax"sv, "eax"sv, "rax"sv,
+            "cl"sv, "cx"sv, "ecx"sv, "rcx"sv,
+            "dl"sv, "dx"sv, "edx"sv, "rdx"sv,
+            "bl"sv, "bx"sv, "ebx"sv, "rbx"sv,
+            "ah"sv, "sp"sv, "esp"sv, "rsp"sv,
+            "ch"sv, "bp"sv, "ebp"sv, "rbp"sv,
+            "dh"sv, "si"sv, "esi"sv, "rsi"sv,
+            "bh"sv, "di"sv, "edi"sv, "rdi"sv,
+        };
+
+        long long index;
+        for (index = 0; index < registers.size(); index++)
+        {
+            if (registers[index] == current().getText())
+            {
+                break;
+            }
+        }
+        consume();
+
+        return std::make_pair(index / 4, index % 4);
     }
 }
