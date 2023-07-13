@@ -10,22 +10,22 @@ namespace Codegen
     }
 
 
-    void BinaryFormat::write(char const data, Section const)
-    {
-        mBuffer.write(&data, sizeof(data));
-    }
-
-    void BinaryFormat::write(short const data, Section const)
+    void BinaryFormat::write(unsigned char const data, Section const)
     {
         mBuffer.write((char const*)&data, sizeof(data));
     }
 
-    void BinaryFormat::write(int const data, Section const)
+    void BinaryFormat::write(unsigned short const data, Section const)
     {
         mBuffer.write((char const*)&data, sizeof(data));
     }
 
-    void BinaryFormat::write(long const data, Section const)
+    void BinaryFormat::write(unsigned int const data, Section const)
+    {
+        mBuffer.write((char const*)&data, sizeof(data));
+    }
+
+    void BinaryFormat::write(unsigned long const data, Section const)
     {
         mBuffer.write((char const*)&data, sizeof(data));
     }

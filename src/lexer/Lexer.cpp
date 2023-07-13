@@ -79,6 +79,14 @@ namespace Lexing
             if(auto it = keywords.find(text); it != keywords.end())
                 return Token(keywords.find(text)->second);
 
+            for (std::string_view reg : registers)
+            {
+                if (text == reg)
+                {
+                    return Token(TokenType::Register, std::move(text));
+                }
+            }
+
             return Token(TokenType::Identifier, std::move(text));
         }
         

@@ -3,6 +3,7 @@
 #include <lexer/Token.h>
 
 #include <codegen/OutputFormat.h>
+#include <codegen/Opcodes.h>
 
 #include <cstdint>
 #include <iostream>
@@ -11,6 +12,8 @@
 
 namespace Parsing
 {
+    constexpr unsigned char SIZE_16 = 0x66;
+
     Parser::Parser(std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
         :mTokens(tokens), mPosition(0), mOutput(output), mSection(Codegen::Section::Text)
     {
@@ -76,16 +79,16 @@ namespace Parsing
                 std::exit(1);
             
             case Lexing::TokenType::DBInst:
-                parseDeclInst<char>();
+                parseDeclInst<unsigned char>();
                 break;
             case Lexing::TokenType::DWInst:
-                parseDeclInst<short>();
+                parseDeclInst<unsigned short>();
                 break;
             case Lexing::TokenType::DDInst:
-                parseDeclInst<int>();
+                parseDeclInst<unsigned int>();
                 break;
             case Lexing::TokenType::DQInst:
-                parseDeclInst<long>();
+                parseDeclInst<unsigned long>();
                 break;
 
             case Lexing::TokenType::JumpInst:
@@ -121,7 +124,7 @@ namespace Parsing
 
         unsigned char const value = parseExpression() - mOutput.getPosition() - 2; // Subtract size of the instruction itself
 
-        mOutput.write((char const)0xEB, mSection);
+        mOutput.write(Codegen::JMP_REL8, mSection);
         mOutput.write(value, mSection);
     }
 
@@ -129,33 +132,65 @@ namespace Parsing
     {
         consume();
 
-        std::pair<long long, RegisterSize> reg = parseRegister();
+        std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
 
         expectToken(Lexing::TokenType::Comma);
         consume();
 
+        std::cout << current().toString() << "\n";
+
         if (isImmediate(current().getTokenType()))
         {
             long long immediate = parseExpression();
-            switch (reg.second)
+            switch (lhs.second)
             {
-                case 0: // BYTE
-                    mOutput.write((char)(0xB0 + reg.first), mSection);
-                    mOutput.write((char)immediate, mSection);
+                case Codegen::OperandSize::Byte:
+                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM8 + lhs.first), mSection);
+                    mOutput.write((unsigned char)immediate, mSection);
                     break;
-                case 1: // WORD
-                    mOutput.write((char)(0xB8 + reg.first), mSection);
-                    mOutput.write((short)immediate, mSection);
+                case Codegen::OperandSize::Word:
+                    mOutput.write(SIZE_16, mSection);
+                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                    mOutput.write((unsigned short)immediate, mSection);
                     break;
-                case 2: // LONG
-                    mOutput.write((char)(0xB8 + reg.first), mSection);
-                    mOutput.write((int)immediate, mSection);
+                case Codegen::OperandSize::Long:
+                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                    mOutput.write((unsigned int)immediate, mSection);
                     break;
-                case 3: // QUAD
-                    mOutput.write((char)(Codegen::REX::W + 0xB8 + reg.first), mSection);
-                    mOutput.write((long)immediate, mSection);
+                case Codegen::OperandSize::Quad:
+                    mOutput.write(Codegen::REX::W, mSection);
+                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                    mOutput.write((unsigned long)immediate, mSection);
                     break;
             }
+        }
+        else if (current().getTokenType() == Lexing::TokenType::Register)
+        {
+            std::pair<long long, Codegen::OperandSize> rhs = parseRegister();
+            if (lhs.second != rhs.second)
+            {
+                std::cerr << "Operand size mismatch on `mov' instruction. Terminating program.\n"; // TODO: Error properly
+                std::exit(1);
+            }
+
+            switch(lhs.second)
+            {
+                case Codegen::OperandSize::Byte:
+                    mOutput.write(Codegen::MOV_REG_REG8, mSection);
+                    break;
+                case Codegen::OperandSize::Word:
+                    mOutput.write(SIZE_16, mSection);
+                    mOutput.write(Codegen::MOV_REG_REG, mSection);
+                    break;
+                case Codegen::OperandSize::Long:
+                    mOutput.write(Codegen::MOV_REG_REG, mSection);
+                    break;
+                case Codegen::OperandSize::Quad:
+                    mOutput.write(Codegen::REX::W, mSection);
+                    mOutput.write(Codegen::MOV_REG_REG, mSection);
+                    break;
+            }
+            mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
         }
     }
 
@@ -229,7 +264,7 @@ namespace Parsing
         return -1;
     }
 
-    std::pair<long long, RegisterSize> Parser::parseRegister()
+    std::pair<long long, Codegen::OperandSize> Parser::parseRegister()
     {
         using namespace std::literals;
         constexpr std::array const registers = {
@@ -253,6 +288,6 @@ namespace Parsing
         }
         consume();
 
-        return std::make_pair(index / 4, index % 4);
+        return std::make_pair(index / 4, static_cast<Codegen::OperandSize>(index % 4));
     }
 }

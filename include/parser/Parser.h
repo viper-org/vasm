@@ -14,12 +14,11 @@ namespace Codegen
 {
     class OutputFormat;
     enum class Section;
+    enum class OperandSize;
 }
 
 namespace Parsing
 {
-    using RegisterSize = int;
-
     class Parser
     {
     public:
@@ -55,7 +54,7 @@ namespace Parsing
         long long parseExpression(int precedence = 1);
         long long parseImmediate();
         
-        std::pair<long long, RegisterSize> parseRegister();
+        std::pair<long long, Codegen::OperandSize> parseRegister();
     };
 }
 

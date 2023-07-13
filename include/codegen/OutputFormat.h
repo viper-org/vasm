@@ -6,14 +6,6 @@
 
 namespace Codegen
 {
-    enum REX : char
-    {
-        B = 0b0100 | 1 << 0,
-        X = 0b0100 | 1 << 1,
-        R = 0b0100 | 1 << 2,
-        W = 0b0100 | 1 << 3,
-    };
-
     enum class Section
     {
         Text,
@@ -25,10 +17,10 @@ namespace Codegen
     public:
         virtual ~OutputFormat() = default;
 
-        virtual void write(char  const data, Section const section) = 0;
-        virtual void write(short const data, Section const section) = 0;
-        virtual void write(int   const data, Section const section) = 0;
-        virtual void write(long  const data, Section const section) = 0;
+        virtual void write(unsigned char  const data, Section const section) = 0;
+        virtual void write(unsigned short const data, Section const section) = 0;
+        virtual void write(unsigned int   const data, Section const section) = 0;
+        virtual void write(unsigned long  const data, Section const section) = 0;
 
         virtual int getPosition() = 0;
         virtual int getSectionStart(Section const section) = 0;
