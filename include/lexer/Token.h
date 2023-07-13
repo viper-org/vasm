@@ -13,6 +13,8 @@ namespace Lexing
 
         Plus, Minus,
 
+        LParen, RParen,
+
         Identifier,
         
         Immediate,

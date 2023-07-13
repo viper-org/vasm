@@ -147,6 +147,15 @@ namespace Parsing
 
     long long Parser::parseImmediate()
     {
+        if(current().getTokenType() == Lexing::TokenType::LParen)
+        {
+            consume();
+            long long ret = parseExpression();
+            expectToken(Lexing::TokenType::RParen);
+            consume();
+            return ret;
+        }
+
         if (current().getTokenType() == Lexing::TokenType::Immediate)
             return std::stoll(consume().getText(), 0, 0);
 

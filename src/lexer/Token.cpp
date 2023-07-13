@@ -35,7 +35,7 @@ namespace Lexing
         {
             case TokenType::Error:
                 return "Error";
-                
+
             case TokenType::Dollar:
                 return "Dollar";
             case TokenType::DollarDollar:
@@ -45,6 +45,11 @@ namespace Lexing
                 return "Plus";
             case TokenType::Minus:
                 return "Minus";
+
+            case TokenType::LParen:
+                return "LParen";
+            case TokenType::RParen:
+                return "RParen";
 
             case TokenType::Identifier:
                 return "Identifier";

@@ -135,6 +135,12 @@ namespace Lexing
                 return Token(TokenType::Plus);
             case '-':
                 return Token(TokenType::Minus);
+            
+            case '(':
+                return Token(TokenType::LParen);
+            case ')':
+                return Token(TokenType::RParen);
+            
             default:
                 return Token(TokenType::Error); // Unknown character
         }
