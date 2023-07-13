@@ -35,14 +35,23 @@ namespace Lexing
         {
             case TokenType::Error:
                 return "Error";
+                
             case TokenType::Dollar:
                 return "Dollar";
             case TokenType::DollarDollar:
                 return "DollarDollar";
+
+            case TokenType::Plus:
+                return "Plus";
+            case TokenType::Minus:
+                return "Minus";
+
             case TokenType::Identifier:
                 return "Identifier";
+
             case TokenType::Immediate:
                 return "Immediate";
+
             case TokenType::DBInst:
                 return "DBInst";
             case TokenType::DWInst:

@@ -26,12 +26,8 @@ int main(int argc, char** argv)
     Parsing::Parser parser(tokens, *output);
     parser.parse();
 
-    //output->write((short)0xFEEB, Codegen::Section::Text);
-    //for(int i = 0; i < 508; i++)
-    //    output->write((char)0x00, Codegen::Section::Text);
-    //output->write((short)0xAA55, Codegen::Section::Text);
-
     std::ofstream outFile(inPath + ".o", std::ios::out | std::ios::binary);
     output->print(outFile);
+    
     return 0;
 }

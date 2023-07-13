@@ -11,6 +11,8 @@ namespace Lexing
 
         Dollar, DollarDollar,
 
+        Plus, Minus,
+
         Identifier,
         
         Immediate,

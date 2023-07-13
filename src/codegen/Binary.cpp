@@ -1,4 +1,5 @@
 #include <codegen/Binary.h>
+#include <iostream>
 #include <lexer/Token.h>
 
 namespace Codegen
@@ -42,6 +43,6 @@ namespace Codegen
 
     void BinaryFormat::print(std::ostream& stream)
     {
-        stream << mBuffer.rdbuf()->view();
+        stream.write(mBuffer.view().data(), mBuffer.view().length());
     }
 }
