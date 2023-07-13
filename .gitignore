@@ -1,0 +1,10 @@
+.cache/
+CMakeFiles/
+
+*.cmake
+*.o
+Makefile
+
+vasm
+CMakeCache.txt
+compile_commands.json
