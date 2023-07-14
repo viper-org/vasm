@@ -10,12 +10,13 @@ namespace Lexing
     {
     }
 
-    std::vector<std::string_view> instructions = {
+    constexpr std::array instructions = {
         "db",
         "dw",
         "dd",
         "dq",
         "jmp",
+        "call",
         "ret",
         "mov",
         "int",

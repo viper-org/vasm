@@ -1,2 +1,5 @@
+test:
+    jmp $
+
 _start:
-    ret
+    call test

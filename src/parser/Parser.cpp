@@ -41,9 +41,17 @@ namespace Parsing
             },
             {
                 "jmp", [&](){
-                    unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
+                    unsigned char value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
 
                     mOutput.write(Codegen::JMP_REL8, mSection);
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "call", [&](){
+                    unsigned int value = parseExpression() - mOutput.getPosition(mSection) - 5; // Subtract size of the instruction itself
+
+                    mOutput.write(Codegen::CALL_REL32, mSection);
                     mOutput.write(value, mSection);
                 }
             },
@@ -202,8 +210,7 @@ namespace Parsing
 
             case Lexing::TokenType::Instruction:
             {
-                consume();
-                InstructionParser parser = mInstructionParsers.at(current().getText());
+                InstructionParser parser = mInstructionParsers.at(consume().getText());
                 parser();
                 break;
             }
@@ -228,7 +235,7 @@ namespace Parsing
     {
         long long lhs = parseImmediate();
         int binaryOperatorPrecedence;
-        while (binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType()), binaryOperatorPrecedence > precedence)
+        while (mPosition < mTokens.size() && (binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType()), binaryOperatorPrecedence > precedence))
         {
             Lexing::TokenType operatorToken = consume().getTokenType();
 
