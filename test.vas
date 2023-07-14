@@ -1,7 +1,22 @@
-test:
-    jmp $
+string:  db "Hello, "
+string2: db "world!\n"
+
+return:
+    mov rax, 60
+    mov rdi, 13
+    syscall
 
 _start:
-    call test
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, string
+    mov rdx, 7
+    syscall
 
-something: db "hello\0"
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, string2
+    mov rdx, 7
+    syscall
+
+    call return

@@ -29,6 +29,7 @@ namespace Codegen
 
         void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) override;
         unsigned long getSymbol(const std::string& name) override;
+        void relocSymbol(const std::string& name, Section const section) override;
 
         void print(std::ostream& stream) override;
     private:

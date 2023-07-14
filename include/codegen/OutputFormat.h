@@ -30,9 +30,10 @@ namespace Codegen
 
         virtual void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) = 0;
         virtual unsigned long getSymbol(const std::string& name) = 0;
+        virtual void relocSymbol(const std::string& name, Section const section) = 0;
 
         virtual void print(std::ostream& stream) = 0;
     };
 }
 
-#endif  
+#endif

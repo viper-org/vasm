@@ -31,6 +31,8 @@ namespace Codegen
     constexpr int TYPE_PROGBITS = 1;
     constexpr int TYPE_SYMTAB = 2;
     constexpr int TYPE_STRTAB = 3;
+    constexpr int TYPE_RELA = 4;
+
     constexpr long SECTION_ADDR = 0;
 
     constexpr unsigned char SYM_LOCAL = 0;
@@ -166,6 +168,41 @@ namespace Codegen
     unsigned long ELFFormat::getSymbol(const std::string& name)
     {
         return mSymbols.at(name);
+    }
+
+    void ELFFormat::relocSymbol(const std::string& name, Section const section)
+    {
+        ELFSection* sect = getOrCreateSection(section);
+        ELFSection* rela = getSection(".rela" + sect->mName);
+        if(!rela)
+        {
+            int symtabIndex;
+            int sectionIndex = 0;
+            for (symtabIndex = 0; symtabIndex < mSections.size(); symtabIndex++)
+            {
+                if (mSections[symtabIndex].mName == ".symtab")
+                {
+                    break;
+                }
+            }
+            for (sectionIndex = 0; sectionIndex < mSections.size(); sectionIndex++)
+            {
+                if (mSections[sectionIndex].mName == sect->mName)
+                {
+                    break;
+                }
+            }
+
+            mSections.push_back(ELFSection(".rela" + sect->mName, TYPE_RELA, 0, symtabIndex, sectionIndex, 8, 24, Section::Other));
+
+            rela = &mSections.back();
+        }
+
+        unsigned long symbol = mSymbols.at(name);
+        
+        rela->write((unsigned long)getPosition(section));
+        rela->write((unsigned long)0x200000001);
+        rela->write(symbol);
     }
 
 

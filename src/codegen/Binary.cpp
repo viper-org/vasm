@@ -51,6 +51,10 @@ namespace Codegen
         return mSymbols.at(name);
     }
 
+    void BinaryFormat::relocSymbol(const std::string&, Section const)
+    {
+    }
+
     void BinaryFormat::print(std::ostream& stream)
     {
         stream.write(mBuffer.view().data(), mBuffer.view().length());

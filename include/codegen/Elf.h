@@ -31,6 +31,7 @@ namespace Codegen
 
         void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) override;
         unsigned long getSymbol(const std::string& name) override;
+        void relocSymbol(const std::string& name, Section const section) override;
 
         void print(std::ostream& stream) override;
     private:
@@ -70,7 +71,7 @@ namespace Codegen
 
         std::vector<ELFSection> mSections;
 
-        std::unordered_map<std::string, long long> mSymbols;
+        std::unordered_map<std::string, unsigned long> mSymbols;
 
         const std::string& mFileName;
     };

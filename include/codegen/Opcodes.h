@@ -22,7 +22,7 @@ namespace Codegen
         Quad,
     };
 
-    enum Opcodes : unsigned char
+    enum ByteOpcodes : unsigned char
     {
         JMP_REL8 = 0xEB,
 
@@ -36,6 +36,11 @@ namespace Codegen
         MOV_REG_REG  = 0x89,
 
         INT = 0xCD,
+    };
+
+    enum WordOpcodes : unsigned short
+    {
+        SYSCALL = 0x050F,
     };
 
     using namespace std::literals;

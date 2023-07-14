@@ -79,25 +79,47 @@ namespace Parsing
 
                     if (isImmediate(current().getTokenType()))
                     {
+                        Lexing::Token* reloc = nullptr;
+                        if (current().getTokenType() == Lexing::TokenType::Identifier) // Emit a relocation for symbols
+                        {
+                            reloc = &current();
+                        }
+
                         long long immediate = parseExpression();
                         switch (lhs.second)
                         {
                             case Codegen::OperandSize::Byte:
                                 mOutput.write((unsigned char)(Codegen::MOV_REG_IMM8 + lhs.first), mSection);
+                                if (reloc)
+                                {
+                                    mOutput.relocSymbol(reloc->getText(), mSection);
+                                }
                                 mOutput.write((unsigned char)immediate, mSection);
                                 break;
                             case Codegen::OperandSize::Word:
                                 mOutput.write(SIZE_16, mSection);
                                 mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                if (reloc)
+                                {
+                                    mOutput.relocSymbol(reloc->getText(), mSection);
+                                }
                                 mOutput.write((unsigned short)immediate, mSection);
                                 break;
                             case Codegen::OperandSize::Long:
                                 mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                if (reloc)
+                                {
+                                    mOutput.relocSymbol(reloc->getText(), mSection);
+                                }
                                 mOutput.write((unsigned int)immediate, mSection);
                                 break;
                             case Codegen::OperandSize::Quad:
                                 mOutput.write(Codegen::REX::W, mSection);
                                 mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                if (reloc)
+                                {
+                                    mOutput.relocSymbol(reloc->getText(), mSection);
+                                }
                                 mOutput.write((unsigned long)immediate, mSection);
                                 break;
                         }
@@ -138,6 +160,11 @@ namespace Parsing
 
                     mOutput.write(Codegen::INT, mSection);
                     mOutput.write(vector, mSection);
+                }
+            },
+            {
+                "syscall", [&](){
+                    mOutput.write(Codegen::SYSCALL, mSection);
                 }
             },
             {

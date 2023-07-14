@@ -20,6 +20,7 @@ namespace Lexing
         "ret",
         "mov",
         "int",
+        "syscall",
         "times",
     };
 
