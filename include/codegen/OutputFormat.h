@@ -1,8 +1,7 @@
 #ifndef VASM_CODEGEN_OUTPUT_FORMAT_H
 #define VASM_CODEGEN_OUTPUT_FORMAT_H 1
 
-#include <sstream>
-#include <vector>
+#include <string>
 
 namespace Codegen
 {

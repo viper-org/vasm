@@ -1,6 +1,4 @@
 #include <codegen/Binary.h>
-#include <iostream>
-#include <lexer/Token.h>
 
 namespace Codegen
 {

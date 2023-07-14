@@ -1,7 +1,5 @@
 #include <codegen/Elf.h>
 
-#include <cstring>
-
 namespace Codegen
 {
     // TODO: Make this into an enum or similar

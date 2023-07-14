@@ -1,7 +1,5 @@
 #include <lexer/Token.h>
 
-#include <sstream>
-
 namespace Lexing
 {
     Token::Token(const TokenType tokenType, const std::string& text)

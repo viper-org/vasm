@@ -5,7 +5,6 @@
 
 #include <concepts>
 #include <sstream>
-#include <optional>
 #include <unordered_map>
 #include <vector>
 

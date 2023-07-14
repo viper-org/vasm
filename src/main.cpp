@@ -6,9 +6,7 @@
 #include <codegen/Binary.h>
 #include <codegen/Elf.h>
 
-#include <iostream>
 #include <fstream>
-#include <string>
 #include <memory>
 
 int main(int argc, char** argv)
