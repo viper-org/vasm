@@ -5,10 +5,7 @@
 #include <codegen/OutputFormat.h>
 #include <codegen/Opcodes.h>
 
-#include <cstdint>
-#include <format>
 #include <iostream>
-#include <string_view>
 
 namespace Parsing
 {
@@ -19,42 +16,31 @@ namespace Parsing
     {
         mInstructionParsers = {
             {
-                "db",
-                [&](){
-                    consume();
+                "db", [&](){
                     unsigned char value = parseExpression();
                     mOutput.write(value, mSection);
                 }
             },
             {
-                "dw",
-                [&](){
-                    consume();
+                "dw", [&](){
                     unsigned short value = parseExpression();
                     mOutput.write(value, mSection);
                 }
             },
             {
-                "dd",
-                [&](){
-                    consume();
+                "dd", [&](){
                     unsigned int value = parseExpression();
                     mOutput.write(value, mSection);
                 }
             },
             {
-                "dq",
-                [&](){
-                    consume();
+                "dq", [&](){
                     unsigned long value = parseExpression();
                     mOutput.write(value, mSection);
                 }
             },
             {
-                "jmp",
-                [&](){
-                    consume();
-
+                "jmp", [&](){
                     unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
 
                     mOutput.write(Codegen::JMP_REL8, mSection);
@@ -62,18 +48,12 @@ namespace Parsing
                 }
             },
             {
-                "ret",
-                [&](){
-                    consume();
-                    
+                "ret", [&](){
                     mOutput.write(Codegen::RET, mSection);
                 }
             },
             {
-                "mov",
-                [&](){
-                    consume();
-
+                "mov", [&](){
                     std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
 
                     expectToken(Lexing::TokenType::Comma);
@@ -135,10 +115,7 @@ namespace Parsing
                 }
             },
             {
-                "int",
-                [&](){
-                    consume();
-                    
+                "int", [&](){
                     unsigned char vector = parseExpression();
 
                     mOutput.write(Codegen::INT, mSection);
@@ -146,10 +123,7 @@ namespace Parsing
                 }
             },
             {
-                "times",
-                [&](){
-                    consume();
-
+                "times", [&](){
                     long long iterations = parseExpression();
 
                     int position = mPosition;
@@ -227,8 +201,12 @@ namespace Parsing
                 break;
 
             case Lexing::TokenType::Instruction:
-                mInstructionParsers.at(current().getText())();
+            {
+                consume();
+                InstructionParser parser = mInstructionParsers.at(current().getText());
+                parser();
                 break;
+            }
 
             default:
                 std::cerr << "Expected statement. Found " << current().getText() << ". Terminating program.\n"; // TODO: Error properly
@@ -243,20 +221,19 @@ namespace Parsing
         expectToken(Lexing::TokenType::Colon);
         consume();
 
-        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true));
+        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true)); // TODO: Check if global
     }
 
     long long Parser::parseExpression(int precedence)
     {
         long long lhs = parseImmediate();
-        while(mPosition < mTokens.size())
+        int binaryOperatorPrecedence;
+        while (binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType()), binaryOperatorPrecedence > precedence)
         {
-            int binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType());
-            if (binaryOperatorPrecedence < precedence)
-                break;
-
             Lexing::TokenType operatorToken = consume().getTokenType();
-            long long rhs = parseImmediate();
+
+            long long rhs = parseExpression(binaryOperatorPrecedence);
+
             switch(operatorToken)
             {
                 case Lexing::TokenType::Plus:
@@ -277,15 +254,18 @@ namespace Parsing
         if(current().getTokenType() == Lexing::TokenType::LParen)
         {
             consume();
+
             long long ret = parseExpression();
+
             expectToken(Lexing::TokenType::RParen);
             consume();
+
             return ret;
         }
-
-        if (current().getTokenType() == Lexing::TokenType::Immediate)
+        else if (current().getTokenType() == Lexing::TokenType::Immediate)
+        {
             return std::stoll(consume().getText(), 0, 0);
-
+        }
         else if (current().getTokenType() == Lexing::TokenType::Dollar)
         {
             consume();
@@ -300,36 +280,26 @@ namespace Parsing
         {
             return mOutput.getSymbol(consume().getText());
         }
-        
         else
-            expectToken(Lexing::TokenType::Immediate);
+            expectToken(Lexing::TokenType::Immediate); // TODO: Error properly
+
         return -1;
     }
 
     std::pair<long long, Codegen::OperandSize> Parser::parseRegister()
     {
-        using namespace std::literals;
-        constexpr std::array const registers = {
-            "al"sv, "ax"sv, "eax"sv, "rax"sv,
-            "cl"sv, "cx"sv, "ecx"sv, "rcx"sv,
-            "dl"sv, "dx"sv, "edx"sv, "rdx"sv,
-            "bl"sv, "bx"sv, "ebx"sv, "rbx"sv,
-            "ah"sv, "sp"sv, "esp"sv, "rsp"sv,
-            "ch"sv, "bp"sv, "ebp"sv, "rbp"sv,
-            "dh"sv, "si"sv, "esi"sv, "rsi"sv,
-            "bh"sv, "di"sv, "edi"sv, "rdi"sv,
-        };
+        constexpr int REGISTERS_PER_ENCODING = 4;
 
         long long index;
-        for (index = 0; index < registers.size(); index++)
+        for (index = 0; index < Codegen::Registers.size(); index++)
         {
-            if (registers[index] == current().getText())
+            if (Codegen::Registers[index] == current().getText())
             {
                 break;
             }
         }
         consume();
 
-        return std::make_pair(index / 4, static_cast<Codegen::OperandSize>(index % 4));
+        return std::make_pair(index / REGISTERS_PER_ENCODING, static_cast<Codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
     }
 }

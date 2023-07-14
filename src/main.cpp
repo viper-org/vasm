@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     Lexing::Lexer lexer(text);
     std::vector<Lexing::Token> tokens = lexer.lex();
 
-    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::BinaryFormat>();
+    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::ELFFormat>(inPath);
 
     Parsing::Parser parser(tokens, *output);
     parser.parse();

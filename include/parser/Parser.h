@@ -33,12 +33,15 @@ namespace Parsing
         Codegen::OutputFormat& mOutput;
         int mPosition{ 0 };
         Codegen::Section mSection;
-        std::unordered_map<std::string_view, std::function<void()>> mInstructionParsers;
+
+        using InstructionParser = std::function<void()>;
+        std::unordered_map<std::string_view, InstructionParser> mInstructionParsers;
 
 
         Lexing::Token& current();
         Lexing::Token& consume();
         Lexing::Token& peek(int offset);
+        
         void expectToken(Lexing::TokenType tokenType);
         int getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const;
         bool isImmediate(Lexing::TokenType tokenType) const;
@@ -46,10 +49,8 @@ namespace Parsing
         void parseStatement();
 
         void parseLabel();
-
         long long parseExpression(int precedence = 1);
-        long long parseImmediate();
-        
+        long long parseImmediate();        
         std::pair<long long, Codegen::OperandSize> parseRegister();
     };
 }

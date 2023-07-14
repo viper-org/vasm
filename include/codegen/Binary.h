@@ -27,7 +27,7 @@ namespace Codegen
         int getPosition(Section const section) override;
         int getSectionStart(Section const section) override;
 
-        void addSymbol(const std::string& name, unsigned long value, Section const section, bool global) override;
+        void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) override;
         unsigned long getSymbol(const std::string& name) override;
 
         void print(std::ostream& stream) override;
