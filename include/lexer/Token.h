@@ -22,17 +22,6 @@ namespace Lexing
         Register,
 
         Instruction,
-
-        DBInst, DWInst, DDInst, DQInst,
-
-        JumpInst,
-        RetInst,
-
-        MovInst,
-
-        IntInst,
-
-        TimesStatement,
     };
 
     class Token
