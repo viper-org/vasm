@@ -17,7 +17,7 @@ namespace Lexing
 
         Identifier,
         
-        Immediate,
+        Immediate, String,
 
         Register,
 

@@ -17,8 +17,18 @@ namespace Parsing
         mInstructionParsers = {
             {
                 "db", [&](){
-                    unsigned char value = parseExpression();
-                    mOutput.write(value, mSection);
+                    if (current().getTokenType() == Lexing::TokenType::String)
+                    {
+                        for (unsigned char character : consume().getText())
+                        {
+                            mOutput.write(character, mSection);
+                        }
+                    }
+                    else
+                    {
+                        unsigned char value = parseExpression();
+                        mOutput.write(value, mSection);
+                    }
                 }
             },
             {

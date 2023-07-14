@@ -167,6 +167,44 @@ namespace Lexing
                 return Token(TokenType::Comma);
             case ':':
                 return Token(TokenType::Colon);
+
+            case '"':
+            {
+                consume();
+                std::string value;
+                while(current() != '"')
+                {
+                    switch(current())
+                    {
+                        case '\\':
+                        {
+                            consume();
+                            switch(current())
+                            {
+                                case 'n':
+                                    value += '\n';
+                                    break;
+                                case '\'':
+                                    value += '\'';
+                                    break;
+                                case '\\':
+                                    value += '\\';
+                                    break;
+                                case '0':
+                                    value += '\0';
+                                    break;
+                                default:
+                                    return Token(TokenType::Error);
+                            }
+                            break;
+                        }
+                        default:
+                            value += current();
+                    }
+                    consume();
+                }
+                return Token(TokenType::String, value);
+            }
             
             default:
                 return Token(TokenType::Error); // Unknown character

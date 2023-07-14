@@ -3,3 +3,5 @@ test:
 
 _start:
     call test
+
+something: db "hello\0"
