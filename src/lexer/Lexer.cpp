@@ -43,8 +43,10 @@ namespace Lexing
         while (mPosition < mText.length())
         {
             std::optional<Token> token = nextToken();
-            if(token.has_value())
+            if (token.has_value())
+            {
                 tokens.push_back(*token);
+            }
             consume();
         }
 
@@ -78,8 +80,6 @@ namespace Lexing
                 text += current();
             }
 
-            //if(auto it = keywords.find(text); it != keywords.end())
-            //    return Token(keywords.find(text)->second);
             for (std::string_view instruction : instructions)
             {
                 if (text == instruction)
@@ -143,7 +143,7 @@ namespace Lexing
                     }
                 }
             }
-            else
+            else // decimal
             {
                 while (std::isdigit(peek(1)))
                 {
@@ -165,6 +165,7 @@ namespace Lexing
                 }
                 return Token(TokenType::Dollar);
             }
+
             case '+':
                 return Token(TokenType::Plus);
             case '-':
