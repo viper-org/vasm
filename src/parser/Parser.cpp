@@ -6,8 +6,8 @@
 #include <codegen/Opcodes.h>
 
 #include <cstdint>
-#include <iostream>
 #include <format>
+#include <iostream>
 #include <string_view>
 
 namespace Parsing
@@ -17,6 +17,148 @@ namespace Parsing
     Parser::Parser(std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
         :mTokens(tokens), mPosition(0), mOutput(output), mSection(Codegen::Section::Text)
     {
+        mInstructionParsers = {
+            {
+                "db",
+                [&](){
+                    consume();
+                    unsigned char value = parseExpression();
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "dw",
+                [&](){
+                    consume();
+                    unsigned short value = parseExpression();
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "dd",
+                [&](){
+                    consume();
+                    unsigned int value = parseExpression();
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "dq",
+                [&](){
+                    consume();
+                    unsigned long value = parseExpression();
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "jmp",
+                [&](){
+                    unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
+
+                    mOutput.write(Codegen::JMP_REL8, mSection);
+                    mOutput.write(value, mSection);
+                }
+            },
+            {
+                "ret",
+                [&](){
+                    consume();
+                    
+                    mOutput.write(Codegen::RET, mSection);
+                }
+            },
+            {
+                "mov",
+                [&](){
+                    consume();
+
+                    std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
+
+                    expectToken(Lexing::TokenType::Comma);
+                    consume();
+
+                    if (isImmediate(current().getTokenType()))
+                    {
+                        long long immediate = parseExpression();
+                        switch (lhs.second)
+                        {
+                            case Codegen::OperandSize::Byte:
+                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM8 + lhs.first), mSection);
+                                mOutput.write((unsigned char)immediate, mSection);
+                                break;
+                            case Codegen::OperandSize::Word:
+                                mOutput.write(SIZE_16, mSection);
+                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                mOutput.write((unsigned short)immediate, mSection);
+                                break;
+                            case Codegen::OperandSize::Long:
+                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                mOutput.write((unsigned int)immediate, mSection);
+                                break;
+                            case Codegen::OperandSize::Quad:
+                                mOutput.write(Codegen::REX::W, mSection);
+                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                mOutput.write((unsigned long)immediate, mSection);
+                                break;
+                        }
+                    }
+                    else if (current().getTokenType() == Lexing::TokenType::Register)
+                    {
+                        std::pair<long long, Codegen::OperandSize> rhs = parseRegister();
+                        if (lhs.second != rhs.second)
+                        {
+                            std::cerr << "Operand size mismatch on `mov' instruction. Terminating program.\n"; // TODO: Error properly
+                            std::exit(1);
+                        }
+
+                        switch(lhs.second)
+                        {
+                            case Codegen::OperandSize::Byte:
+                                mOutput.write(Codegen::MOV_REG_REG8, mSection);
+                                break;
+                            case Codegen::OperandSize::Word:
+                                mOutput.write(SIZE_16, mSection);
+                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                                break;
+                            case Codegen::OperandSize::Long:
+                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                                break;
+                            case Codegen::OperandSize::Quad:
+                                mOutput.write(Codegen::REX::W, mSection);
+                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                                break;
+                        }
+                        mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
+                    }
+                }
+            },
+            {
+                "int",
+                [&](){
+                    consume();
+                    
+                    unsigned char vector = parseExpression();
+
+                    mOutput.write(Codegen::INT, mSection);
+                    mOutput.write(vector, mSection);
+                }
+            },
+            {
+                "times",
+                [&](){
+                    consume();
+
+                    long long iterations = parseExpression();
+
+                    int position = mPosition;
+                    while (--iterations)
+                    {
+                        parseStatement();
+                        mPosition = position;
+                    }
+                }
+            },
+        };
     }
     
     Lexing::Token& Parser::current()
@@ -81,37 +223,9 @@ namespace Parsing
             case Lexing::TokenType::Identifier:
                 parseLabel();
                 break;
-            
-            case Lexing::TokenType::DBInst:
-                parseDeclInst<unsigned char>();
-                break;
-            case Lexing::TokenType::DWInst:
-                parseDeclInst<unsigned short>();
-                break;
-            case Lexing::TokenType::DDInst:
-                parseDeclInst<unsigned int>();
-                break;
-            case Lexing::TokenType::DQInst:
-                parseDeclInst<unsigned long>();
-                break;
 
-            case Lexing::TokenType::JumpInst:
-                parseJumpInst();
-                break;
-            case Lexing::TokenType::RetInst:
-                parseRetInst();
-                break;
-
-            case Lexing::TokenType::MovInst:
-                parseMovInst();
-                break;
-
-            case Lexing::TokenType::IntInst:
-                parseIntInst();
-                break;
-
-            case Lexing::TokenType::TimesStatement:
-                parseTimesStatement();
+            case Lexing::TokenType::Instruction:
+                mInstructionParsers.at(current().getText())();
                 break;
 
             default:
@@ -128,120 +242,6 @@ namespace Parsing
         consume();
 
         mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true));
-    }
-
-    template<typename T>
-    void Parser::parseDeclInst()
-    {
-        consume();
-
-        T value = parseExpression();
-        mOutput.write(value, mSection);
-    }
-
-    void Parser::parseJumpInst()
-    {
-        consume();
-
-        unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
-
-        mOutput.write(Codegen::JMP_REL8, mSection);
-        mOutput.write(value, mSection);
-    }
-
-    void Parser::parseRetInst()
-    {
-        consume();
-
-        mOutput.write(Codegen::RET, mSection);
-    }
-
-    void Parser::parseMovInst()
-    {
-        consume();
-
-        std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
-
-        expectToken(Lexing::TokenType::Comma);
-        consume();
-
-        if (isImmediate(current().getTokenType()))
-        {
-            long long immediate = parseExpression();
-            switch (lhs.second)
-            {
-                case Codegen::OperandSize::Byte:
-                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM8 + lhs.first), mSection);
-                    mOutput.write((unsigned char)immediate, mSection);
-                    break;
-                case Codegen::OperandSize::Word:
-                    mOutput.write(SIZE_16, mSection);
-                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
-                    mOutput.write((unsigned short)immediate, mSection);
-                    break;
-                case Codegen::OperandSize::Long:
-                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
-                    mOutput.write((unsigned int)immediate, mSection);
-                    break;
-                case Codegen::OperandSize::Quad:
-                    mOutput.write(Codegen::REX::W, mSection);
-                    mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
-                    mOutput.write((unsigned long)immediate, mSection);
-                    break;
-            }
-        }
-        else if (current().getTokenType() == Lexing::TokenType::Register)
-        {
-            std::pair<long long, Codegen::OperandSize> rhs = parseRegister();
-            if (lhs.second != rhs.second)
-            {
-                std::cerr << "Operand size mismatch on `mov' instruction. Terminating program.\n"; // TODO: Error properly
-                std::exit(1);
-            }
-
-            switch(lhs.second)
-            {
-                case Codegen::OperandSize::Byte:
-                    mOutput.write(Codegen::MOV_REG_REG8, mSection);
-                    break;
-                case Codegen::OperandSize::Word:
-                    mOutput.write(SIZE_16, mSection);
-                    mOutput.write(Codegen::MOV_REG_REG, mSection);
-                    break;
-                case Codegen::OperandSize::Long:
-                    mOutput.write(Codegen::MOV_REG_REG, mSection);
-                    break;
-                case Codegen::OperandSize::Quad:
-                    mOutput.write(Codegen::REX::W, mSection);
-                    mOutput.write(Codegen::MOV_REG_REG, mSection);
-                    break;
-            }
-            mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
-        }
-    }
-
-    void Parser::parseIntInst()
-    {
-        consume();
-
-        unsigned char vector = parseExpression();
-
-        mOutput.write(Codegen::INT, mSection);
-        mOutput.write(vector, mSection);
-    }
-
-    void Parser::parseTimesStatement()
-    {
-        consume();
-
-        long long iterations = parseExpression();
-
-        int position = mPosition;
-        while (--iterations)
-        {
-            parseStatement();
-            mPosition = position;
-        }
     }
 
     long long Parser::parseExpression(int precedence)

@@ -1,7 +1,9 @@
 #ifndef VASM_PARSER_PARSER_H
 #define VASM_PARSER_PARSER_H 1
 
+#include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace Lexing
@@ -31,6 +33,7 @@ namespace Parsing
         Codegen::OutputFormat& mOutput;
         int mPosition{ 0 };
         Codegen::Section mSection;
+        std::unordered_map<std::string_view, std::function<void()>> mInstructionParsers;
 
 
         Lexing::Token& current();
@@ -43,18 +46,6 @@ namespace Parsing
         void parseStatement();
 
         void parseLabel();
-
-        template<typename T>
-        void parseDeclInst();
-
-        void parseJumpInst();
-        void parseRetInst();
-
-        void parseMovInst();
-
-        void parseIntInst();
-
-        void parseTimesStatement();
 
         long long parseExpression(int precedence = 1);
         long long parseImmediate();

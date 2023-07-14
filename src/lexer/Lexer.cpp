@@ -11,16 +11,16 @@ namespace Lexing
     {
     }
 
-    std::unordered_map<std::string_view, TokenType> keywords = {
-        { "db", TokenType::DBInst },
-        { "dw", TokenType::DWInst },
-        { "dd", TokenType::DDInst },
-        { "dq", TokenType::DQInst },
-        { "jmp", TokenType::JumpInst },
-        { "ret", TokenType::RetInst },
-        { "mov", TokenType::MovInst },
-        { "int", TokenType::IntInst },
-        { "times", TokenType::TimesStatement },
+    std::vector<std::string_view> instructions = {
+        "db",
+        "dw",
+        "dd",
+        "dq",
+        "jmp",
+        "ret",
+        "mov",
+        "int",
+        "times",
     };
 
     using namespace std::literals;
@@ -78,8 +78,15 @@ namespace Lexing
                 text += current();
             }
 
-            if(auto it = keywords.find(text); it != keywords.end())
-                return Token(keywords.find(text)->second);
+            //if(auto it = keywords.find(text); it != keywords.end())
+            //    return Token(keywords.find(text)->second);
+            for (std::string_view instruction : instructions)
+            {
+                if (text == instruction)
+                {
+                    return Token(TokenType::Instruction, std::move(text));
+                }
+            }
 
             for (std::string_view reg : registers)
             {

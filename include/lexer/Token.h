@@ -21,6 +21,8 @@ namespace Lexing
 
         Register,
 
+        Instruction,
+
         DBInst, DWInst, DDInst, DQInst,
 
         JumpInst,
