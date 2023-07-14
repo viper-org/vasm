@@ -53,6 +53,8 @@ namespace Parsing
             {
                 "jmp",
                 [&](){
+                    consume();
+
                     unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
 
                     mOutput.write(Codegen::JMP_REL8, mSection);
