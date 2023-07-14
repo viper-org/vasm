@@ -4,6 +4,7 @@
 #include <parser/Parser.h>
 
 #include <codegen/Binary.h>
+#include <codegen/Elf.h>
 
 #include <iostream>
 #include <fstream>
@@ -21,13 +22,13 @@ int main(int argc, char** argv)
     Lexing::Lexer lexer(text);
     std::vector<Lexing::Token> tokens = lexer.lex();
 
-    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::BinaryFormat>();
+    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::ELFFormat>(inPath);
 
     Parsing::Parser parser(tokens, *output);
     parser.parse();
 
     std::ofstream outFile(inPath + ".o", std::ios::out | std::ios::binary);
     output->print(outFile);
-    
+
     return 0;
 }

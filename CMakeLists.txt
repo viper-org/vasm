@@ -17,6 +17,7 @@ file(GLOB vasm_sources
     src/parser/Parser.cpp
 
     src/codegen/Binary.cpp
+    src/codegen/Elf.cpp
 )
 
 add_executable(vasm ${vasm_sources})

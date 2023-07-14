@@ -31,7 +31,7 @@ namespace Codegen
     }
 
 
-    int BinaryFormat::getPosition()
+    int BinaryFormat::getPosition(Section const)
     {
         return mBuffer.view().length();
     }
@@ -41,12 +41,12 @@ namespace Codegen
         return 0;
     }
 
-    void BinaryFormat::addSymbol(const std::string& name, long long value)
+    void BinaryFormat::addSymbol(const std::string& name, unsigned long value, Section const, bool)
     {
         mSymbols[name] = value;
     }
 
-    long long BinaryFormat::getSymbol(const std::string& name)
+    unsigned long BinaryFormat::getSymbol(const std::string& name)
     {
         return mSymbols.at(name);
     }

@@ -1,10 +1,2 @@
 _start:
-    mov ah, 0xe
-    mov al, 65
-
-    int 0x10
-
-    jmp _start
-
-times 510 - ($ - $$) db 0
-dw 0xaa55
+    jmp $

@@ -124,7 +124,7 @@ namespace Parsing
         expectToken(Lexing::TokenType::Colon);
         consume();
 
-        mOutput.addSymbol(name, mOutput.getPosition());
+        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true));
     }
 
     template<typename T>
@@ -140,7 +140,7 @@ namespace Parsing
     {
         consume();
 
-        unsigned char const value = parseExpression() - mOutput.getPosition() - 2; // Subtract size of the instruction itself
+        unsigned char const value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
 
         mOutput.write(Codegen::JMP_REL8, mSection);
         mOutput.write(value, mSection);
@@ -279,7 +279,7 @@ namespace Parsing
         else if (current().getTokenType() == Lexing::TokenType::Dollar)
         {
             consume();
-            return mOutput.getPosition();
+            return mOutput.getPosition(mSection);
         }
         else if (current().getTokenType() == Lexing::TokenType::DollarDollar)
         {
