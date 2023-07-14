@@ -1,2 +1,2 @@
 _start:
-    jmp $
+    ret

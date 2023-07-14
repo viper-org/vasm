@@ -22,6 +22,7 @@ namespace Codegen
     enum Opcodes : unsigned char
     {
         JMP_REL8 = 0xEB,
+        RET = 0xC3,
 
         MOV_REG_IMM8 = 0xB0,
         MOV_REG_IMM  = 0xB8,

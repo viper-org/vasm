@@ -48,6 +48,7 @@ namespace Parsing
         void parseDeclInst();
 
         void parseJumpInst();
+        void parseRetInst();
 
         void parseMovInst();
 

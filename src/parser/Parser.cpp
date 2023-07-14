@@ -39,7 +39,7 @@ namespace Parsing
         if(current().getTokenType() != tokenType)
         {
             Lexing::Token temp(tokenType);
-            std::cerr << std::format("Expected {}. Found {}. Terminating program.\n", temp.getTokenTypeString(), current().getText()); // TODO: Error properly
+            std::cerr << "Unexpected token. Terminating program.\n"; // TODO: Error properly
             std::exit(1);
         }
     }
@@ -98,6 +98,9 @@ namespace Parsing
             case Lexing::TokenType::JumpInst:
                 parseJumpInst();
                 break;
+            case Lexing::TokenType::RetInst:
+                parseRetInst();
+                break;
 
             case Lexing::TokenType::MovInst:
                 parseMovInst();
@@ -146,6 +149,13 @@ namespace Parsing
         mOutput.write(value, mSection);
     }
 
+    void Parser::parseRetInst()
+    {
+        consume();
+
+        mOutput.write(Codegen::RET, mSection);
+    }
+
     void Parser::parseMovInst()
     {
         consume();
@@ -154,8 +164,6 @@ namespace Parsing
 
         expectToken(Lexing::TokenType::Comma);
         consume();
-
-        std::cout << current().toString() << "\n";
 
         if (isImmediate(current().getTokenType()))
         {

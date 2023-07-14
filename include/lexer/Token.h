@@ -24,6 +24,7 @@ namespace Lexing
         DBInst, DWInst, DDInst, DQInst,
 
         JumpInst,
+        RetInst,
 
         MovInst,
 
@@ -39,12 +40,8 @@ namespace Lexing
         Token(const TokenType tokenType, std::string&& text);
         Token(const TokenType tokenType);
 
-        const char* getTokenTypeString() const;
-
         TokenType getTokenType() const;
         const std::string& getText() const;
-
-        std::string toString() const;
 
         bool operator==(Token other);
 
