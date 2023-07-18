@@ -11,8 +11,8 @@ namespace Parsing
 {
     constexpr unsigned char SIZE_16 = 0x66;
 
-    Parser::Parser(std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
-        :mTokens(tokens), mPosition(0), mOutput(output), mSection(Codegen::Section::Text)
+    Parser::Parser(std::string_view filename, std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
+        : filename {filename}, mTokens {tokens}, mOutput {output}, mPosition {0}, mSection {Codegen::Section::Text}
     {
         mInstructionParsers = {
             {
@@ -71,10 +71,70 @@ namespace Parsing
                 }
             },
             {
+                "lea", [&](){
+                    auto registerToken = current();
+                    std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
+                    
+                    expectToken(Lexing::TokenType::Comma, "Expected ',' after lea destination register.");
+                    consume();
+                    
+                    expectToken(Lexing::TokenType::LBracket, "Expected '[' before lea source expression.");
+                    auto bracketStartToken = consume();
+                    
+                    // TODO: Maybe a proper keyword in lexer?
+                    bool rel = false;
+                    if (current().getText() == "rel") {
+                        consume();
+                        rel = true;
+                    }
+                    
+                    expectToken(Lexing::TokenType::Identifier, "Expected an identifier in lea source expression.");
+                    long long labelAddr = parseImmediate();
+                    
+                    expectToken(Lexing::TokenType::RBracket, "Expected ']' after lea source expression.");
+                    consume();
+                    
+                    if (!rel) {
+                        reportError(bracketStartToken, "Not relative lea instruction is not supported.");
+                    }
+                    
+                    int extra_bytes = 0;
+                    auto start = mOutput.getPosition(mSection);
+                    switch (lhs.second) {
+                        case Codegen::OperandSize::Byte:
+                            reportError(registerToken, "Unsupported operand size for 'lea' instruction.");
+                            break;
+                        case Codegen::OperandSize::Quad:
+                            mOutput.write(Codegen::REX::W, mSection);
+                            extra_bytes = 1;
+                            [[fallthrough]];
+                        case Codegen::OperandSize::Word:
+                        case Codegen::OperandSize::Long:
+                            mOutput.write(Codegen::LEA, mSection);
+                            if (rel)
+                            {
+                                // mod = 0b11000000
+                                // reg = 0b00111000
+                                // rm  = 0b00000111
+                                
+                                // rm none | mod none | reg
+                                
+                                // TODO: Extended registers
+                                uint8_t modrm = 0b101 | 0b00 << 6 | (lhs.first & 0b111) << 3;
+                                mOutput.write(modrm, mSection);
+                                // This is actually signed but to avoid casting just use unsigned int
+                                unsigned int value = labelAddr - start - (6 + extra_bytes);
+                                mOutput.write(value, mSection);
+                            }
+                            break;
+                    }
+                }
+            },
+            {
                 "mov", [&](){
                     std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
 
-                    expectToken(Lexing::TokenType::Comma);
+                    expectToken(Lexing::TokenType::Comma, "Expected ',' after mov destination register.");
                     consume();
 
                     if (isImmediate(current().getTokenType()))
@@ -126,11 +186,11 @@ namespace Parsing
                     }
                     else if (current().getTokenType() == Lexing::TokenType::Register)
                     {
+                        auto rhsRegisterToken = current();
                         std::pair<long long, Codegen::OperandSize> rhs = parseRegister();
                         if (lhs.second != rhs.second)
                         {
-                            std::cerr << "Operand size mismatch on `mov' instruction. Terminating program.\n"; // TODO: Error properly
-                            std::exit(1);
+                            reportError(rhsRegisterToken, "Operand size mismatch on 'mov' instruction.");
                         }
 
                         switch(lhs.second)
@@ -171,7 +231,7 @@ namespace Parsing
                 "times", [&](){
                     long long iterations = parseExpression();
 
-                    int position = mPosition;
+                    size_t position = mPosition;
                     while (--iterations)
                     {
                         parseStatement();
@@ -192,35 +252,41 @@ namespace Parsing
         return mTokens[mPosition++];
     }
 
-    Lexing::Token& Parser::peek(int offset)
+    const Lexing::Token& Parser::peek(size_t offset) const
     {
         return mTokens[mPosition + offset];
     }
 
-    void Parser::expectToken(Lexing::TokenType tokenType)
+    void Parser::expectToken(Lexing::TokenType tokenType, std::string_view context)
     {
-        if(current().getTokenType() != tokenType)
+        auto token = current();
+        if (token.getTokenType() != tokenType)
         {
-            Lexing::Token temp(tokenType);
-            std::cerr << "Unexpected token. Terminating program.\n"; // TODO: Error properly
-            std::exit(1);
+            reportError(token, context);
         }
     }
+    
+    void Parser::reportError(const Lexing::Token& token, std::string_view error) {
+        std::cerr << filename << ':' << token.location.line << ':' << token.location.column << ": " << error << '\n';
+        std::exit(1);
+    }
 
-    int Parser::getBinaryOperatorPrecedence(Lexing::TokenType tokenType) const
+    int Parser::getBinaryOperatorPrecedence(Lexing::TokenType tokenType)
     {
-        switch(tokenType)
+        switch (tokenType)
         {
             case Lexing::TokenType::Plus:
             case Lexing::TokenType::Minus:
                 return 35;
-            
+            case Lexing::TokenType::Star:
+            case Lexing::TokenType::Slash:
+                return 45;
             default:
                 return 0;
         }
     }
 
-    bool Parser::isImmediate(Lexing::TokenType tokenType) const
+    bool Parser::isImmediate(Lexing::TokenType tokenType)
     {
         return tokenType == Lexing::TokenType::Immediate || tokenType == Lexing::TokenType::Identifier || tokenType == Lexing::TokenType::Dollar || tokenType == Lexing::TokenType::DollarDollar;
     }
@@ -235,12 +301,13 @@ namespace Parsing
 
     void Parser::parseStatement()
     {
-        switch(current().getTokenType())
+        auto token = current();
+        switch (token.getTokenType())
         {
             case Lexing::TokenType::Error:
-                std::cerr << "Found unknown symbol. Terminating program.\n"; // TODO: Error properly
-                std::exit(1);
-
+                reportError(token, "Found unknown symbol.");
+                break;
+                
             case Lexing::TokenType::Identifier:
                 parseLabel();
                 break;
@@ -253,8 +320,7 @@ namespace Parsing
             }
 
             default:
-                std::cerr << "Expected statement. Found " << current().getText() << ". Terminating program.\n"; // TODO: Error properly
-                std::exit(1);
+                reportError(token, "Expected statement, found '" + token.getText() + "'.");
         }
     }
 
@@ -262,7 +328,7 @@ namespace Parsing
     {
         const std::string& name = consume().getText();
 
-        expectToken(Lexing::TokenType::Colon);
+        expectToken(Lexing::TokenType::Colon, "Expected ':' after a label.");
         consume();
 
         mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true)); // TODO: Check if global
@@ -286,6 +352,12 @@ namespace Parsing
                 case Lexing::TokenType::Minus:
                     lhs -= rhs;
                     break;
+                case Lexing::TokenType::Star:
+                    lhs *= rhs;
+                    break;
+                case Lexing::TokenType::Slash:
+                    lhs /= rhs;
+                    break;
                 default:
                     break;
             }
@@ -300,32 +372,36 @@ namespace Parsing
             consume();
 
             long long ret = parseExpression();
-
-            expectToken(Lexing::TokenType::RParen);
+            
+            // TODO: Use the location of LParen
+            expectToken(Lexing::TokenType::RParen, "Expected matching ')'.");
             consume();
 
             return ret;
         }
         else if (current().getTokenType() == Lexing::TokenType::Immediate)
         {
-            return std::stoll(consume().getText(), 0, 0);
+            return std::stoll(consume().getText(), nullptr, 0);
         }
         else if (current().getTokenType() == Lexing::TokenType::Dollar)
         {
             consume();
-            return mOutput.getPosition(mSection);
+            return static_cast<long long>(mOutput.getPosition(mSection));
         }
         else if (current().getTokenType() == Lexing::TokenType::DollarDollar)
         {
             consume();
-            return mOutput.getSectionStart(mSection);
+            return static_cast<long long>(mOutput.getSectionStart(mSection));
         }
         else if (current().getTokenType() == Lexing::TokenType::Identifier)
         {
-            return mOutput.getSymbol(consume().getText());
+            if (!mOutput.hasSymbol(current().getText())) {
+                reportError(current(), "Found unknown symbol '" + current().getText() + "'.");
+            }
+            return static_cast<long long>(mOutput.getSymbol(consume().getText()));
         }
         else
-            expectToken(Lexing::TokenType::Immediate); // TODO: Error properly
+            expectToken(Lexing::TokenType::Immediate, "Expected an immediate.");
 
         return -1;
     }
@@ -335,7 +411,7 @@ namespace Parsing
         constexpr int REGISTERS_PER_ENCODING = 4;
 
         long long index;
-        for (index = 0; index < Codegen::Registers.size(); index++)
+        for (index = 0; index < static_cast<long long>(Codegen::Registers.size()); index++)
         {
             if (Codegen::Registers[index] == current().getText())
             {

@@ -5,8 +5,8 @@
 
 namespace Lexing
 {
-    Lexer::Lexer(const std::string& text)
-        :mText(text), mPosition(0)
+    Lexer::Lexer(std::string_view text)
+        : mText(text)
     {
     }
 
@@ -22,6 +22,7 @@ namespace Lexing
         "int",
         "syscall",
         "times",
+        "lea"
     };
 
     std::vector<Token> Lexer::lex()
@@ -41,23 +42,33 @@ namespace Lexing
         return tokens;
     }
 
-    unsigned char Lexer::current()
+    char Lexer::current() const
     {
         return mText[mPosition];
     }
 
-    unsigned char Lexer::consume()
+    char Lexer::consume()
     {
-        return mText[mPosition++];
+        char c = mText[mPosition++];
+        if (c == '\n') {
+			column = 1;
+			line += 1;
+        }
+        else {
+			column += 1;
+        }
+        return c;
     }
 
-    unsigned char Lexer::peek(int offset)
+    char Lexer::peek(size_t offset) const
     {
         return mText[mPosition + offset];
     }
 
     std::optional<Token> Lexer::nextToken()
     {
+        SrcLocation start_loc {line, column};
+        
         if (std::isalpha(current()) || current() == '_') // Identifier
         {
             std::string text = std::string(1, current());
@@ -72,7 +83,7 @@ namespace Lexing
             {
                 if (text == instruction)
                 {
-                    return Token(TokenType::Instruction, std::move(text));
+                    return Token {start_loc, TokenType::Instruction, std::move(text)};
                 }
             }
 
@@ -80,11 +91,11 @@ namespace Lexing
             {
                 if (text == reg)
                 {
-                    return Token(TokenType::Register, std::move(text));
+                    return Token {start_loc, TokenType::Register, std::move(text)};
                 }
             }
 
-            return Token(TokenType::Identifier, std::move(text));
+            return Token {start_loc, TokenType::Identifier, std::move(text)};
         }
         
         if (std::isspace(current())) // Newline, tab, space etc
@@ -139,7 +150,7 @@ namespace Lexing
                     text += current();
                 }
             }
-            return Token(TokenType::Immediate, std::move(text));
+            return Token {start_loc, TokenType::Immediate, std::move(text)};
         }
 
         switch(current())
@@ -149,25 +160,33 @@ namespace Lexing
                 if (peek(1) == '$')
                 {
                     consume();
-                    return Token(TokenType::DollarDollar);
+                    return Token {start_loc, TokenType::DollarDollar};
                 }
-                return Token(TokenType::Dollar);
+                return Token {start_loc, TokenType::Dollar};
             }
 
             case '+':
-                return Token(TokenType::Plus);
+                return Token {start_loc, TokenType::Plus};
             case '-':
-                return Token(TokenType::Minus);
+                return Token {start_loc, TokenType::Minus};
+            case '*':
+                return Token {start_loc, TokenType::Star};
+            case '/':
+                return Token {start_loc, TokenType::Slash};
             
             case '(':
-                return Token(TokenType::LParen);
+                return Token {start_loc, TokenType::LParen};
             case ')':
-                return Token(TokenType::RParen);
+                return Token {start_loc, TokenType::RParen};
+            case '[':
+                return Token {start_loc, TokenType::LBracket};
+            case ']':
+                return Token {start_loc, TokenType::RBracket};
 
             case ',':
-                return Token(TokenType::Comma);
+                return Token {start_loc, TokenType::Comma};
             case ':':
-                return Token(TokenType::Colon);
+                return Token {start_loc, TokenType::Colon};
 
             case '"':
             {
@@ -195,7 +214,7 @@ namespace Lexing
                                     value += '\0';
                                     break;
                                 default:
-                                    return Token(TokenType::Error);
+                                    return Token {start_loc, TokenType::Error};
                             }
                             break;
                         }
@@ -204,11 +223,11 @@ namespace Lexing
                     }
                     consume();
                 }
-                return Token(TokenType::String, value);
+                return Token {start_loc, TokenType::String, std::move(value)};
             }
             
             default:
-                return Token(TokenType::Error); // Unknown character
+                return Token {start_loc, TokenType::Error}; // Unknown character
         }
     }
 }

@@ -12,17 +12,19 @@ namespace Lexing
     class Lexer
     {
     public:
-        Lexer(const std::string& text);
+        explicit Lexer(std::string_view text);
 
         std::vector<Token> lex();
     private:
-        const std::string& mText;
+        std::string_view mText;
 
-        int mPosition{ 0 };
+        size_t mPosition {0};
+		size_t line {1};
+		size_t column {1};
 
-        unsigned char current();
-        unsigned char consume();
-        unsigned char peek(int offset);
+        [[nodiscard]] char current() const;
+        char consume();
+        [[nodiscard]] char peek(size_t offset) const;
 
         std::optional<Token> nextToken();
     };

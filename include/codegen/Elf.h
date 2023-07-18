@@ -4,7 +4,7 @@
 #include <codegen/OutputFormat.h>
 
 #include <concepts>
-#include <sstream>
+#include <vector>
 #include <unordered_map>
 #include <vector>
 
@@ -18,33 +18,34 @@ namespace Codegen
     class ELFFormat : public OutputFormat
     {
     public:
-        ELFFormat(const std::string& fileName);
+        explicit ELFFormat(std::string_view fileName);
 
-        void write(unsigned char  const data, Section const section) override;
-        void write(unsigned short const data, Section const section) override;
-        void write(unsigned int   const data, Section const section) override;
-        void write(unsigned long  const data, Section const section) override;
+        void write(unsigned char  data, Section section) override;
+        void write(unsigned short data, Section section) override;
+        void write(unsigned int   data, Section section) override;
+        void write(unsigned long  data, Section section) override;
 
-        int getPosition(Section const section) override;
-        int getSectionStart(Section const section) override;
+        size_t getPosition(Section section) override;
+        size_t getSectionStart(Section section) override;
 
-        void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) override;
-        unsigned long getSymbol(const std::string& name) override;
-        void relocSymbol(const std::string& name, Section const section) override;
+        void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) override;
+        [[nodiscard]] unsigned long getSymbol(const std::string& name) const override;
+        [[nodiscard]] bool hasSymbol(const std::string& name) const override;
+        void relocSymbol(const std::string& name, Section section) override;
 
         void print(std::ostream& stream) override;
     private:
         class ELFSection
         {
         public:
-            ELFSection(const std::string& name, int type, long flags, int link, int info, long align, long entrySize, Section section);
-            ELFSection(Section section);
+            ELFSection(std::string_view name, int type, long flags, int link, int info, long align, long entrySize, Section section);
+            explicit ELFSection(Section section);
 
-            void write(std::unsigned_integral auto const data);
-            void write(char const* data, int size);
+            void write(std::unsigned_integral auto data);
+            void write(const char* data, size_t size);
             void write(std::string_view data);
 
-            std::stringstream mBuffer;
+            std::vector<char> mBuffer;
 
             std::string mName;
             int mNameIdx;
@@ -56,23 +57,23 @@ namespace Codegen
             long mEntrySize;
             Section mSection;
 
-            unsigned int size() const;
+            [[nodiscard]] size_t size() const;
 
             int& length(); // should only be used for symtab
         };
 
-        ELFSection* getSection(const std::string& name);
-        ELFSection* getSection(Section const section);
+        ELFSection* getSection(std::string_view name);
+        ELFSection* getSection(Section section);
 
-        ELFSection* createSection(Section const section);
+        ELFSection* createSection(Section section);
 
-        ELFSection* getOrCreateSection(Section const section);
+        ELFSection* getOrCreateSection(Section section);
 
         std::vector<ELFSection> mSections;
 
         std::unordered_map<std::string, unsigned long> mSymbols;
 
-        const std::string& mFileName;
+        std::string_view mFileName;
     };
 }
 

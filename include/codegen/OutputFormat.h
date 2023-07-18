@@ -2,6 +2,7 @@
 #define VASM_CODEGEN_OUTPUT_FORMAT_H 1
 
 #include <string>
+#include <ostream>
 
 namespace Codegen
 {
@@ -19,17 +20,18 @@ namespace Codegen
     public:
         virtual ~OutputFormat() = default;
 
-        virtual void write(unsigned char  const data, Section const section) = 0;
-        virtual void write(unsigned short const data, Section const section) = 0;
-        virtual void write(unsigned int   const data, Section const section) = 0;
-        virtual void write(unsigned long  const data, Section const section) = 0;
+        virtual void write(unsigned char  data, Section section) = 0;
+        virtual void write(unsigned short data, Section section) = 0;
+        virtual void write(unsigned int   data, Section section) = 0;
+        virtual void write(unsigned long  data, Section section) = 0;
 
-        virtual int getPosition(Section const section) = 0;
-        virtual int getSectionStart(Section const section) = 0;
+        virtual size_t getPosition(Section section) = 0;
+        virtual size_t getSectionStart(Section section) = 0;
 
-        virtual void addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal) = 0;
-        virtual unsigned long getSymbol(const std::string& name) = 0;
-        virtual void relocSymbol(const std::string& name, Section const section) = 0;
+        virtual void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) = 0;
+        [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
+        [[nodiscard]] virtual unsigned long getSymbol(const std::string& name) const = 0;
+        virtual void relocSymbol(const std::string& name, Section section) = 0;
 
         virtual void print(std::ostream& stream) = 0;
     };
