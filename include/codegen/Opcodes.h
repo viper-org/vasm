@@ -34,6 +34,8 @@ namespace Codegen
 
         MOV_REG_REG8 = 0x88,
         MOV_REG_REG  = 0x89,
+        
+        LEA = 0x8D,
 
         INT = 0xCD,
     };

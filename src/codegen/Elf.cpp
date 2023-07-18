@@ -3,7 +3,7 @@
 namespace Codegen
 {
     // TODO: Make this into an enum or similar
-    constexpr char const* ELF_MAGIC = "\x{7f}ELF";
+    constexpr char const* ELF_MAGIC = "\x7f" "ELF";
     constexpr char ELF_64 = 2;
     constexpr char ELF_LITTLE_ENDIAN = 1;
     constexpr char ELF_EI_VERSION = 1;
@@ -45,13 +45,12 @@ namespace Codegen
 
     constexpr unsigned short SYM_ABS = 0xFFF1;
 
-    ELFFormat::ELFFormat(const std::string& fileName)
-        :mFileName(fileName)
+    ELFFormat::ELFFormat(std::string_view fileName) : mFileName {fileName}
     {
-        mSections.push_back(ELFSection("", TYPE_NULL, 0, 0, 0, 0, 0, Section::Other));
-        mSections.push_back(ELFSection(".shstrtab", TYPE_STRTAB, 0, 0, 0, 1, 0, Section::Other));
-        mSections.push_back(ELFSection(".symtab", TYPE_SYMTAB, 0, 3, 0, 8, 24, Section::Other));
-        mSections.push_back(ELFSection(".strtab", TYPE_STRTAB, 0, 0, 0, 1, 0, Section::Other));
+        mSections.emplace_back("", TYPE_NULL, 0, 0, 0, 0, 0, Section::Other);
+        mSections.emplace_back(".shstrtab", TYPE_STRTAB, 0, 0, 0, 1, 0, Section::Other);
+        mSections.emplace_back(".symtab", TYPE_SYMTAB, 0, 3, 0, 8, 24, Section::Other);
+        mSections.emplace_back(".strtab", TYPE_STRTAB, 0, 0, 0, 1, 0, Section::Other);
 
         mSections[3].write("", 1); // NULL string
         mSections[3].write(fileName.data(), fileName.length() + 1); // File name string
@@ -76,63 +75,63 @@ namespace Codegen
     }
 
 
-    void ELFFormat::write(unsigned char const data, Section const section)
+    void ELFFormat::write(unsigned char data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write((char const*)&data, sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned short const data, Section const section)
+    void ELFFormat::write(unsigned short data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write((char const*)&data, sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned int const data, Section const section)
+    void ELFFormat::write(unsigned int data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write((char const*)&data, sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned long const data, Section const section)
+    void ELFFormat::write(unsigned long data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write((char const*)&data, sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
 
-    int ELFFormat::getPosition(Section const section)
+    size_t ELFFormat::getPosition(Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        return elfSection->mBuffer.view().length();
+        return elfSection->mBuffer.size();
     }
 
-    int ELFFormat::getSectionStart(Section const)
+    size_t ELFFormat::getSectionStart(Section)
     {
         return 0;
     }
 
-    void ELFFormat::addSymbol(const std::string& name, unsigned long value, Section const section, bool isGlobal)
+    void ELFFormat::addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal)
     {
         ELFSection* strtab = getSection(".strtab");
         unsigned int strtabIndex = strtab->size();
@@ -145,7 +144,7 @@ namespace Codegen
         symtab->write(strtabIndex);
         symtab->write(isGlobal ? SYM_GLOBAL : SYM_LOCAL);
         symtab->write(SYM_DEFAULT);
-        for (unsigned short sectionIndex = 0; sectionIndex < mSections.size(); sectionIndex++)
+        for (unsigned short sectionIndex = 0; sectionIndex < static_cast<unsigned short>(mSections.size()); sectionIndex++)
         {
             if (mSections[sectionIndex].mSection == section)
             {
@@ -163,19 +162,23 @@ namespace Codegen
         mSymbols[name] = value;
     }
 
-    unsigned long ELFFormat::getSymbol(const std::string& name)
+    unsigned long ELFFormat::getSymbol(const std::string& name) const
     {
         return mSymbols.at(name);
+    }
+    
+    bool ELFFormat::hasSymbol(const std::string& name) const {
+        return mSymbols.contains(name);
     }
 
     void ELFFormat::relocSymbol(const std::string& name, Section const section)
     {
         ELFSection* sect = getOrCreateSection(section);
         ELFSection* rela = getSection(".rela" + sect->mName);
-        if(!rela)
+        if (!rela)
         {
-            int symtabIndex;
-            int sectionIndex = 0;
+            size_t symtabIndex;
+            size_t sectionIndex = 0;
             for (symtabIndex = 0; symtabIndex < mSections.size(); symtabIndex++)
             {
                 if (mSections[symtabIndex].mName == ".symtab")
@@ -191,28 +194,29 @@ namespace Codegen
                 }
             }
 
-            mSections.push_back(ELFSection(".rela" + sect->mName, TYPE_RELA, 0, symtabIndex, sectionIndex, 8, 24, Section::Other));
+            mSections.emplace_back(".rela" + sect->mName, TYPE_RELA, 0, symtabIndex, sectionIndex, 8, 24, Section::Other);
 
             rela = &mSections.back();
         }
 
         unsigned long symbol = mSymbols.at(name);
         
-        rela->write((unsigned long)getPosition(section));
-        rela->write((unsigned long)0x200000001);
+        rela->write(getPosition(section));
+        rela->write(0x200000001UL);
         rela->write(symbol);
     }
 
 
-    ELFFormat::ELFSection::ELFSection(const std::string& name, int type, long flags, int link, int info, long align, long entrySize, Section section)
-        :mBuffer(std::stringstream(std::ios::out | std::ios::binary)), mName(name), mType(type), mFlags(flags), mLink(link), mInfo(info), mAlign(align), mEntrySize(entrySize), mSection(section)
+    ELFFormat::ELFSection::ELFSection(std::string_view name, int type, long flags, int link, int info, long align, long entrySize, Section section)
+        : mBuffer {}, mName {name}, mNameIdx {0}, mType {type}, mFlags {flags}, mLink {link}, mInfo {info},
+            mAlign {align}, mEntrySize {entrySize}, mSection {section}
     {
     }
 
     ELFFormat::ELFSection::ELFSection(Section section)
-        :mBuffer(std::stringstream(std::ios::out | std::ios::binary)), mSection(section)
+        :mBuffer {}, mNameIdx {0}, mSection(section)
     {
-        switch(section)
+        switch (section)
         {
             case Section::Text:
                 mName = ".text";
@@ -224,7 +228,7 @@ namespace Codegen
                 mEntrySize = 0;
                 break;
             case Section::Data:
-                mName = ".text";
+                mName = ".data";
                 mType = TYPE_PROGBITS;
                 mFlags = 2;
                 mLink = 0;
@@ -239,22 +243,28 @@ namespace Codegen
 
     void ELFFormat::ELFSection::write(std::unsigned_integral auto const data)
     {
-        mBuffer.write((char const*)&data, sizeof(data));
+        for (size_t i = 0; i < sizeof(data) * 8; i += 8) {
+            mBuffer.push_back(data >> i);
+        }
     }
 
-    void ELFFormat::ELFSection::write(char const* data, int size)
+    void ELFFormat::ELFSection::write(const char* data, size_t size)
     {
-        mBuffer.write(data, size);
+        for (; size; --size) {
+            mBuffer.push_back(*data++);
+        }
     }
 
     void ELFFormat::ELFSection::write(std::string_view data)
     {
-        mBuffer.write(data.data(), data.length() + 1);
+        for (size_t i = 0; i < data.size() + 1; ++i) {
+            mBuffer.push_back(data[i]);
+        }
     }
 
-    unsigned int ELFFormat::ELFSection::size() const
+    size_t ELFFormat::ELFSection::size() const
     {
-        return mBuffer.view().length();
+        return mBuffer.size();
     }
 
     int& ELFFormat::ELFSection::length()
@@ -301,7 +311,7 @@ namespace Codegen
         ELFSection* shstrtab = getSection(".shstrtab");
         for (ELFSection& section : mSections)
         {
-            section.mNameIdx = shstrtab->size();
+            section.mNameIdx = static_cast<int>(shstrtab->size());
             shstrtab->write(section.mName);
         }
 
@@ -315,7 +325,7 @@ namespace Codegen
             WriteELF(stream, section.mFlags);
             WriteELF(stream, SECTION_ADDR);
             WriteELF(stream, currentOffset);
-            WriteELF(stream, (long)section.size());
+            WriteELF(stream, static_cast<long>(section.size()));
             WriteELF(stream, section.mLink);
             WriteELF(stream, section.mInfo);
             WriteELF(stream, section.mAlign);
@@ -334,14 +344,14 @@ namespace Codegen
             }
             written = alignedWritten;
 
-            stream.write(section.mBuffer.view().data(), section.size());
+            stream.write(section.mBuffer.data(), static_cast<std::streamsize>(section.size()));
 
             written += section.size();
             alignedWritten = (written + 15) & ~15;
         }
     }
 
-    ELFFormat::ELFSection* ELFFormat::getSection(std::string const& name)
+    ELFFormat::ELFSection* ELFFormat::getSection(std::string_view name)
     {
         for (ELFSection& section : mSections)
         {
@@ -354,7 +364,7 @@ namespace Codegen
         return nullptr;
     }
 
-    ELFFormat::ELFSection* ELFFormat::getSection(Section const section)
+    ELFFormat::ELFSection* ELFFormat::getSection(Section section)
     {
         for (ELFSection& elfSection : mSections)
         {
@@ -367,21 +377,21 @@ namespace Codegen
         return nullptr;
     }
 
-    ELFFormat::ELFSection* ELFFormat::createSection(Section const section)
+    ELFFormat::ELFSection* ELFFormat::createSection(Section section)
     {
-        mSections.push_back(ELFSection(section));
+        mSections.emplace_back(section);
 
         ELFSection* newSection = &mSections.back();
 
         ELFSection* strtab = getSection(".strtab");
         ELFSection* symtab = getSection(".symtab");
 
-        symtab->write((unsigned int)strtab->mBuffer.view().length());
+        symtab->write(static_cast<unsigned int>(strtab->mBuffer.size()));
         symtab->write(SYM_SECTION);
         symtab->write(SYM_DEFAULT);
-        symtab->write((unsigned short)(mSections.size() - 1));
-        symtab->write((unsigned long)0);
-        symtab->write((unsigned long)0);
+        symtab->write(static_cast<unsigned short>(mSections.size() - 1));
+        symtab->write(0UL);
+        symtab->write(0UL);
         symtab->mInfo++;
 
         strtab->write(newSection->mName.data(), newSection->mName.length() + 1);
@@ -389,7 +399,7 @@ namespace Codegen
         return newSection;
     }
 
-    ELFFormat::ELFSection* ELFFormat::getOrCreateSection(Section const section)
+    ELFFormat::ELFSection* ELFFormat::getOrCreateSection(Section section)
     {
         ELFSection* ret = getSection(section);
         if (!ret)

@@ -2,18 +2,13 @@
 
 namespace Lexing
 {
-    Token::Token(const TokenType tokenType, const std::string& text)
-        :mTokenType(tokenType), mText(text)
+    Token::Token(SrcLocation location, TokenType tokenType, std::string text)
+        : location(location), mTokenType(tokenType), mText(std::move(text))
     {
     }
 
-    Token::Token(const TokenType tokenType, std::string&& text)
-        :mTokenType(tokenType), mText(std::move(text))
-    {
-    }
-
-    Token::Token(const TokenType tokenType)
-        :mTokenType(tokenType), mText("")
+    Token::Token(SrcLocation location, TokenType tokenType)
+        : location {location}, mTokenType {tokenType}
     {
     }
 
@@ -27,8 +22,8 @@ namespace Lexing
         return mText;
     }
 
-    bool Token::operator==(Token other)
+    bool Token::operator==(const Token& other) const
     {
-        return ((mText == other.mText) && (mTokenType == other.mTokenType));
+        return (mText == other.mText) && (mTokenType == other.mTokenType);
     }
 }

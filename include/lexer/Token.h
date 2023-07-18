@@ -11,8 +11,8 @@ namespace Lexing
 
         Dollar, DollarDollar,
 
-        Plus, Minus,
-        LParen, RParen,
+        Plus, Minus, Star, Slash,
+        LParen, RParen, LBracket, RBracket,
         Comma, Colon,
 
         Identifier,
@@ -23,19 +23,26 @@ namespace Lexing
 
         Instruction,
     };
+    
+    struct SrcLocation {
+        SrcLocation(size_t line, size_t column) : line {line}, column {column} {}
+        
+        size_t line;
+        size_t column;
+    };
 
     class Token
     {
     public:
-        Token(const TokenType tokenType, const std::string& text);
-        Token(const TokenType tokenType, std::string&& text);
-        Token(const TokenType tokenType);
+        Token(SrcLocation location, TokenType tokenType, std::string text);
+        explicit Token(SrcLocation location, TokenType tokenType);
 
-        TokenType getTokenType() const;
-        const std::string& getText() const;
+        [[nodiscard]] TokenType getTokenType() const;
+        [[nodiscard]] const std::string& getText() const;
 
-        bool operator==(Token other);
-
+        bool operator==(const Token& other) const;
+        
+        const SrcLocation location;
     private:
         TokenType mTokenType{ TokenType::Error };
 
