@@ -1,5 +1,6 @@
 #include <codegen/Pe.h>
 #include <cassert>
+#include <bit>
 
 namespace Codegen {
     constexpr uint16_t IMAGE_FILE_MACHINE_AMD64 = 0x8664;
@@ -9,20 +10,6 @@ namespace Codegen {
     constexpr uint32_t IMAGE_SCN_CNT_CODE = 0x20;
     constexpr uint32_t IMAGE_SCN_CNT_INITIALIZED_DATA = 0x40;
     constexpr uint32_t IMAGE_SCN_CNT_UNINITIALIZED_DATA = 0x80;
-    constexpr uint32_t IMAGE_SCN_ALIGN_1BYTES = 0x100000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_2BYTES = 0x200000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_4BYTES = 0x300000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_8BYTES = 0x400000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_16BYTES = 0x500000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_32BYTES = 0x600000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_64BYTES = 0x700000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_128BYTES = 0x800000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_256BYTES = 0x900000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_512BYTES = 0xA00000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_1024BYTES = 0xB00000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_2048BYTES = 0xC00000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_4096BYTES = 0xD00000;
-    constexpr uint32_t IMAGE_SCN_ALIGN_8192BYTES = 0xE00000;
     constexpr uint32_t IMAGE_SCN_LNK_NRELOC_OVFL = 0x1000000;
     constexpr uint32_t IMAGE_SCN_MEM_EXECUTE = 0x20000000;
     constexpr uint32_t IMAGE_SCN_MEM_READ = 0x40000000;
@@ -99,19 +86,30 @@ namespace Codegen {
         return 0;
     }
     
+    static constexpr uint32_t alignToCharacteristic(uint32_t align) {
+        if (align == 0) {
+            return 0;
+        }
+
+        // Make sure align is power of two and at max 8192 bytes
+        assert((align & (align - 1)) == 0);
+        assert(align <= 8192);
+        return std::bit_width(align) << 20;
+    }
+    
     PEFormat::PESection::PESection(Section section)
         : mNameOffset {0}, mSection {section} {
         switch (section)
         {
             case Section::Text:
                 mName = ".text";
-                mCharacteristics = IMAGE_SCN_CNT_CODE | IMAGE_SCN_ALIGN_16BYTES | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_EXECUTE;
                 mAlign = 16;
+                mCharacteristics = IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_EXECUTE | alignToCharacteristic(mAlign);
                 break;
             case Section::Data:
                 mName = ".data";
-                mCharacteristics = IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_ALIGN_16BYTES | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE;
                 mAlign = 16;
+                mCharacteristics = IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | alignToCharacteristic(mAlign);
                 break;
             case Section::Other:
                 break;
