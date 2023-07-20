@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 project(vasm)
 
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(vasm_sources
     src/main.cpp
@@ -13,6 +14,7 @@ set(vasm_sources
 
     src/codegen/Binary.cpp
     src/codegen/Elf.cpp
+	src/codegen/Pe.cpp
 )
 
 add_executable(vasm ${vasm_sources})
