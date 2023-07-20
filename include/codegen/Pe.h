@@ -85,7 +85,7 @@ namespace Codegen
         std::vector<PESection> mSections;
     
         std::string mStringTable;
-        std::unordered_map<std::string, unsigned long> mSymbols;
+        std::unordered_map<std::string, size_t> mSymbolIndices;
         std::vector<PESymbol> mSymbolTable;
 
         std::string_view mFileName;

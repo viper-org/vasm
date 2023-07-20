@@ -210,30 +210,24 @@ namespace Codegen {
         }
         
         mSymbolTable.push_back(symbol);
-        mSymbols[name] = value;
+        mSymbolIndices[name] = mSymbolTable.size() - 1;
     }
     
     [[nodiscard]] unsigned long PEFormat::getSymbol(const std::string& name) const
     {
-        return mSymbols.at(name);
+        return mSymbolTable[mSymbolIndices.at(name)].mValue;
     }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const
     {
-        return mSymbols.contains(name);
+        return mSymbolIndices.contains(name);
     }
     
     void PEFormat::relocSymbol(const std::string& name, Section section)
     {
         PESection* sect = getOrCreateSection(section);
         
-        uint16_t symbolIndex = 0;
-        auto value = static_cast<uint32_t>(mSymbols[name]);
-        for (; symbolIndex < static_cast<uint16_t>(mSymbolTable.size()); ++symbolIndex) {
-            if (mSymbolTable[symbolIndex].mValue == value) {
-                break;
-            }
-        }
+        uint16_t symbolIndex = mSymbolIndices[name];
         
         PESection::Relocation reloc {
             .mVirtualAddress = static_cast<uint32_t>(getPosition(section)),
