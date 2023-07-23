@@ -171,7 +171,7 @@ namespace Codegen
         return mSymbols.contains(name);
     }
 
-    void ELFFormat::relocSymbol(const std::string& name, Section const section)
+    void ELFFormat::relocSymbol(const std::string& name, Section section)
     {
         ELFSection* sect = getOrCreateSection(section);
         ELFSection* rela = getSection(".rela" + sect->mName);
@@ -214,7 +214,7 @@ namespace Codegen
     }
 
     ELFFormat::ELFSection::ELFSection(Section section)
-        :mBuffer {}, mNameIdx {0}, mSection(section)
+        : mBuffer {}, mNameIdx {0}, mSection(section)
     {
         switch (section)
         {
@@ -241,7 +241,7 @@ namespace Codegen
         }
     }
 
-    void ELFFormat::ELFSection::write(std::unsigned_integral auto const data)
+    void ELFFormat::ELFSection::write(std::unsigned_integral auto data)
     {
         for (size_t i = 0; i < sizeof(data) * 8; i += 8) {
             mBuffer.push_back(data >> i);
@@ -279,7 +279,7 @@ namespace Codegen
         stream.write((char*)&data, sizeof(T));
     }
 
-    static inline void WriteELF(std::ostream& stream, char const* data, int size)
+    static inline void WriteELF(std::ostream& stream, const char* data, int size)
     {
         stream.write(data, size);
     }
