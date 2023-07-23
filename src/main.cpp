@@ -33,8 +33,8 @@ int main(int argc, char** argv)
     Lexing::Lexer lexer(text);
     std::vector<Lexing::Token> tokens = lexer.lex();
 
-    //std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::ELFFormat>(inPath);
-    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::PEFormat>(inPath);
+    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::ELFFormat>(inPath);
+    //std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::PEFormat>(inPath);
 
     Parsing::Parser parser(inPath, tokens, *output);
     parser.parse();

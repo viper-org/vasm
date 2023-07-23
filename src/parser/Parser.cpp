@@ -153,8 +153,12 @@ namespace Parsing
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
+                                    mOutput.write((unsigned char) 0, mSection);
                                 }
-                                mOutput.write((unsigned char)immediate, mSection);
+                                else
+                                {
+                                    mOutput.write((unsigned char)immediate, mSection);
+                                }
                                 break;
                             case Codegen::OperandSize::Word:
                                 mOutput.write(SIZE_16, mSection);
@@ -162,16 +166,24 @@ namespace Parsing
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
+                                    mOutput.write((unsigned short) 0, mSection);
                                 }
-                                mOutput.write((unsigned short)immediate, mSection);
+                                else
+                                {
+                                    mOutput.write((unsigned short)immediate, mSection);
+                                }
                                 break;
                             case Codegen::OperandSize::Long:
                                 mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
+                                    mOutput.write((unsigned int) 0, mSection);
                                 }
-                                mOutput.write((unsigned int)immediate, mSection);
+                                else
+                                {
+                                    mOutput.write((unsigned int)immediate, mSection);
+                                }
                                 break;
                             case Codegen::OperandSize::Quad:
                                 mOutput.write(Codegen::REX::W, mSection);
@@ -179,8 +191,12 @@ namespace Parsing
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
+                                    mOutput.write((unsigned long) 0, mSection);
                                 }
-                                mOutput.write((unsigned long)immediate, mSection);
+                                else
+                                {
+                                    mOutput.write((unsigned long)immediate, mSection);
+                                }
                                 break;
                         }
                     }
