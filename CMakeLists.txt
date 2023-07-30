@@ -1,26 +1,7 @@
-cmake_minimum_required(VERSION 3.26)
-project(vasm)
+cmake_minimum_required (VERSION 3.26)
 
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+project (vasm)
 
-set(vasm_sources
-    src/main.cpp
+add_subdirectory(framework)
 
-    src/lexer/Lexer.cpp
-    src/lexer/Token.cpp
-
-    src/parser/Parser.cpp
-
-    src/codegen/Binary.cpp
-    src/codegen/Elf.cpp
-	src/codegen/Pe.cpp
-)
-
-add_executable(vasm ${vasm_sources})
-
-target_include_directories(vasm PRIVATE include)
-target_compile_options(vasm PRIVATE -fsanitize=address,undefined -Wall -Wextra)
-target_link_options(vasm PRIVATE -fsanitize=address,undefined)
-
-target_compile_features(vasm PUBLIC cxx_std_20)
+add_subdirectory(compiler)

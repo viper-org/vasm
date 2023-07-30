@@ -5,6 +5,7 @@
 #include <codegen/OutputFormat.h>
 #include <codegen/Opcodes.h>
 
+#include <cstdint>
 #include <iostream>
 
 namespace Parsing

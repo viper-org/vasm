@@ -1,4 +1,6 @@
 #include <codegen/Pe.h>
+
+#include <cstring>
 #include <cassert>
 #include <bit>
 

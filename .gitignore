@@ -4,6 +4,7 @@ CMakeFiles/
 *.cmake
 *.o
 *.exe
+*.so
 Makefile
 
 vasm

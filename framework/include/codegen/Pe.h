@@ -3,6 +3,7 @@
 
 #include <codegen/OutputFormat.h>
 
+#include <cstdint>
 #include <concepts>
 #include <vector>
 #include <unordered_map>
