@@ -2,12 +2,20 @@
 
 namespace Lexing
 {
-    Token::Token(SrcLocation location, TokenType tokenType, std::string text)
-        : location(location), mTokenType(tokenType), mText(std::move(text))
+    SourceLocation::SourceLocation(size_t line, size_t column)
+        : line(line)
+        , column(column)
     {
     }
 
-    Token::Token(SrcLocation location, TokenType tokenType)
+    Token::Token(SourceLocation location, TokenType tokenType, std::string text)
+        : location(location)
+        , mTokenType(tokenType)
+        , mText(std::move(text))
+    {
+    }
+
+    Token::Token(SourceLocation location, TokenType tokenType)
         : location {location}, mTokenType {tokenType}
     {
     }

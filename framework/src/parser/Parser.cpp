@@ -13,7 +13,11 @@ namespace Parsing
     constexpr unsigned char SIZE_16 = 0x66;
 
     Parser::Parser(std::string_view filename, std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
-        : filename {filename}, mTokens {tokens}, mOutput {output}, mPosition {0}, mSection {Codegen::Section::Text}
+        : filename {filename}
+        , mTokens {tokens}
+        , mOutput {output}
+        , mPosition {0}
+        , mSection {Codegen::Section::Text}
     {
         mInstructionParsers = {
             {

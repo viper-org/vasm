@@ -28,9 +28,9 @@ namespace Codegen {
     constexpr size_t SYMBOL_SIZE = 18;
     constexpr size_t COFF_RELOC_SIZE = 10;
     
-    PEFormat::PEFormat(std::string_view fileName) : mFileName {fileName}
+    PEFormat::PEFormat(std::string_view fileName)
+        : mFileName{fileName}
     {
-        
     }
     
     void PEFormat::write(unsigned char data, Section section)

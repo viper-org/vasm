@@ -45,7 +45,8 @@ namespace Codegen
 
     constexpr unsigned short SYM_ABS = 0xFFF1;
 
-    ELFFormat::ELFFormat(std::string_view fileName) : mFileName {fileName}
+    ELFFormat::ELFFormat(std::string_view fileName)
+        : mFileName{fileName}
     {
         mSections.emplace_back("", TYPE_NULL, 0, 0, 0, 0, 0, Section::Other);
         mSections.emplace_back(".shstrtab", TYPE_STRTAB, 0, 0, 0, 1, 0, Section::Other);

@@ -67,7 +67,7 @@ namespace Lexing
 
     std::optional<Token> Lexer::nextToken()
     {
-        SrcLocation start_loc {line, column};
+        SourceLocation start_loc {line, column};
         
         if (std::isalpha(current()) || current() == '_') // Identifier
         {

@@ -24,8 +24,8 @@ namespace Lexing
         Instruction,
     };
     
-    struct SrcLocation {
-        SrcLocation(size_t line, size_t column) : line {line}, column {column} {}
+    struct SourceLocation {
+        SourceLocation(size_t line, size_t column);
         
         size_t line;
         size_t column;
@@ -34,15 +34,15 @@ namespace Lexing
     class Token
     {
     public:
-        Token(SrcLocation location, TokenType tokenType, std::string text);
-        explicit Token(SrcLocation location, TokenType tokenType);
+        Token(SourceLocation location, TokenType tokenType, std::string text);
+        Token(SourceLocation location, TokenType tokenType);
 
         [[nodiscard]] TokenType getTokenType() const;
         [[nodiscard]] const std::string& getText() const;
 
         bool operator==(const Token& other) const;
         
-        const SrcLocation location;
+        const SourceLocation location;
     private:
         TokenType mTokenType{ TokenType::Error };
 

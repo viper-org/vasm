@@ -2,7 +2,9 @@
 
 namespace Codegen
 {
-    BinaryFormat::BinaryFormat() : mBuffer {} {}
+    BinaryFormat::BinaryFormat() 
+        : mBuffer{}
+    {}
 
     void BinaryFormat::write(unsigned char data, Section)
     {
