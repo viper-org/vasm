@@ -8,5 +8,6 @@ CMakeFiles/
 Makefile
 
 vasm
+vasm_tests
 CMakeCache.txt
 compile_commands.json

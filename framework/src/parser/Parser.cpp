@@ -288,7 +288,7 @@ namespace Parsing
     }
     
     void Parser::reportError(const Lexing::Token& token, std::string_view error) {
-        std::cerr << filename << ':' << token.location.line << ':' << token.location.column << ": " << error << '\n';
+        std::cerr << filename << ':' << token.getSourceLocation().line << ':' << token.getSourceLocation().column << ": " << error << '\n';
         std::exit(1);
     }
 

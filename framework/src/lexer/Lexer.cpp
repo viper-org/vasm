@@ -2,6 +2,7 @@
 #include "lexer/Token.h"
 
 #include <codegen/Opcodes.h>
+#include <iostream>
 
 namespace Lexing
 {
@@ -19,10 +20,10 @@ namespace Lexing
         "call",
         "ret",
         "mov",
+        "lea",
         "int",
         "syscall",
         "times",
-        "lea"
     };
 
     std::vector<Token> Lexer::lex()
@@ -132,9 +133,6 @@ namespace Lexing
                 }
                 else // octal
                 {
-                    consume();
-                    text += current();
-
                     while (peek(1) >= '0' && peek(1) <= '7')
                     {
                         consume();
@@ -214,6 +212,7 @@ namespace Lexing
                                     value += '\0';
                                     break;
                                 default:
+                                    std::cout << current() << "\n";
                                     return Token {start_loc, TokenType::Error};
                             }
                             break;

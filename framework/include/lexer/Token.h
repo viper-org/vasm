@@ -37,17 +37,23 @@ namespace Lexing
         Token(SourceLocation location, TokenType tokenType, std::string text);
         Token(SourceLocation location, TokenType tokenType);
 
+
         [[nodiscard]] TokenType getTokenType() const;
         [[nodiscard]] const std::string& getText() const;
+        [[nodiscard]] SourceLocation getSourceLocation() const;
 
         bool operator==(const Token& other) const;
         
-        const SourceLocation location;
     private:
         TokenType mTokenType{ TokenType::Error };
 
         std::string mText;
+
+        SourceLocation mSourceLocation;
     };
+
+    std::string to_string(const Lexing::TokenType& tokenType);
 }
+
 
 #endif
