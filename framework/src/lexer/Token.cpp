@@ -1,4 +1,4 @@
-#include <lexer/Token.h>
+#include "lexer/Token.h"
 
 namespace Lexing
 {

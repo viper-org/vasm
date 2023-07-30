@@ -1,10 +1,9 @@
-#include <lexer/Lexer.h>
-#include <lexer/Token.h>
+#include "lexer/Lexer.h"
+#include "lexer/Token.h"
 
-#include <parser/Parser.h>
+#include "parser/Parser.h"
 
-#include <codegen/Binary.h>
-#include <codegen/Elf.h>
+#include "codegen/Elf.h"
 
 #include <sstream>
 #include <fstream>

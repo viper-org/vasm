@@ -1,7 +1,7 @@
 #ifndef VASM_CODEGEN_PE_H
 #define VASM_CODEGEN_PE_H 1
 
-#include <codegen/OutputFormat.h>
+#include "codegen/OutputFormat.h"
 
 #include <cstdint>
 #include <concepts>

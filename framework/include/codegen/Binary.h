@@ -1,7 +1,7 @@
 #ifndef VASM_CODEGEN_BINARY_H
 #define VASM_CODEGEN_BINARY_H 1
 
-#include <codegen/OutputFormat.h>
+#include "codegen/OutputFormat.h"
 
 #include <unordered_map>
 #include <vector>

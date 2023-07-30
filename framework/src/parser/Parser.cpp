@@ -1,9 +1,9 @@
-#include <parser/Parser.h>
+#include "parser/Parser.h"
 
-#include <lexer/Token.h>
+#include "lexer/Token.h"
 
-#include <codegen/OutputFormat.h>
-#include <codegen/Opcodes.h>
+#include "codegen/OutputFormat.h"
+#include "codegen/Opcodes.h"
 
 #include <cstdint>
 #include <iostream>

@@ -1,5 +1,5 @@
-#include <lexer/Lexer.h>
-#include <lexer/Token.h>
+#include "lexer/Lexer.h"
+#include "lexer/Token.h"
 
 #include <codegen/Opcodes.h>
 
