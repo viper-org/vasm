@@ -6,4 +6,6 @@ add_subdirectory(framework)
 
 add_subdirectory(compiler)
 
+add_subdirectory(fakes)
+
 add_subdirectory(tests)

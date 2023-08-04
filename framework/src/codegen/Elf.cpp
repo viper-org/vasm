@@ -1,6 +1,6 @@
 #include "codegen/Elf.h"
 
-namespace Codegen
+namespace codegen
 {
     // TODO: Make this into an enum or similar
     constexpr char const* ELF_MAGIC = "\x7f" "ELF";

@@ -1,9 +1,10 @@
 #ifndef VASM_LEXER_TOKEN_H
 #define VASM_LEXER_TOKEN_H
 
+#include <format>
 #include <string>
 
-namespace Lexing
+namespace lexing
 {
     enum class TokenType : int
     {
@@ -51,9 +52,16 @@ namespace Lexing
 
         SourceLocation mSourceLocation;
     };
-
-    std::string to_string(const Lexing::TokenType& tokenType);
 }
 
+template<>
+struct std::formatter<lexing::TokenType> : std::formatter<int>
+{
+    template <typename FormatContext>
+    auto format(lexing::TokenType tokenType, FormatContext& context) const
+    {
+        return formatter<int>::format((int)tokenType, context);
+    }
+};
 
 #endif

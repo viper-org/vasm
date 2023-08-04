@@ -4,7 +4,7 @@
 #include <cassert>
 #include <bit>
 
-namespace Codegen {
+namespace codegen {
     constexpr uint16_t IMAGE_FILE_MACHINE_AMD64 = 0x8664;
     
     constexpr uint16_t IMAGE_FILE_LARGE_ADDRESS_AWARE = 0x20;

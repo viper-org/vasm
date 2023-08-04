@@ -1,7 +1,7 @@
 #ifndef VASM_CODEGEN_PE_H
 #define VASM_CODEGEN_PE_H 1
 
-#include "codegen/OutputFormat.h"
+#include "codegen/IOutputFormat.h"
 
 #include <cstdint>
 #include <concepts>
@@ -9,14 +9,14 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Lexing
+namespace lexing
 {
     class Token;
 }
 
-namespace Codegen
+namespace codegen
 {   
-    class PEFormat : public OutputFormat
+    class PEFormat : public IOutputFormat
     {
     public:
         explicit PEFormat(std::string_view fileName);

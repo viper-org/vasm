@@ -4,7 +4,7 @@
 #include <array>
 #include <string_view>
 
-namespace Codegen
+namespace codegen
 {
     enum REX : unsigned char
     {

@@ -8,11 +8,11 @@ namespace LexerTests
     struct TestCase
     {
         std::string input;
-        std::vector<Lexing::TokenType> expectedTokens;
+        std::vector<lexing::TokenType> expectedTokens;
         std::vector<std::string> expectedStrings;
 
         TestCase& setInput(const    std::string&                          newInput)           { input           = newInput;           return *this; }
-        TestCase& setExpectedTokens(const std::vector<Lexing::TokenType>& newExpectedTokens)  { expectedTokens  = newExpectedTokens;  return *this; }
+        TestCase& setExpectedTokens(const std::vector<lexing::TokenType>& newExpectedTokens)  { expectedTokens  = newExpectedTokens;  return *this; }
         TestCase& setExpectedStrings(const std::vector<std::string>&      newExpectedStrings) { expectedStrings = newExpectedStrings; return *this; }
     };
     using TestCases = std::vector<TestCase>;
@@ -21,7 +21,7 @@ namespace LexerTests
     {
         for (const auto& testCase : testCases)
         {
-            Lexing::Lexer lexer(testCase.input);
+            lexing::Lexer lexer(testCase.input);
             const auto tokens = lexer.lex();
 
             REQUIRE(tokens.size() == testCase.expectedTokens.size());
@@ -41,27 +41,27 @@ namespace LexerTests
 
             TestCase()
                 .setInput("$")
-                .setExpectedTokens({ Lexing::TokenType::Dollar })
+                .setExpectedTokens({ lexing::TokenType::Dollar })
                 .setExpectedStrings({ "" }),
             
             TestCase()
                 .setInput("$$")
-                .setExpectedTokens({ Lexing::TokenType::DollarDollar })
+                .setExpectedTokens({ lexing::TokenType::DollarDollar })
                 .setExpectedStrings({ "" }),
 
             TestCase()
                 .setInput("$$$")
-                .setExpectedTokens({ Lexing::TokenType::DollarDollar, Lexing::TokenType::Dollar })
+                .setExpectedTokens({ lexing::TokenType::DollarDollar, lexing::TokenType::Dollar })
                 .setExpectedStrings({ "", "" }),
 
             TestCase()
                 .setInput("$ $$")
-                .setExpectedTokens({ Lexing::TokenType::Dollar, Lexing::TokenType::DollarDollar })
+                .setExpectedTokens({ lexing::TokenType::Dollar, lexing::TokenType::DollarDollar })
                 .setExpectedStrings({ "", "" }),
 
             TestCase()
                 .setInput("$$$$")
-                .setExpectedTokens({ Lexing::TokenType::DollarDollar, Lexing::TokenType::DollarDollar })
+                .setExpectedTokens({ lexing::TokenType::DollarDollar, lexing::TokenType::DollarDollar })
                 .setExpectedStrings({ "", "" }),
 
         };
@@ -75,19 +75,19 @@ namespace LexerTests
 
             TestCase()
                 .setInput("+")
-                .setExpectedTokens({ Lexing::TokenType::Plus })
+                .setExpectedTokens({ lexing::TokenType::Plus })
                 .setExpectedStrings({ "" }),
             TestCase()
                 .setInput("-")
-                .setExpectedTokens({ Lexing::TokenType::Minus })
+                .setExpectedTokens({ lexing::TokenType::Minus })
                 .setExpectedStrings({ "" }),
             TestCase()
                 .setInput("*")
-                .setExpectedTokens({ Lexing::TokenType::Star })
+                .setExpectedTokens({ lexing::TokenType::Star })
                 .setExpectedStrings({ "" }),
             TestCase()
                 .setInput("/")
-                .setExpectedTokens({ Lexing::TokenType::Slash })
+                .setExpectedTokens({ lexing::TokenType::Slash })
                 .setExpectedStrings({ "" }),
 
         };
@@ -101,22 +101,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("(")
-                .setExpectedTokens({ Lexing::TokenType::LParen })
+                .setExpectedTokens({ lexing::TokenType::LParen })
                 .setExpectedStrings({ "" }),
 
             TestCase()
                 .setInput(")")
-                .setExpectedTokens({ Lexing::TokenType::RParen })
+                .setExpectedTokens({ lexing::TokenType::RParen })
                 .setExpectedStrings({ "" }),
 
             TestCase()
                 .setInput("[")
-                .setExpectedTokens({ Lexing::TokenType::LBracket })
+                .setExpectedTokens({ lexing::TokenType::LBracket })
                 .setExpectedStrings({ "" }),
 
             TestCase()
                 .setInput("]")
-                .setExpectedTokens({ Lexing::TokenType::RBracket })
+                .setExpectedTokens({ lexing::TokenType::RBracket })
                 .setExpectedStrings({ "" }),
 
         };
@@ -130,12 +130,12 @@ namespace LexerTests
 
             TestCase()
                 .setInput(":")
-                .setExpectedTokens({ Lexing::TokenType::Colon })
+                .setExpectedTokens({ lexing::TokenType::Colon })
                 .setExpectedStrings({ "" }),
 
             TestCase()
                 .setInput(",")
-                .setExpectedTokens({ Lexing::TokenType::Comma })
+                .setExpectedTokens({ lexing::TokenType::Comma })
                 .setExpectedStrings({ "" }),
 
         };
@@ -153,22 +153,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("0")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0" }),
 
             TestCase()
                 .setInput("1")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "1" }),
 
             TestCase()
                 .setInput("1234567890")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "1234567890" }),
 
             TestCase()
                 .setInput("123A")
-                .setExpectedTokens({ Lexing::TokenType::Immediate, Lexing::TokenType::Identifier })
+                .setExpectedTokens({ lexing::TokenType::Immediate, lexing::TokenType::Identifier })
                 .setExpectedStrings({ "123", "A" }),
 
             /*****************************************************************************/
@@ -177,22 +177,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("0x0")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0x0" }),
 
             TestCase()
                 .setInput("0x1")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0x1" }),
 
             TestCase()
                 .setInput("0x1234567890ABCDEFabcdef")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0x1234567890ABCDEFabcdef" }),
 
             TestCase()
                 .setInput("0x123G")
-                .setExpectedTokens({ Lexing::TokenType::Immediate, Lexing::TokenType::Identifier })
+                .setExpectedTokens({ lexing::TokenType::Immediate, lexing::TokenType::Identifier })
                 .setExpectedStrings({ "0x123", "G" }),
 
             /*****************************************************************************/
@@ -201,22 +201,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("00")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "00" }),
 
             TestCase()
                 .setInput("01")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "01" }),
 
             TestCase()
                 .setInput("012345670")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "012345670" }),
 
             TestCase()
                 .setInput("01238")
-                .setExpectedTokens({ Lexing::TokenType::Immediate, Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate, lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0123", "8" }),
 
             /*****************************************************************************/
@@ -225,22 +225,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("0b0")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0b0" }),
 
             TestCase()
                 .setInput("0b1")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0b1" }),
 
             TestCase()
                 .setInput("0b10")
-                .setExpectedTokens({ Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0b10" }),
 
             TestCase()
                 .setInput("0b1012")
-                .setExpectedTokens({ Lexing::TokenType::Immediate, Lexing::TokenType::Immediate })
+                .setExpectedTokens({ lexing::TokenType::Immediate, lexing::TokenType::Immediate })
                 .setExpectedStrings({ "0b101", "2" }),
 
         };
@@ -258,17 +258,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("\"A\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "A" }),
 
             TestCase()
                 .setInput("\"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz" }),
 
             TestCase()
                 .setInput("\"!£$%^&*()-=_+[]{};'#:@~,./<>?|`¬\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "!£$%^&*()-=_+[]{};'#:@~,./<>?|`¬" }),
 
             /*****************************************************************************/
@@ -277,17 +277,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("\"" "\\'" "\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "'" }),
 
             TestCase()
                 .setInput("\"" "\\n" "\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "\n" }),
 
             TestCase()
                 .setInput("\"" "\\\\" "\"")
-                .setExpectedTokens({ Lexing::TokenType::String })
+                .setExpectedTokens({ lexing::TokenType::String })
                 .setExpectedStrings({ "\\" }),
 
         };
@@ -301,17 +301,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("a")
-                .setExpectedTokens({ Lexing::TokenType::Identifier })
+                .setExpectedTokens({ lexing::TokenType::Identifier })
                 .setExpectedStrings({ "a" }),
 
             TestCase()
                 .setInput("_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz_")
-                .setExpectedTokens({ Lexing::TokenType::Identifier })
+                .setExpectedTokens({ lexing::TokenType::Identifier })
                 .setExpectedStrings({ "_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz_" }),
             
             TestCase()
                 .setInput("a a")
-                .setExpectedTokens({ Lexing::TokenType::Identifier, Lexing::TokenType::Identifier })
+                .setExpectedTokens({ lexing::TokenType::Identifier, lexing::TokenType::Identifier })
                 .setExpectedStrings({ "a", "a" }),
 
         };
@@ -329,22 +329,22 @@ namespace LexerTests
 
             TestCase()
                 .setInput("db")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "db" }),
 
             TestCase()
                 .setInput("dw")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "dw" }),
 
             TestCase()
                 .setInput("dd")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "dd" }),
             
             TestCase()
                 .setInput("dq")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "dq" }),
 
 
@@ -354,17 +354,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("jmp")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "jmp" }),
 
             TestCase()
                 .setInput("call")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "call" }),
 
             TestCase()
                 .setInput("ret")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "ret" }),
 
             
@@ -374,12 +374,12 @@ namespace LexerTests
 
             TestCase()
                 .setInput("mov")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "mov" }),
 
             TestCase()
                 .setInput("lea")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "lea" }),
 
             
@@ -389,12 +389,12 @@ namespace LexerTests
 
             TestCase()
                 .setInput("int")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "int" }),
 
             TestCase()
                 .setInput("syscall")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "syscall" }),
 
 
@@ -404,7 +404,7 @@ namespace LexerTests
 
             TestCase()
                 .setInput("times")
-                .setExpectedTokens({ Lexing::TokenType::Instruction })
+                .setExpectedTokens({ lexing::TokenType::Instruction })
                 .setExpectedStrings({ "times" }),
 
         };
@@ -422,27 +422,27 @@ namespace LexerTests
 
             TestCase()
                 .setInput("al")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "al" }),
 
             TestCase()
                 .setInput("ah")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ah" }),
 
             TestCase()
                 .setInput("ax")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ax" }),
 
             TestCase()
                 .setInput("eax")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "eax" }),
 
             TestCase()
                 .setInput("rax")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rax" }),
 
 
@@ -452,27 +452,27 @@ namespace LexerTests
 
             TestCase()
                 .setInput("bl")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "bl" }),
 
             TestCase()
                 .setInput("bh")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "bh" }),
 
             TestCase()
                 .setInput("bx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "bx" }),
 
             TestCase()
                 .setInput("ebx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ebx" }),
 
             TestCase()
                 .setInput("rbx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rbx" }),
 
 
@@ -482,27 +482,27 @@ namespace LexerTests
 
             TestCase()
                 .setInput("cl")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "cl" }),
 
             TestCase()
                 .setInput("ch")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ch" }),
 
             TestCase()
                 .setInput("cx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "cx" }),
 
             TestCase()
                 .setInput("ecx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ecx" }),
 
             TestCase()
                 .setInput("rcx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rcx" }),
 
             
@@ -512,27 +512,27 @@ namespace LexerTests
 
             TestCase()
                 .setInput("dl")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "dl" }),
 
             TestCase()
                 .setInput("dh")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "dh" }),
 
             TestCase()
                 .setInput("dx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "dx" }),
 
             TestCase()
                 .setInput("edx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "edx" }),
 
             TestCase()
                 .setInput("rdx")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rdx" }),
 
 
@@ -542,17 +542,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("sp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "sp" }),
 
             TestCase()
                 .setInput("esp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "esp" }),
 
             TestCase()
                 .setInput("rsp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rsp" }),
 
 
@@ -562,17 +562,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("bp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "bp" }),
 
             TestCase()
                 .setInput("ebp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "ebp" }),
 
             TestCase()
                 .setInput("rbp")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rbp" }),
 
 
@@ -582,17 +582,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("si")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "si" }),
 
             TestCase()
                 .setInput("esi")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "esi" }),
 
             TestCase()
                 .setInput("rsi")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rsi" }),
 
 
@@ -602,17 +602,17 @@ namespace LexerTests
 
             TestCase()
                 .setInput("di")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "di" }),
 
             TestCase()
                 .setInput("edi")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "edi" }),
 
             TestCase()
                 .setInput("rdi")
-                .setExpectedTokens({ Lexing::TokenType::Register })
+                .setExpectedTokens({ lexing::TokenType::Register })
                 .setExpectedStrings({ "rdi" }),
 
         };

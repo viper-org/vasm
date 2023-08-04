@@ -1,6 +1,6 @@
 #include "codegen/Binary.h"
 
-namespace Codegen
+namespace codegen
 {
     BinaryFormat::BinaryFormat() 
         : mBuffer{}

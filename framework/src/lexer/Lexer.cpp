@@ -4,7 +4,7 @@
 #include <codegen/Opcodes.h>
 #include <iostream>
 
-namespace Lexing
+namespace lexing
 {
     Lexer::Lexer(std::string_view text)
         : mText(text)
@@ -88,7 +88,7 @@ namespace Lexing
                 }
             }
 
-            for (std::string_view reg : Codegen::Registers)
+            for (std::string_view reg : codegen::Registers)
             {
                 if (text == reg)
                 {

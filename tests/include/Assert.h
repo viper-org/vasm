@@ -1,7 +1,7 @@
-#include <iostream>
 #ifndef VASM_TESTS_ASSERT_H
 #define VASM_TESTS_ASSERT_H 1
 
+#include <format>
 #include <string>
 #include <source_location>
 
@@ -30,11 +30,8 @@ struct AssertInfo {
     std::string rhs;
 };
 
-namespace Lexing
-{
-    enum class TokenType;
-    std::string to_string(const Lexing::TokenType& tokenType);
-}
+template<typename T>
+concept formattable = requires (T& v, std::format_context ctx) { std::formatter<std::remove_cvref_t<T>>().format(v, ctx); };
 
 template <class A>
 struct AssertCheck {
@@ -43,24 +40,16 @@ struct AssertCheck {
     template <class B>
     AssertInfo operator==(B&& b) &&
     {
-        using std::to_string;
         i.result = (a == b) ? AssertResult::True : AssertResult::False;
-        
-        if constexpr(!std::is_same_v<A, const std::string&> && !std::is_same_v<A, std::string&> && !std::is_same_v<A, std::string>)
+
+        if constexpr (formattable<A>)
         {
-            i.lhs = to_string(a);
+            i.lhs = std::format("{}", a);
         }
-        else
+
+        if constexpr (formattable<B>)
         {
-            i.lhs = a;
-        }
-        if constexpr(!std::is_same_v<B, const std::string&> && !std::is_same_v<B, std::string&> && !std::is_same_v<B, std::string>)
-        {
-            i.rhs = to_string(b);
-        }
-        else
-        {
-            i.rhs = b;
+            i.rhs = std::format("{}", b);
         }
 
         i.op = AssertOperator::EQ;

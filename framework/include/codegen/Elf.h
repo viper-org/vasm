@@ -1,21 +1,21 @@
 #ifndef VASM_CODEGEN_ELF_H
 #define VASM_CODEGEN_ELF_H 1
 
-#include "codegen/OutputFormat.h"
+#include "codegen/IOutputFormat.h"
 
 #include <concepts>
 #include <vector>
 #include <unordered_map>
 #include <vector>
 
-namespace Lexing
+namespace lexing
 {
     class Token;
 }
 
-namespace Codegen
+namespace codegen
 {   
-    class ELFFormat : public OutputFormat
+    class ELFFormat : public IOutputFormat
     {
     public:
         explicit ELFFormat(std::string_view fileName);

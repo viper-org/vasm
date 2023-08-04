@@ -4,55 +4,55 @@
 #include <functional>
 #include <string>
 
-namespace Lexing
+namespace lexing
 {
     class Token;
     enum class TokenType;
 }
 
-namespace Codegen
+namespace codegen
 {
-    class OutputFormat;
+    class IOutputFormat;
     enum class Section;
     enum class OperandSize;
 }
 
-namespace Parsing
+namespace parsing
 {
     class Parser
     {
     public:
-        Parser(std::string_view filename, std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output);
+        Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output);
 
         void parse();
 
     private:
         std::string_view filename;
-        std::vector<Lexing::Token>& mTokens;
-        Codegen::OutputFormat& mOutput;
+        std::vector<lexing::Token>& mTokens;
+        codegen::IOutputFormat& mOutput;
         size_t mPosition {0};
-        Codegen::Section mSection;
+        codegen::Section mSection;
 
         using InstructionParser = std::function<void ()>;
         std::unordered_map<std::string_view, InstructionParser> mInstructionParsers;
 
 
-        Lexing::Token& current();
-        Lexing::Token& consume();
-        [[nodiscard]] const Lexing::Token& peek(size_t offset) const;
+        lexing::Token& current();
+        lexing::Token& consume();
+        [[nodiscard]] const lexing::Token& peek(size_t offset) const;
         
-        void expectToken(Lexing::TokenType tokenType, std::string_view context);
-        void reportError(const Lexing::Token& token, std::string_view error);
+        void expectToken(lexing::TokenType tokenType, std::string_view context);
+        void reportError(const lexing::Token& token, std::string_view error);
         
-        static int getBinaryOperatorPrecedence(Lexing::TokenType tokenType);
-        static bool isImmediate(Lexing::TokenType tokenType);
+        static int getBinaryOperatorPrecedence(lexing::TokenType tokenType);
+        static bool isImmediate(lexing::TokenType tokenType);
         
         void parseStatement();
 
         void parseLabel();
         long long parseExpression(int precedence = 1);
         long long parseImmediate();
-        std::pair<long long, Codegen::OperandSize> parseRegister();
+        std::pair<long long, codegen::OperandSize> parseRegister();
     };
 }
 

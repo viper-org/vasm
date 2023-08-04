@@ -17,12 +17,12 @@ int main(int argc, char** argv)
     buffer << inFile.rdbuf();
     std::string text = buffer.str();
 
-    Lexing::Lexer lexer(text);
-    std::vector<Lexing::Token> tokens = lexer.lex();
+    lexing::Lexer lexer(text);
+    std::vector<lexing::Token> tokens = lexer.lex();
 
-    std::unique_ptr<Codegen::OutputFormat> output = std::make_unique<Codegen::ELFFormat>(inPath);
+    std::unique_ptr<codegen::IOutputFormat> output = std::make_unique<codegen::ELFFormat>(inPath);
 
-    Parsing::Parser parser(inPath, tokens, *output);
+    parsing::Parser parser(inPath, tokens, *output);
     parser.parse();
 
     std::ofstream outFile(inPath + ".o", std::ios::out | std::ios::binary);

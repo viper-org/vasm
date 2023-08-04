@@ -1,19 +1,19 @@
 #ifndef VASM_CODEGEN_BINARY_H
 #define VASM_CODEGEN_BINARY_H 1
 
-#include "codegen/OutputFormat.h"
+#include "codegen/IOutputFormat.h"
 
 #include <unordered_map>
 #include <vector>
 
-namespace Lexing
+namespace lexing
 {
     class Token;
 }
 
-namespace Codegen
+namespace codegen
 {
-    class BinaryFormat : public OutputFormat
+    class BinaryFormat : public IOutputFormat
     {
     public:
         BinaryFormat();

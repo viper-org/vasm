@@ -4,7 +4,7 @@
 #include <string>
 #include <ostream>
 
-namespace Codegen
+namespace codegen
 {
     using Global = bool;
 
@@ -15,10 +15,10 @@ namespace Codegen
         Other,
     };
 
-    class OutputFormat
+    class IOutputFormat
     {
     public:
-        virtual ~OutputFormat() = default;
+        virtual ~IOutputFormat() = default;
 
         virtual void write(unsigned char  data, Section section) = 0;
         virtual void write(unsigned short data, Section section) = 0;

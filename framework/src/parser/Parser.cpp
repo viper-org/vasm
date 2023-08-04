@@ -2,27 +2,27 @@
 
 #include "lexer/Token.h"
 
-#include "codegen/OutputFormat.h"
+#include "codegen/IOutputFormat.h"
 #include "codegen/Opcodes.h"
 
 #include <cstdint>
 #include <iostream>
 
-namespace Parsing
+namespace parsing
 {
     constexpr unsigned char SIZE_16 = 0x66;
 
-    Parser::Parser(std::string_view filename, std::vector<Lexing::Token>& tokens, Codegen::OutputFormat& output)
+    Parser::Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output)
         : filename {filename}
         , mTokens {tokens}
         , mOutput {output}
         , mPosition {0}
-        , mSection {Codegen::Section::Text}
+        , mSection {codegen::Section::Text}
     {
         mInstructionParsers = {
             {
                 "db", [&](){
-                    if (current().getTokenType() == Lexing::TokenType::String)
+                    if (current().getTokenType() == lexing::TokenType::String)
                     {
                         for (unsigned char character : consume().getText())
                         {
@@ -58,7 +58,7 @@ namespace Parsing
                 "jmp", [&](){
                     unsigned char value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
 
-                    mOutput.write(Codegen::JMP_REL8, mSection);
+                    mOutput.write(codegen::JMP_REL8, mSection);
                     mOutput.write(value, mSection);
                 }
             },
@@ -66,24 +66,24 @@ namespace Parsing
                 "call", [&](){
                     unsigned int value = parseExpression() - mOutput.getPosition(mSection) - 5; // Subtract size of the instruction itself
 
-                    mOutput.write(Codegen::CALL_REL32, mSection);
+                    mOutput.write(codegen::CALL_REL32, mSection);
                     mOutput.write(value, mSection);
                 }
             },
             {
                 "ret", [&](){
-                    mOutput.write(Codegen::RET, mSection);
+                    mOutput.write(codegen::RET, mSection);
                 }
             },
             {
                 "lea", [&](){
                     auto registerToken = current();
-                    std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
+                    std::pair<long long, codegen::OperandSize> lhs = parseRegister();
                     
-                    expectToken(Lexing::TokenType::Comma, "Expected ',' after lea destination register.");
+                    expectToken(lexing::TokenType::Comma, "Expected ',' after lea destination register.");
                     consume();
                     
-                    expectToken(Lexing::TokenType::LBracket, "Expected '[' before lea source expression.");
+                    expectToken(lexing::TokenType::LBracket, "Expected '[' before lea source expression.");
                     auto bracketStartToken = consume();
                     
                     // TODO: Maybe a proper keyword in lexer?
@@ -93,10 +93,10 @@ namespace Parsing
                         rel = true;
                     }
                     
-                    expectToken(Lexing::TokenType::Identifier, "Expected an identifier in lea source expression.");
+                    expectToken(lexing::TokenType::Identifier, "Expected an identifier in lea source expression.");
                     long long labelAddr = parseImmediate();
                     
-                    expectToken(Lexing::TokenType::RBracket, "Expected ']' after lea source expression.");
+                    expectToken(lexing::TokenType::RBracket, "Expected ']' after lea source expression.");
                     consume();
                     
                     if (!rel) {
@@ -106,16 +106,16 @@ namespace Parsing
                     int extra_bytes = 0;
                     auto start = mOutput.getPosition(mSection);
                     switch (lhs.second) {
-                        case Codegen::OperandSize::Byte:
+                        case codegen::OperandSize::Byte:
                             reportError(registerToken, "Unsupported operand size for 'lea' instruction.");
                             break;
-                        case Codegen::OperandSize::Quad:
-                            mOutput.write(Codegen::REX::W, mSection);
+                        case codegen::OperandSize::Quad:
+                            mOutput.write(codegen::REX::W, mSection);
                             extra_bytes = 1;
                             [[fallthrough]];
-                        case Codegen::OperandSize::Word:
-                        case Codegen::OperandSize::Long:
-                            mOutput.write(Codegen::LEA, mSection);
+                        case codegen::OperandSize::Word:
+                        case codegen::OperandSize::Long:
+                            mOutput.write(codegen::LEA, mSection);
                             if (rel)
                             {
                                 // mod = 0b11000000
@@ -137,15 +137,15 @@ namespace Parsing
             },
             {
                 "mov", [&](){
-                    std::pair<long long, Codegen::OperandSize> lhs = parseRegister();
+                    std::pair<long long, codegen::OperandSize> lhs = parseRegister();
 
-                    expectToken(Lexing::TokenType::Comma, "Expected ',' after mov destination register.");
+                    expectToken(lexing::TokenType::Comma, "Expected ',' after mov destination register.");
                     consume();
 
                     if (isImmediate(current().getTokenType()))
                     {
-                        Lexing::Token* reloc = nullptr;
-                        if (current().getTokenType() == Lexing::TokenType::Identifier) // Emit a relocation for symbols
+                        lexing::Token* reloc = nullptr;
+                        if (current().getTokenType() == lexing::TokenType::Identifier) // Emit a relocation for symbols
                         {
                             reloc = &current();
                         }
@@ -153,8 +153,8 @@ namespace Parsing
                         long long immediate = parseExpression();
                         switch (lhs.second)
                         {
-                            case Codegen::OperandSize::Byte:
-                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM8 + lhs.first), mSection);
+                            case codegen::OperandSize::Byte:
+                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM8 + lhs.first), mSection);
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
@@ -165,9 +165,9 @@ namespace Parsing
                                     mOutput.write((unsigned char)immediate, mSection);
                                 }
                                 break;
-                            case Codegen::OperandSize::Word:
+                            case codegen::OperandSize::Word:
                                 mOutput.write(SIZE_16, mSection);
-                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
@@ -178,8 +178,8 @@ namespace Parsing
                                     mOutput.write((unsigned short)immediate, mSection);
                                 }
                                 break;
-                            case Codegen::OperandSize::Long:
-                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                            case codegen::OperandSize::Long:
+                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
@@ -190,9 +190,9 @@ namespace Parsing
                                     mOutput.write((unsigned int)immediate, mSection);
                                 }
                                 break;
-                            case Codegen::OperandSize::Quad:
-                                mOutput.write(Codegen::REX::W, mSection);
-                                mOutput.write((unsigned char)(Codegen::MOV_REG_IMM + lhs.first), mSection);
+                            case codegen::OperandSize::Quad:
+                                mOutput.write(codegen::REX::W, mSection);
+                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
@@ -205,10 +205,10 @@ namespace Parsing
                                 break;
                         }
                     }
-                    else if (current().getTokenType() == Lexing::TokenType::Register)
+                    else if (current().getTokenType() == lexing::TokenType::Register)
                     {
                         auto rhsRegisterToken = current();
-                        std::pair<long long, Codegen::OperandSize> rhs = parseRegister();
+                        std::pair<long long, codegen::OperandSize> rhs = parseRegister();
                         if (lhs.second != rhs.second)
                         {
                             reportError(rhsRegisterToken, "Operand size mismatch on 'mov' instruction.");
@@ -216,19 +216,19 @@ namespace Parsing
 
                         switch(lhs.second)
                         {
-                            case Codegen::OperandSize::Byte:
-                                mOutput.write(Codegen::MOV_REG_REG8, mSection);
+                            case codegen::OperandSize::Byte:
+                                mOutput.write(codegen::MOV_REG_REG8, mSection);
                                 break;
-                            case Codegen::OperandSize::Word:
+                            case codegen::OperandSize::Word:
                                 mOutput.write(SIZE_16, mSection);
-                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                                mOutput.write(codegen::MOV_REG_REG, mSection);
                                 break;
-                            case Codegen::OperandSize::Long:
-                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                            case codegen::OperandSize::Long:
+                                mOutput.write(codegen::MOV_REG_REG, mSection);
                                 break;
-                            case Codegen::OperandSize::Quad:
-                                mOutput.write(Codegen::REX::W, mSection);
-                                mOutput.write(Codegen::MOV_REG_REG, mSection);
+                            case codegen::OperandSize::Quad:
+                                mOutput.write(codegen::REX::W, mSection);
+                                mOutput.write(codegen::MOV_REG_REG, mSection);
                                 break;
                         }
                         mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
@@ -239,13 +239,13 @@ namespace Parsing
                 "int", [&](){
                     unsigned char vector = parseExpression();
 
-                    mOutput.write(Codegen::INT, mSection);
+                    mOutput.write(codegen::INT, mSection);
                     mOutput.write(vector, mSection);
                 }
             },
             {
                 "syscall", [&](){
-                    mOutput.write(Codegen::SYSCALL, mSection);
+                    mOutput.write(codegen::SYSCALL, mSection);
                 }
             },
             {
@@ -263,22 +263,22 @@ namespace Parsing
         };
     }
     
-    Lexing::Token& Parser::current()
+    lexing::Token& Parser::current()
     {
         return mTokens[mPosition];
     }
 
-    Lexing::Token& Parser::consume()
+    lexing::Token& Parser::consume()
     {
         return mTokens[mPosition++];
     }
 
-    const Lexing::Token& Parser::peek(size_t offset) const
+    const lexing::Token& Parser::peek(size_t offset) const
     {
         return mTokens[mPosition + offset];
     }
 
-    void Parser::expectToken(Lexing::TokenType tokenType, std::string_view context)
+    void Parser::expectToken(lexing::TokenType tokenType, std::string_view context)
     {
         auto token = current();
         if (token.getTokenType() != tokenType)
@@ -287,29 +287,29 @@ namespace Parsing
         }
     }
     
-    void Parser::reportError(const Lexing::Token& token, std::string_view error) {
+    void Parser::reportError(const lexing::Token& token, std::string_view error) {
         std::cerr << filename << ':' << token.getSourceLocation().line << ':' << token.getSourceLocation().column << ": " << error << '\n';
         std::exit(1);
     }
 
-    int Parser::getBinaryOperatorPrecedence(Lexing::TokenType tokenType)
+    int Parser::getBinaryOperatorPrecedence(lexing::TokenType tokenType)
     {
         switch (tokenType)
         {
-            case Lexing::TokenType::Plus:
-            case Lexing::TokenType::Minus:
+            case lexing::TokenType::Plus:
+            case lexing::TokenType::Minus:
                 return 35;
-            case Lexing::TokenType::Star:
-            case Lexing::TokenType::Slash:
+            case lexing::TokenType::Star:
+            case lexing::TokenType::Slash:
                 return 45;
             default:
                 return 0;
         }
     }
 
-    bool Parser::isImmediate(Lexing::TokenType tokenType)
+    bool Parser::isImmediate(lexing::TokenType tokenType)
     {
-        return tokenType == Lexing::TokenType::Immediate || tokenType == Lexing::TokenType::Identifier || tokenType == Lexing::TokenType::Dollar || tokenType == Lexing::TokenType::DollarDollar;
+        return tokenType == lexing::TokenType::Immediate || tokenType == lexing::TokenType::Identifier || tokenType == lexing::TokenType::Dollar || tokenType == lexing::TokenType::DollarDollar;
     }
 
     void Parser::parse()
@@ -325,15 +325,15 @@ namespace Parsing
         auto token = current();
         switch (token.getTokenType())
         {
-            case Lexing::TokenType::Error:
+            case lexing::TokenType::Error:
                 reportError(token, "Found unknown symbol.");
                 break;
                 
-            case Lexing::TokenType::Identifier:
+            case lexing::TokenType::Identifier:
                 parseLabel();
                 break;
 
-            case Lexing::TokenType::Instruction:
+            case lexing::TokenType::Instruction:
             {
                 InstructionParser parser = mInstructionParsers.at(consume().getText());
                 parser();
@@ -349,10 +349,10 @@ namespace Parsing
     {
         const std::string& name = consume().getText();
 
-        expectToken(Lexing::TokenType::Colon, "Expected ':' after a label.");
+        expectToken(lexing::TokenType::Colon, "Expected ':' after a label.");
         consume();
 
-        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, Codegen::Global(true)); // TODO: Check if global
+        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, codegen::Global(true)); // TODO: Check if global
     }
 
     long long Parser::parseExpression(int precedence)
@@ -361,22 +361,22 @@ namespace Parsing
         int binaryOperatorPrecedence;
         while (mPosition < mTokens.size() && (binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType()), binaryOperatorPrecedence > precedence))
         {
-            Lexing::TokenType operatorToken = consume().getTokenType();
+            lexing::TokenType operatorToken = consume().getTokenType();
 
             long long rhs = parseExpression(binaryOperatorPrecedence);
 
             switch(operatorToken)
             {
-                case Lexing::TokenType::Plus:
+                case lexing::TokenType::Plus:
                     lhs += rhs;
                     break;
-                case Lexing::TokenType::Minus:
+                case lexing::TokenType::Minus:
                     lhs -= rhs;
                     break;
-                case Lexing::TokenType::Star:
+                case lexing::TokenType::Star:
                     lhs *= rhs;
                     break;
-                case Lexing::TokenType::Slash:
+                case lexing::TokenType::Slash:
                     lhs /= rhs;
                     break;
                 default:
@@ -388,33 +388,33 @@ namespace Parsing
 
     long long Parser::parseImmediate()
     {
-        if(current().getTokenType() == Lexing::TokenType::LParen)
+        if(current().getTokenType() == lexing::TokenType::LParen)
         {
             consume();
 
             long long ret = parseExpression();
             
             // TODO: Use the location of LParen
-            expectToken(Lexing::TokenType::RParen, "Expected matching ')'.");
+            expectToken(lexing::TokenType::RParen, "Expected matching ')'.");
             consume();
 
             return ret;
         }
-        else if (current().getTokenType() == Lexing::TokenType::Immediate)
+        else if (current().getTokenType() == lexing::TokenType::Immediate)
         {
             return std::stoll(consume().getText(), nullptr, 0);
         }
-        else if (current().getTokenType() == Lexing::TokenType::Dollar)
+        else if (current().getTokenType() == lexing::TokenType::Dollar)
         {
             consume();
             return static_cast<long long>(mOutput.getPosition(mSection));
         }
-        else if (current().getTokenType() == Lexing::TokenType::DollarDollar)
+        else if (current().getTokenType() == lexing::TokenType::DollarDollar)
         {
             consume();
             return static_cast<long long>(mOutput.getSectionStart(mSection));
         }
-        else if (current().getTokenType() == Lexing::TokenType::Identifier)
+        else if (current().getTokenType() == lexing::TokenType::Identifier)
         {
             if (!mOutput.hasSymbol(current().getText())) {
                 reportError(current(), "Found unknown symbol '" + current().getText() + "'.");
@@ -422,25 +422,25 @@ namespace Parsing
             return static_cast<long long>(mOutput.getSymbol(consume().getText()));
         }
         else
-            expectToken(Lexing::TokenType::Immediate, "Expected an immediate.");
+            expectToken(lexing::TokenType::Immediate, "Expected an immediate.");
 
         return -1;
     }
 
-    std::pair<long long, Codegen::OperandSize> Parser::parseRegister()
+    std::pair<long long, codegen::OperandSize> Parser::parseRegister()
     {
         constexpr int REGISTERS_PER_ENCODING = 4;
 
         long long index;
-        for (index = 0; index < static_cast<long long>(Codegen::Registers.size()); index++)
+        for (index = 0; index < static_cast<long long>(codegen::Registers.size()); index++)
         {
-            if (Codegen::Registers[index] == current().getText())
+            if (codegen::Registers[index] == current().getText())
             {
                 break;
             }
         }
         consume();
 
-        return std::make_pair(index / REGISTERS_PER_ENCODING, static_cast<Codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
+        return std::make_pair(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
     }
 }
