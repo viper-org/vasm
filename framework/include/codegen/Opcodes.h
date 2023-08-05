@@ -24,6 +24,9 @@ namespace codegen
 
     enum ByteOpcodes : unsigned char
     {
+        ADD_REG_REG8 = 0x00,
+        ADD_REG_REG = 0x01,
+
         JMP_REL8 = 0xEB,
 
         CALL_REL32 = 0xE8,

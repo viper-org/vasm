@@ -382,6 +382,60 @@ namespace ParserTests
             check(testCases);
         }
 
+        TEST(AddInst, ParserTests)
+        {
+            TestCases testCases = {
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "add" },
+                        { lexing::TokenType::Register, "al" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "al" },
+                    })
+                    .setExpectedCode({ codegen::ADD_REG_REG8, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "add" },
+                        { lexing::TokenType::Register, "ax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "ax" },
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "add" },
+                        { lexing::TokenType::Register, "eax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "eax" },
+                    })
+                    .setExpectedCode({ codegen::ADD_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "add" },
+                        { lexing::TokenType::Register, "rax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "rax" },
+                    })
+                    .setExpectedCode({ codegen::REX::W, codegen::ADD_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({})
+
+            };
+
+            check(testCases);
+        }
+
         TEST(PushInst, ParserTests)
         {
             TestCases testCases = {

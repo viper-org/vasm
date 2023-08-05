@@ -15,7 +15,8 @@ _start:
 
     push 1
     pop rax
-    mov rdi, 1
+    mov rdi, 0
+    add rdi, rax
     mov rsi, string2
     mov rdx, 7
     syscall

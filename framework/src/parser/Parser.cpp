@@ -240,6 +240,46 @@ namespace parsing
                 }
             },
             {
+                "add", [&](){
+                    auto lhs = parseRegister();
+                    expectToken(lexing::TokenType::Comma, "Expected ',' after add destination register.");
+                    consume();
+
+                    if (current().getTokenType() == lexing::TokenType::Register)
+                    {
+                        auto token = current();
+                        auto rhs = parseRegister();
+                        
+                        if (lhs.second != rhs.second)
+                        {
+                            reportError(token, "Operand size mismatch on 'add' instruction.");
+                        }
+
+                        switch (lhs.second)
+                        {
+                            case codegen::OperandSize::Byte:
+                                mOutput.write(codegen::ADD_REG_REG8, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Word:
+                                mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                mOutput.write(codegen::ADD_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Long:
+                                mOutput.write(codegen::ADD_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Quad:
+                                mOutput.write(codegen::REX::W, mSection);
+                                mOutput.write(codegen::ADD_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                        }
+                    }
+                }
+            },
+            {
                 "push", [&](){
                     auto token = current();
                     if (current().getTokenType() == lexing::TokenType::Register)
