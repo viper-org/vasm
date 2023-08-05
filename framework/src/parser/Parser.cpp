@@ -120,7 +120,7 @@ namespace parsing
                         default:
                             break;
                     }
-                    
+
                     mOutput.write(codegen::LEA, mSection);
                     if (rel)
                     {
@@ -250,6 +250,11 @@ namespace parsing
             {
                 "syscall", [&](){
                     mOutput.write(codegen::SYSCALL, mSection);
+                }
+            },
+            {
+                "nop", [&](){
+                    mOutput.write(codegen::NOP, mSection);
                 }
             },
             {

@@ -23,6 +23,7 @@ namespace lexing
         "lea",
         "int",
         "syscall",
+        "nop",
         "times",
     };
 

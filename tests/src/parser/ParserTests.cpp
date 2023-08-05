@@ -150,7 +150,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "jmp" },
                         { lexing::TokenType::Dollar, "" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::JMP_REL8, static_cast<unsigned char>(-2) }) // Instruction is 2 bytes
+                    .setExpectedCode({ codegen::JMP_REL8, static_cast<unsigned char>(-2) }) // Instruction is 2 bytes
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -169,7 +169,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "call" },
                         { lexing::TokenType::Dollar, "" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::CALL_REL32, static_cast<unsigned char>(-5), 0xFF, 0xFF, 0xFF }) // Instruction is 5 bytes
+                    .setExpectedCode({ codegen::CALL_REL32, static_cast<unsigned char>(-5), 0xFF, 0xFF, 0xFF }) // Instruction is 5 bytes
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -187,7 +187,7 @@ namespace ParserTests
                     .setInput({
                         { lexing::TokenType::Instruction, "ret" }
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::RET })
+                    .setExpectedCode({ codegen::RET })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -212,7 +212,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "al" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::MOV_REG_REG8, 0xC0 })
+                    .setExpectedCode({ codegen::MOV_REG_REG8, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -223,7 +223,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "ax" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ByteOpcodes::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::MOV_REG_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -234,7 +234,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "eax" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::MOV_REG_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -245,7 +245,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "rax" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ByteOpcodes::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::REX::W, codegen::MOV_REG_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -262,7 +262,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::MOV_REG_IMM8, 0x00 })
+                    .setExpectedCode({ codegen::MOV_REG_IMM8, 0x00 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -273,7 +273,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ByteOpcodes::MOV_REG_IMM, 0x00, 0x00 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::MOV_REG_IMM, 0x00, 0x00 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -284,7 +284,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::MOV_REG_IMM, 0x00, 0x00,0x00, 0x00 })
+                    .setExpectedCode({ codegen::MOV_REG_IMM, 0x00, 0x00,0x00, 0x00 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -295,7 +295,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ByteOpcodes::MOV_REG_IMM, 0x00, 0x00,0x00, 0x00, 0x00, 0x00,0x00, 0x00 })
+                    .setExpectedCode({ codegen::REX::W, codegen::MOV_REG_IMM, 0x00, 0x00,0x00, 0x00, 0x00, 0x00,0x00, 0x00 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -321,7 +321,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ByteOpcodes::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -338,7 +338,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::LEA, 0x05, static_cast<unsigned char>(-6), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::LEA, 0x05, static_cast<unsigned char>(-6), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -355,7 +355,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ByteOpcodes::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::REX::W, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -372,7 +372,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ByteOpcodes::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({})
@@ -391,7 +391,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "int" },
                         { lexing::TokenType::Immediate,   "0" }
                     })
-                    .setExpectedCode({ codegen::ByteOpcodes::INT, 0x00 })
+                    .setExpectedCode({ codegen::INT, 0x00 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({})
@@ -409,7 +409,25 @@ namespace ParserTests
                     .setInput({
                         { lexing::TokenType::Instruction, "syscall" }
                     })
-                    .setExpectedCode({ codegen::WordOpcodes::SYSCALL & 0xFF, codegen::WordOpcodes::SYSCALL >> 8 })
+                    .setExpectedCode({ codegen::SYSCALL & 0xFF, codegen::SYSCALL >> 8 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({})
+
+            };
+
+            check(testCases);
+        }
+
+        TEST(NopInst, ParserTests)
+        {
+            TestCases testCases = {
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "nop" }
+                    })
+                    .setExpectedCode({ codegen::NOP })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({})
