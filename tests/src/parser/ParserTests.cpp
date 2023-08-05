@@ -391,7 +391,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "push" },
                         { lexing::TokenType::Register,    "ax" }
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::PUSH })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::PUSH_REG })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -401,10 +401,31 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "push" },
                         { lexing::TokenType::Register,    "rax" }
                     })
-                    .setExpectedCode({ codegen::PUSH })
+                    .setExpectedCode({ codegen::PUSH_REG })
                     .setExpectedData({})
                     .setExpectedSymbols({})
-                    .setExpectedRelocations({})
+                    .setExpectedRelocations({}),
+
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "push" },
+                        { lexing::TokenType::Immediate,    "0" }
+                    })
+                    .setExpectedCode({ codegen::PUSH_IMM8, 0x00 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "push" },
+                        { lexing::TokenType::Immediate,    "0xFFFF" }
+                    })
+                    .setExpectedCode({ codegen::PUSH_IMM, 0xFF, 0xFF })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
 
             };
 
@@ -420,7 +441,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "pop" },
                         { lexing::TokenType::Register,    "ax" }
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::POP })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::POP_REG })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -430,10 +451,10 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "pop" },
                         { lexing::TokenType::Register,    "rax" }
                     })
-                    .setExpectedCode({ codegen::POP })
+                    .setExpectedCode({ codegen::POP_REG })
                     .setExpectedData({})
                     .setExpectedSymbols({})
-                    .setExpectedRelocations({})
+                    .setExpectedRelocations({}),
 
             };
 

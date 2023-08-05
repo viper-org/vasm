@@ -48,6 +48,8 @@ namespace parsing
         
         static int getBinaryOperatorPrecedence(lexing::TokenType tokenType);
         static bool isImmediate(lexing::TokenType tokenType);
+
+        static codegen::OperandSize getImmediateSize(long long immediate);
         
         void parseStatement();
 

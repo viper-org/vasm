@@ -242,22 +242,47 @@ namespace parsing
             {
                 "push", [&](){
                     auto token = current();
-                    auto reg = parseRegister();
-
-                    switch (reg.second)
+                    if (current().getTokenType() == lexing::TokenType::Register)
                     {
-                        case codegen::OperandSize::Byte:
-                            reportError(token, "Unsupported operand size for 'push' instruction");
-                        case codegen::OperandSize::Word:
-                            mOutput.write(codegen::SIZE_PREFIX, mSection);
-                            break;
-                        case codegen::OperandSize::Long:
-                            reportError(token, "Unsupported operand size for 'push' instruction"); // TODO: Check if in 32-bit mode
-                        default:
-                            break;
-                    }
+                        auto reg = parseRegister();
 
-                    mOutput.write(static_cast<unsigned char>(codegen::PUSH + reg.first), mSection);
+                        switch (reg.second)
+                        {
+                            case codegen::OperandSize::Byte:
+                                reportError(token, "Unsupported operand size for 'push' instruction");
+                            case codegen::OperandSize::Word:
+                                mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                break;
+                            case codegen::OperandSize::Long:
+                                reportError(token, "Unsupported operand size for 'push' instruction"); // TODO: Check if in 32-bit mode
+                            default:
+                                break;
+                        }
+
+                        mOutput.write(static_cast<unsigned char>(codegen::PUSH_REG + reg.first), mSection);
+                    }
+                    else if (current().getTokenType() == lexing::TokenType::Immediate)
+                    {
+                        auto immediate = parseExpression();
+
+                        switch (getImmediateSize(immediate))
+                        {
+                            case codegen::OperandSize::Byte:
+                                mOutput.write(codegen::PUSH_IMM8, mSection);
+                                mOutput.write(static_cast<unsigned char>(immediate), mSection);
+                                break;
+                            case codegen::OperandSize::Word:
+                                mOutput.write(codegen::PUSH_IMM, mSection);
+                                mOutput.write(static_cast<unsigned short>(immediate), mSection);
+                                break;
+                            case codegen::OperandSize::Long:
+                                mOutput.write(codegen::PUSH_IMM, mSection);
+                                mOutput.write(static_cast<unsigned int>(immediate), mSection);
+                                break;
+                            case codegen::OperandSize::Quad:
+                                reportError(token, "Unsupported operand size for 'push' instruction");
+                        }
+                    }
                 }
             },
             {
@@ -278,7 +303,7 @@ namespace parsing
                             break;
                     }
 
-                    mOutput.write(static_cast<unsigned char>(codegen::POP + reg.first), mSection);
+                    mOutput.write(static_cast<unsigned char>(codegen::POP_REG + reg.first), mSection);
                 }
             },
             {
@@ -355,6 +380,26 @@ namespace parsing
                 return 45;
             default:
                 return 0;
+        }
+    }
+
+    codegen::OperandSize Parser::getImmediateSize(long long immediate)
+    {
+        if (immediate <= UINT8_MAX)
+        {
+            return codegen::OperandSize::Byte;
+        }
+        else if (immediate <= UINT16_MAX)
+        {
+            return codegen::OperandSize::Word;
+        }
+        else if (immediate <= UINT32_MAX)
+        {
+            return codegen::OperandSize::Long;
+        }
+        else
+        {
+            return codegen::OperandSize::Quad;
         }
     }
 
