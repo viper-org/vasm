@@ -103,7 +103,7 @@ namespace parsing
                         reportError(bracketStartToken, "Not relative lea instruction is not supported.");
                     }
                     
-                    int extra_bytes = 0;
+                    int extraBytes = 0;
                     auto start = mOutput.getPosition(mSection);
                     switch (lhs.second) {
                         case codegen::OperandSize::Byte:
@@ -111,27 +111,31 @@ namespace parsing
                             break;
                         case codegen::OperandSize::Quad:
                             mOutput.write(codegen::REX::W, mSection);
-                            extra_bytes = 1;
-                            [[fallthrough]];
-                        case codegen::OperandSize::Word:
-                        case codegen::OperandSize::Long:
-                            mOutput.write(codegen::LEA, mSection);
-                            if (rel)
-                            {
-                                // mod = 0b11000000
-                                // reg = 0b00111000
-                                // rm  = 0b00000111
-                                
-                                // rm none | mod none | reg
-                                
-                                // TODO: Extended registers
-                                uint8_t modrm = 0b101 | 0b00 << 6 | (lhs.first & 0b111) << 3;
-                                mOutput.write(modrm, mSection);
-                                // This is actually signed but to avoid casting just use unsigned int
-                                unsigned int value = labelAddr - start - (6 + extra_bytes);
-                                mOutput.write(value, mSection);
-                            }
+                            extraBytes = 1;
                             break;
+                        case codegen::OperandSize::Word:
+                            mOutput.write(codegen::SIZE_PREFIX, mSection);
+                            extraBytes = 1;
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    mOutput.write(codegen::LEA, mSection);
+                    if (rel)
+                    {
+                        // mod = 0b11000000
+                        // reg = 0b00111000
+                        // rm  = 0b00000111
+                        
+                        // rm none | mod none | reg
+                        
+                        // TODO: Extended registers
+                        uint8_t modrm = 0b101 | 0b00 << 6 | (lhs.first & 0b111) << 3;
+                        mOutput.write(modrm, mSection);
+                        // This is actually signed but to avoid casting just use unsigned int
+                        unsigned int value = labelAddr - start - (6 + extraBytes);
+                        mOutput.write(value, mSection);
                     }
                 }
             },
