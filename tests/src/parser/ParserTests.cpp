@@ -382,6 +382,64 @@ namespace ParserTests
             check(testCases);
         }
 
+        TEST(PushInst, ParserTests)
+        {
+            TestCases testCases = {
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "push" },
+                        { lexing::TokenType::Register,    "ax" }
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::PUSH })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "push" },
+                        { lexing::TokenType::Register,    "rax" }
+                    })
+                    .setExpectedCode({ codegen::PUSH })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({})
+
+            };
+
+            check(testCases);
+        }
+
+        TEST(PopInst, ParserTests)
+        {
+            TestCases testCases = {
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "pop" },
+                        { lexing::TokenType::Register,    "ax" }
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::POP })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "pop" },
+                        { lexing::TokenType::Register,    "rax" }
+                    })
+                    .setExpectedCode({ codegen::POP })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({})
+
+            };
+
+            check(testCases);
+        }
+
         TEST(IntInst, ParserTests)
         {
             TestCases testCases = {

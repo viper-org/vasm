@@ -39,6 +39,9 @@ namespace codegen
         
         LEA = 0x8D,
 
+        PUSH = 0x50,
+        POP = 0x58,
+
         INT = 0xCD,
     };
 

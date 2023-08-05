@@ -78,7 +78,7 @@ namespace parsing
             {
                 "lea", [&](){
                     auto registerToken = current();
-                    std::pair<long long, codegen::OperandSize> lhs = parseRegister();
+                    Register lhs = parseRegister();
                     
                     expectToken(lexing::TokenType::Comma, "Expected ',' after lea destination register.");
                     consume();
@@ -141,7 +141,7 @@ namespace parsing
             },
             {
                 "mov", [&](){
-                    std::pair<long long, codegen::OperandSize> lhs = parseRegister();
+                    Register lhs = parseRegister();
 
                     expectToken(lexing::TokenType::Comma, "Expected ',' after mov destination register.");
                     consume();
@@ -200,7 +200,7 @@ namespace parsing
                                 if (reloc)
                                 {
                                     mOutput.relocSymbol(reloc->getText(), mSection);
-                                    mOutput.write((unsigned long) 0, mSection);
+                                    mOutput.write((unsigned long)0, mSection);
                                 }
                                 else
                                 {
@@ -211,11 +211,11 @@ namespace parsing
                     }
                     else if (current().getTokenType() == lexing::TokenType::Register)
                     {
-                        auto rhsRegisterToken = current();
-                        std::pair<long long, codegen::OperandSize> rhs = parseRegister();
+                        auto token = current();
+                        auto rhs = parseRegister();
                         if (lhs.second != rhs.second)
                         {
-                            reportError(rhsRegisterToken, "Operand size mismatch on 'mov' instruction.");
+                            reportError(token, "Operand size mismatch on 'mov' instruction.");
                         }
 
                         switch(lhs.second)
@@ -235,8 +235,50 @@ namespace parsing
                                 mOutput.write(codegen::MOV_REG_REG, mSection);
                                 break;
                         }
-                        mOutput.write((unsigned char)(0xC0 + lhs.first + rhs.first * 8), mSection);
+                        mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
                     }
+                }
+            },
+            {
+                "push", [&](){
+                    auto token = current();
+                    auto reg = parseRegister();
+
+                    switch (reg.second)
+                    {
+                        case codegen::OperandSize::Byte:
+                            reportError(token, "Unsupported operand size for 'push' instruction");
+                        case codegen::OperandSize::Word:
+                            mOutput.write(codegen::SIZE_PREFIX, mSection);
+                            break;
+                        case codegen::OperandSize::Long:
+                            reportError(token, "Unsupported operand size for 'push' instruction"); // TODO: Check if in 32-bit mode
+                        default:
+                            break;
+                    }
+
+                    mOutput.write(static_cast<unsigned char>(codegen::PUSH + reg.first), mSection);
+                }
+            },
+            {
+                "pop", [&](){
+                    auto token = current();
+                    auto reg = parseRegister();
+
+                    switch (reg.second)
+                    {
+                        case codegen::OperandSize::Byte:
+                            reportError(token, "Unsupported operand size for 'pop' instruction");
+                        case codegen::OperandSize::Word:
+                            mOutput.write(codegen::SIZE_PREFIX, mSection);
+                            break;
+                        case codegen::OperandSize::Long:
+                            reportError(token, "Unsupported operand size for 'pop' instruction"); // TODO: Check if in 32-bit mode
+                        default:
+                            break;
+                    }
+
+                    mOutput.write(static_cast<unsigned char>(codegen::POP + reg.first), mSection);
                 }
             },
             {
@@ -436,7 +478,7 @@ namespace parsing
         return -1;
     }
 
-    std::pair<long long, codegen::OperandSize> Parser::parseRegister()
+    Register Parser::parseRegister()
     {
         constexpr int REGISTERS_PER_ENCODING = 4;
 

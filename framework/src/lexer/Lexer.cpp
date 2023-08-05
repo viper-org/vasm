@@ -21,6 +21,8 @@ namespace lexing
         "ret",
         "mov",
         "lea",
+        "push",
+        "pop",
         "int",
         "syscall",
         "nop",

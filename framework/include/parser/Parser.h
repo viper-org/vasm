@@ -19,6 +19,8 @@ namespace codegen
 
 namespace parsing
 {
+    using Register = std::pair<long long, codegen::OperandSize>;
+
     class Parser
     {
     public:
@@ -52,7 +54,7 @@ namespace parsing
         void parseLabel();
         long long parseExpression(int precedence = 1);
         long long parseImmediate();
-        std::pair<long long, codegen::OperandSize> parseRegister();
+        Register parseRegister();
     };
 }
 

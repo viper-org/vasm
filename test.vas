@@ -10,12 +10,12 @@ _start:
     mov rax, 1
     mov rdi, 1
     lea rsi, [rel string]
-    mov rsi, string
     mov rdx, 7
     syscall
 
     mov rax, 1
-    mov rdi, 1
+    push rax
+    pop rdi
     mov rsi, string2
     mov rdx, 7
     syscall
