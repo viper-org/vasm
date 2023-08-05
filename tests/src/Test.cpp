@@ -18,6 +18,7 @@ std::vector<TestCase> tests;
 std::vector<failedTest> failedTests;
 size_t totalAssertions;
 size_t failedAssertions;
+TestCase* currentTest;
 
 void testFailed(AssertInfo info)
 {
@@ -54,15 +55,8 @@ void testFailed(AssertInfo info)
     }
     fail.expansion += info.rhs;
 
-    std::string funcName = info.sourceLocation.function_name();
-
-    size_t firstDollar = funcName.find_first_of('$') + 1;
-
-    std::string testName = funcName.substr(firstDollar, funcName.find_last_of('$') - firstDollar);
-    std::string suiteName = funcName.substr(funcName.find_last_of('$') + 1, funcName.find_first_of('(') - funcName.find_last_of('$') - 1);
-
-    fail.name = testName;
-    fail.suite = suiteName;
+    fail.name = currentTest->name;
+    fail.suite = currentTest->suite;
 
     failedTests.push_back(fail);
 }
@@ -89,6 +83,7 @@ void runTests()
 {
     for (TestCase& test : tests)
     {
+        currentTest = &test;
         const auto start = std::chrono::system_clock::now().time_since_epoch();
         test.method();
         const auto end = std::chrono::system_clock::now().time_since_epoch();

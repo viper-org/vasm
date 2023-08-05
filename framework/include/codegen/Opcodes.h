@@ -56,6 +56,8 @@ namespace codegen
         "dh"sv, "si"sv, "esi"sv, "rsi"sv,
         "bh"sv, "di"sv, "edi"sv, "rdi"sv,
     };
+
+    constexpr unsigned char SIZE_PREFIX = 0x66;
 }
 
 #endif

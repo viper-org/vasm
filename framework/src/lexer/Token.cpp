@@ -36,4 +36,9 @@ namespace lexing
     {
         return mSourceLocation;
     }
+
+    bool Token::operator==(const Token& other) const
+    {
+        return (mText == other.mText) && (mTokenType == other.mTokenType);
+    }
 }

@@ -33,9 +33,6 @@ void runTests();
     volatile test_##name##_##suite_registrar test_##name##_##suite_registrar_object; \
     void test$##name##$##suite()
 
-#define SOMETHING(expr) AssertDecomposer{AssertInfo{#expr, std::source_location::current(), AssertOperator::None, AssertResult::None}} < expr
-
-
 #define REQUIRE(condition) \
     do { \
         ++totalAssertions; \
