@@ -2,7 +2,6 @@
 #include "lexer/Token.h"
 
 #include <codegen/Opcodes.h>
-#include <iostream>
 
 namespace lexing
 {
@@ -216,7 +215,6 @@ namespace lexing
                                     value += '\0';
                                     break;
                                 default:
-                                    std::cout << current() << "\n";
                                     return Token {start_loc, TokenType::Error};
                             }
                             break;
