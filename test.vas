@@ -8,7 +8,8 @@ return:
 
 _start:
     mov rax, 1
-    mov rdi, 1
+    mov rdi, 0
+    add rdi, 1
     lea rsi, [rel string]
     mov rdx, 7
     syscall

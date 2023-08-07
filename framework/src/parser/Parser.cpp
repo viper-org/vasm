@@ -277,6 +277,66 @@ namespace parsing
                                 break;
                         }
                     }
+                    else if (current().getTokenType() == lexing::TokenType::Immediate)
+                    {
+                        auto token = current();
+                        long long rhs = parseImmediate();
+
+                        if (getImmediateSize(rhs) == codegen::OperandSize::Byte)
+                        {
+                            switch (lhs.second)
+                            {
+                                case codegen::OperandSize::Byte:
+                                    mOutput.write(codegen::ADD_REG8_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Word:
+                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Long:
+                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Quad:
+                                    mOutput.write(codegen::REX::W, mSection);
+                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                        break;
+                            }
+                        }
+                        else
+                        {
+                            switch (lhs.second)
+                            {
+                                case codegen::OperandSize::Byte:
+                                    reportError(token, "Operand size mismatch for 'add' instruction");
+                                case codegen::OperandSize::Word:
+                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned short>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Long:
+                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Quad:
+                                    mOutput.write(codegen::REX::W, mSection);
+                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
+                                    break;
+                            }
+                        }
+                    }
                 }
             },
             {

@@ -27,6 +27,10 @@ namespace codegen
         ADD_REG_REG8 = 0x00,
         ADD_REG_REG = 0x01,
 
+        ADD_REG8_IMM8 = 0x80,
+        ADD_REG_IMM = 0x81,
+        ADD_REG_IMM8 = 0x83,
+
         JMP_REL8 = 0xEB,
 
         CALL_REL32 = 0xE8,
