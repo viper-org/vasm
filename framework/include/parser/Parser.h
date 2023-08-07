@@ -2,6 +2,7 @@
 #define VASM_PARSER_PARSER_H 1
 
 #include <functional>
+#include <memory>
 #include <string>
 
 namespace lexing
@@ -17,6 +18,11 @@ namespace codegen
     enum class OperandSize;
 }
 
+namespace error
+{
+    class IErrorReporter;
+}
+
 namespace parsing
 {
     using Register = std::pair<long long, codegen::OperandSize>;
@@ -24,7 +30,7 @@ namespace parsing
     class Parser
     {
     public:
-        Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output);
+        Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output, error::IErrorReporter& errorReporter);
 
         void parse();
 
@@ -32,6 +38,7 @@ namespace parsing
         std::string_view filename;
         std::vector<lexing::Token>& mTokens;
         codegen::IOutputFormat& mOutput;
+        error::IErrorReporter& mErrorReporter;
         size_t mPosition {0};
         codegen::Section mSection;
 
@@ -44,7 +51,6 @@ namespace parsing
         [[nodiscard]] const lexing::Token& peek(size_t offset) const;
         
         void expectToken(lexing::TokenType tokenType, std::string_view context);
-        void reportError(const lexing::Token& token, std::string_view error);
         
         static int getBinaryOperatorPrecedence(lexing::TokenType tokenType);
         static bool isImmediate(lexing::TokenType tokenType);

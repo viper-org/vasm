@@ -5,6 +5,8 @@
 
 #include "codegen/Elf.h"
 
+#include "error/ErrorReporter.h"
+
 #include <sstream>
 #include <fstream>
 #include <memory>
@@ -22,7 +24,9 @@ int main(int argc, char** argv)
 
     std::unique_ptr<codegen::IOutputFormat> output = std::make_unique<codegen::ELFFormat>(inPath);
 
-    parsing::Parser parser(inPath, tokens, *output);
+    std::unique_ptr<error::IErrorReporter> errorReporter = std::make_unique<error::ErrorReporter>();
+
+    parsing::Parser parser(inPath, tokens, *output, *errorReporter);
     parser.parse();
 
     std::ofstream outFile(inPath + ".o", std::ios::out | std::ios::binary);

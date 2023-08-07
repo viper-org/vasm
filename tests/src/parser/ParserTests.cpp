@@ -1,5 +1,6 @@
 #include "Test.h"
 
+#include "error/ErrorReporter.h"
 #include "parser/Parser.h"
 
 #include "lexer/Token.h"
@@ -39,8 +40,9 @@ namespace ParserTests
             });
 
             FakeOutputFormat output;
+            error::ErrorReporter errorReporter; // TODO: Use FakeErrorReporter
 
-            parsing::Parser parser("test", tokens, output);
+            parsing::Parser parser("test", tokens, output, errorReporter);
             parser.parse();
 
             REQUIRE(testCase.expectedCode.size() == output.getCode().size());

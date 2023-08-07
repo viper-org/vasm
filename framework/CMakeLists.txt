@@ -19,6 +19,8 @@ file(GLOB vasm_framework_project_sources
     src/codegen/Binary.cpp
     src/codegen/Elf.cpp
 	src/codegen/Pe.cpp
+
+    src/error/ErrorReporter.cpp
 )
 
 add_library(vasm_framework_project SHARED ${vasm_framework_project_sources})

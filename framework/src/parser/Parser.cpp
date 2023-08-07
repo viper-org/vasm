@@ -5,6 +5,8 @@
 #include "codegen/IOutputFormat.h"
 #include "codegen/Opcodes.h"
 
+#include "error/IErrorReporter.h"
+
 #include <cstdint>
 #include <iostream>
 
@@ -12,10 +14,11 @@ namespace parsing
 {
     constexpr unsigned char SIZE_16 = 0x66;
 
-    Parser::Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output)
+    Parser::Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output, error::IErrorReporter& errorReporter)
         : filename {filename}
         , mTokens {tokens}
         , mOutput {output}
+        , mErrorReporter {errorReporter}
         , mPosition {0}
         , mSection {codegen::Section::Text}
     {
@@ -100,14 +103,14 @@ namespace parsing
                     consume();
                     
                     if (!rel) {
-                        reportError(bracketStartToken, "Not relative lea instruction is not supported.");
+                        mErrorReporter.reportError({filename, "Not relative lea instruction is not supported.", bracketStartToken});
                     }
                     
                     int extraBytes = 0;
                     auto start = mOutput.getPosition(mSection);
                     switch (lhs.second) {
                         case codegen::OperandSize::Byte:
-                            reportError(registerToken, "Unsupported operand size for 'lea' instruction.");
+                            mErrorReporter.reportError({filename, "Unsupported operand size for 'lea' instruction.", registerToken});
                             break;
                         case codegen::OperandSize::Quad:
                             mOutput.write(codegen::REX::W, mSection);
@@ -215,7 +218,7 @@ namespace parsing
                         auto rhs = parseRegister();
                         if (lhs.second != rhs.second)
                         {
-                            reportError(token, "Operand size mismatch on 'mov' instruction.");
+                            mErrorReporter.reportError({filename, "Operand size mismatch on 'mov' instruction.", token});
                         }
 
                         switch(lhs.second)
@@ -252,7 +255,7 @@ namespace parsing
                         
                         if (lhs.second != rhs.second)
                         {
-                            reportError(token, "Operand size mismatch on 'add' instruction.");
+                            mErrorReporter.reportError({filename, "Operand size mismatch on 'add' instruction.", token});
                         }
 
                         switch (lhs.second)
@@ -316,7 +319,7 @@ namespace parsing
                             switch (lhs.second)
                             {
                                 case codegen::OperandSize::Byte:
-                                    reportError(token, "Operand size mismatch for 'add' instruction");
+                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'push' instruction", token});
                                 case codegen::OperandSize::Word:
                                     mOutput.write(codegen::SIZE_PREFIX, mSection);
                                     mOutput.write(codegen::ADD_REG_IMM, mSection);
@@ -349,12 +352,12 @@ namespace parsing
                         switch (reg.second)
                         {
                             case codegen::OperandSize::Byte:
-                                reportError(token, "Unsupported operand size for 'push' instruction");
+                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token});
                             case codegen::OperandSize::Word:
                                 mOutput.write(codegen::SIZE_PREFIX, mSection);
                                 break;
                             case codegen::OperandSize::Long:
-                                reportError(token, "Unsupported operand size for 'push' instruction"); // TODO: Check if in 32-bit mode
+                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token}); // TODO: Check if in 32-bit mode
                             default:
                                 break;
                         }
@@ -380,7 +383,7 @@ namespace parsing
                                 mOutput.write(static_cast<unsigned int>(immediate), mSection);
                                 break;
                             case codegen::OperandSize::Quad:
-                                reportError(token, "Unsupported operand size for 'push' instruction");
+                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token});
                         }
                     }
                 }
@@ -393,12 +396,12 @@ namespace parsing
                     switch (reg.second)
                     {
                         case codegen::OperandSize::Byte:
-                            reportError(token, "Unsupported operand size for 'pop' instruction");
+                            mErrorReporter.reportError({filename, "pop operand size for 'push' instruction", token});
                         case codegen::OperandSize::Word:
                             mOutput.write(codegen::SIZE_PREFIX, mSection);
                             break;
                         case codegen::OperandSize::Long:
-                            reportError(token, "Unsupported operand size for 'pop' instruction"); // TODO: Check if in 32-bit mode
+                            mErrorReporter.reportError({filename, "Unsupported operand size for 'pop' instruction", token}); // TODO: Check if in 32-bit mode
                         default:
                             break;
                     }
@@ -459,13 +462,8 @@ namespace parsing
         auto token = current();
         if (token.getTokenType() != tokenType)
         {
-            reportError(token, context);
+            mErrorReporter.reportError({filename, context, token});
         }
-    }
-    
-    void Parser::reportError(const lexing::Token& token, std::string_view error) {
-        std::cerr << filename << ':' << token.getSourceLocation().line << ':' << token.getSourceLocation().column << ": " << error << '\n';
-        std::exit(1);
     }
 
     int Parser::getBinaryOperatorPrecedence(lexing::TokenType tokenType)
@@ -522,7 +520,7 @@ namespace parsing
         switch (token.getTokenType())
         {
             case lexing::TokenType::Error:
-                reportError(token, "Found unknown symbol.");
+                mErrorReporter.reportError({filename, "Found unknown symbol.", token});
                 break;
                 
             case lexing::TokenType::Identifier:
@@ -537,7 +535,7 @@ namespace parsing
             }
 
             default:
-                reportError(token, "Expected statement, found '" + token.getText() + "'.");
+                mErrorReporter.reportError({filename, "Expected statement, found '" + token.getText() + "'.", token});
         }
     }
 
@@ -613,7 +611,7 @@ namespace parsing
         else if (current().getTokenType() == lexing::TokenType::Identifier)
         {
             if (!mOutput.hasSymbol(current().getText())) {
-                reportError(current(), "Found unknown symbol '" + current().getText() + "'.");
+                mErrorReporter.reportError({filename, "Found unknown symbol '" + current().getText() + "'.", current()});
             }
             return static_cast<long long>(mOutput.getSymbol(consume().getText()));
         }
