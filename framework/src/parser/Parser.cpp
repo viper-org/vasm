@@ -255,7 +255,7 @@ namespace parsing
                         
                         if (lhs.second != rhs.second)
                         {
-                            mErrorReporter.reportError({filename, "Operand size mismatch on 'add' instruction.", token});
+                            mErrorReporter.reportError({filename, "Operand size mismatch for 'add' instruction.", token});
                         }
 
                         switch (lhs.second)
@@ -319,7 +319,7 @@ namespace parsing
                             switch (lhs.second)
                             {
                                 case codegen::OperandSize::Byte:
-                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'push' instruction", token});
+                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'add' instruction", token});
                                 case codegen::OperandSize::Word:
                                     mOutput.write(codegen::SIZE_PREFIX, mSection);
                                     mOutput.write(codegen::ADD_REG_IMM, mSection);
@@ -335,6 +335,105 @@ namespace parsing
                                     mOutput.write(codegen::REX::W, mSection);
                                     mOutput.write(codegen::ADD_REG_IMM, mSection);
                                     mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "sub", [&](){
+                    auto lhs = parseRegister();
+                    expectToken(lexing::TokenType::Comma, "Expected ',' after sub destination register.");
+                    consume();
+
+                    if (current().getTokenType() == lexing::TokenType::Register)
+                    {
+                        auto token = current();
+                        auto rhs = parseRegister();
+                        
+                        if (lhs.second != rhs.second)
+                        {
+                            mErrorReporter.reportError({filename, "Operand size mismatch for 'sub' instruction.", token});
+                        }
+
+                        switch (lhs.second)
+                        {
+                            case codegen::OperandSize::Byte:
+                                mOutput.write(codegen::SUB_REG_REG8, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Word:
+                                mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                mOutput.write(codegen::SUB_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Long:
+                                mOutput.write(codegen::SUB_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                            case codegen::OperandSize::Quad:
+                                mOutput.write(codegen::REX::W, mSection);
+                                mOutput.write(codegen::SUB_REG_REG, mSection);
+                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
+                                break;
+                        }
+                    }
+                    else if (current().getTokenType() == lexing::TokenType::Immediate)
+                    {
+                        auto token = current();
+                        long long rhs = parseImmediate();
+
+                        if (getImmediateSize(rhs) == codegen::OperandSize::Byte)
+                        {
+                            switch (lhs.second)
+                            {
+                                case codegen::OperandSize::Byte:
+                                    mOutput.write(codegen::SUB_REG8_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Word:
+                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Long:
+                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Quad:
+                                    mOutput.write(codegen::REX::W, mSection);
+                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (lhs.second)
+                            {
+                                case codegen::OperandSize::Byte:
+                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'sub' instruction", token});
+                                case codegen::OperandSize::Word:
+                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
+                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned short>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Long:
+                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
+                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
+                                    break;
+                                case codegen::OperandSize::Quad:
+                                    mOutput.write(codegen::REX::W, mSection);
+                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
+                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
                                     mOutput.write(static_cast<unsigned int>(rhs), mSection);
                                     break;
                             }

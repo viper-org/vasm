@@ -531,6 +531,153 @@ namespace ParserTests
             check(testCases);
         }
 
+        TEST(SubInst, ParserTests)
+        {
+            TestCases testCases = {
+
+                /*****************************************************************************/
+                /*                                 Reg,Reg                                   */
+                /*****************************************************************************/
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "al" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "al" },
+                    })
+                    .setExpectedCode({ codegen::SUB_REG_REG8, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "ax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "ax" },
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::SUB_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "eax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "eax" },
+                    })
+                    .setExpectedCode({ codegen::SUB_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "rax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Register, "rax" },
+                    })
+                    .setExpectedCode({ codegen::REX::W, codegen::SUB_REG_REG, 0xC0 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+
+                /*****************************************************************************/
+                /*                                 Reg,Imm8                                  */
+                /*****************************************************************************/
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "al" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "1" },
+                    })
+                    .setExpectedCode({ codegen::SUB_REG8_IMM8, 0xE8, 0x01 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "ax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "1" },
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::SUB_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "eax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "1" },
+                    })
+                    .setExpectedCode({ codegen::SUB_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "rax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "1" },
+                    })
+                    .setExpectedCode({ codegen::REX::W, codegen::SUB_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+
+                /*****************************************************************************/
+                /*                                 Reg,Imm                                   */
+                /*****************************************************************************/
+
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "ax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "0xFFFF" },
+                    })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::SUB_REG_IMM, 0xE8, 0xFF, 0xFF })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "eax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "0xFFFFFFFF" },
+                    })
+                    .setExpectedCode({ codegen::SUB_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+                TestCase()
+                    .setInput({
+                        { lexing::TokenType::Instruction, "sub" },
+                        { lexing::TokenType::Register, "rax" },
+                        { lexing::TokenType::Comma, "" },
+                        { lexing::TokenType::Immediate, "0xFFFFFFFF" },
+                    })
+                    .setExpectedCode({ codegen::REX::W, codegen::SUB_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedData({})
+                    .setExpectedSymbols({})
+                    .setExpectedRelocations({}),
+
+            };
+
+            check(testCases);
+        }
+
         TEST(PushInst, ParserTests)
         {
             TestCases testCases = {

@@ -31,10 +31,21 @@ namespace codegen
         ADD_REG_IMM = 0x81,
         ADD_REG_IMM8 = 0x83,
 
+
+        SUB_REG_REG8 = 0x28,
+        SUB_REG_REG = 0x29,
+
+        SUB_REG8_IMM8 = 0x80,
+        SUB_REG_IMM = 0x81,
+        SUB_REG_IMM8 = 0x83,
+
+
         JMP_REL8 = 0xEB,
+
 
         CALL_REL32 = 0xE8,
         RET = 0xC3,
+
 
         MOV_REG_IMM8 = 0xB0,
         MOV_REG_IMM  = 0xB8,
@@ -42,14 +53,19 @@ namespace codegen
         MOV_REG_REG8 = 0x88,
         MOV_REG_REG  = 0x89,
 
+
         NOP = 0x90,
         
+
         LEA = 0x8D,
+
 
         PUSH_REG = 0x50,
         POP_REG = 0x58,
+        
         PUSH_IMM = 0x68,
         PUSH_IMM8 = 0x6A,
+
 
         INT = 0xCD,
     };

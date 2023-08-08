@@ -21,6 +21,7 @@ namespace lexing
         "mov",
         "lea",
         "add",
+        "sub",
         "push",
         "pop",
         "int",

@@ -7,9 +7,10 @@ return:
     syscall
 
 _start:
-    mov rax, 1
-    mov rdi, 0
-    add rdi, 1
+    mov rax, 2
+    sub rax, 1
+    mov rdi, 2
+    sub rdi, rax
     lea rsi, [rel string]
     mov rdx, 7
     syscall
