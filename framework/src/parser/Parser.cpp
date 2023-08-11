@@ -1,545 +1,64 @@
+// Copyright 2023 solar-mist
+
+
 #include "parser/Parser.h"
 
 #include "lexer/Token.h"
 
-#include "codegen/IOutputFormat.h"
-#include "codegen/Opcodes.h"
-
 #include "error/IErrorReporter.h"
 
-#include <cstdint>
+#include "instruction/Builder.h"
+
+#include "instruction/singleOperandInstruction/CallInstruction.h"
+#include "instruction/singleOperandInstruction/JmpInstruction.h"
+#include "instruction/singleOperandInstruction/PushInstruction.h"
+#include "instruction/singleOperandInstruction/PopInstruction.h"
+#include "instruction/singleOperandInstruction/DeclInstruction.h"
+
+#include "instruction/twoOperandInstruction/MovInstruction.h"
+#include "instruction/twoOperandInstruction/AddSubInstruction.h"
 
 namespace parsing
 {
-    constexpr unsigned char SIZE_16 = 0x66;
+    using namespace instruction;
 
-    Parser::Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output, error::IErrorReporter& errorReporter)
+    Parser::Parser(std::string_view filename, std::vector<lexing::Token>& tokens, error::IErrorReporter& errorReporter)
         : filename {filename}
-        , mTokens {tokens}
-        , mOutput {output}
+        , mTokens(tokens)
         , mErrorReporter {errorReporter}
-        , mPosition {0}
-        , mSection {codegen::Section::Text}
+        , mTokenStream({ &mTokens, &mPosition })
+        , mPosition(0)
     {
         mInstructionParsers = {
-            {
-                "db", [&](){
-                    if (current().getTokenType() == lexing::TokenType::String)
-                    {
-                        for (unsigned char character : consume().getText())
-                        {
-                            mOutput.write(character, mSection);
-                        }
-                    }
-                    else
-                    {
-                        unsigned char value = parseExpression();
-                        mOutput.write(value, mSection);
-                    }
-                }
-            },
-            {
-                "dw", [&](){
-                    unsigned short value = parseExpression();
-                    mOutput.write(value, mSection);
-                }
-            },
-            {
-                "dd", [&](){
-                    unsigned int value = parseExpression();
-                    mOutput.write(value, mSection);
-                }
-            },
-            {
-                "dq", [&](){
-                    unsigned long value = parseExpression();
-                    mOutput.write(value, mSection);
-                }
-            },
-            {
-                "jmp", [&](){
-                    unsigned char value = parseExpression() - mOutput.getPosition(mSection) - 2; // Subtract size of the instruction itself
+            { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
+            { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
+            { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()    .parse(mTokenStream); } },
+            { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
+            { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
+            { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
+            { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
+            { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
+            { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse( mTokenStream); } },
 
-                    mOutput.write(codegen::JMP_REL8, mSection);
-                    mOutput.write(value, mSection);
-                }
-            },
-            {
-                "call", [&](){
-                    unsigned int value = parseExpression() - mOutput.getPosition(mSection) - 5; // Subtract size of the instruction itself
-
-                    mOutput.write(codegen::CALL_REL32, mSection);
-                    mOutput.write(value, mSection);
-                }
-            },
-            {
-                "ret", [&](){
-                    mOutput.write(codegen::RET, mSection);
-                }
-            },
-            {
-                "lea", [&](){
-                    auto registerToken = current();
-                    Register lhs = parseRegister();
-                    
-                    expectToken(lexing::TokenType::Comma, "Expected ',' after lea destination register.");
-                    consume();
-                    
-                    expectToken(lexing::TokenType::LBracket, "Expected '[' before lea source expression.");
-                    auto bracketStartToken = consume();
-                    
-                    // TODO: Maybe a proper keyword in lexer?
-                    bool rel = false;
-                    if (current().getText() == "rel") {
-                        consume();
-                        rel = true;
-                    }
-                    
-                    expectToken(lexing::TokenType::Identifier, "Expected an identifier in lea source expression.");
-                    long long labelAddr = parseImmediate();
-                    
-                    expectToken(lexing::TokenType::RBracket, "Expected ']' after lea source expression.");
-                    consume();
-                    
-                    if (!rel) {
-                        mErrorReporter.reportError({filename, "Not relative lea instruction is not supported.", bracketStartToken});
-                    }
-                    
-                    int extraBytes = 0;
-                    auto start = mOutput.getPosition(mSection);
-                    switch (lhs.second) {
-                        case codegen::OperandSize::Byte:
-                            mErrorReporter.reportError({filename, "Unsupported operand size for 'lea' instruction.", registerToken});
-                            break;
-                        case codegen::OperandSize::Quad:
-                            mOutput.write(codegen::REX::W, mSection);
-                            extraBytes = 1;
-                            break;
-                        case codegen::OperandSize::Word:
-                            mOutput.write(codegen::SIZE_PREFIX, mSection);
-                            extraBytes = 1;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    mOutput.write(codegen::LEA, mSection);
-                    if (rel)
-                    {
-                        // mod = 0b11000000
-                        // reg = 0b00111000
-                        // rm  = 0b00000111
-                        
-                        // rm none | mod none | reg
-                        
-                        // TODO: Extended registers
-                        uint8_t modrm = 0b101 | 0b00 << 6 | (lhs.first & 0b111) << 3;
-                        mOutput.write(modrm, mSection);
-                        // This is actually signed but to avoid casting just use unsigned int
-                        unsigned int value = labelAddr - start - (6 + extraBytes);
-                        mOutput.write(value, mSection);
-                    }
-                }
-            },
-            {
-                "mov", [&](){
-                    Register lhs = parseRegister();
-
-                    expectToken(lexing::TokenType::Comma, "Expected ',' after mov destination register.");
-                    consume();
-
-                    if (isImmediate(current().getTokenType()))
-                    {
-                        lexing::Token* reloc = nullptr;
-                        if (current().getTokenType() == lexing::TokenType::Identifier) // Emit a relocation for symbols
-                        {
-                            reloc = &current();
-                        }
-
-                        long long immediate = parseExpression();
-                        switch (lhs.second)
-                        {
-                            case codegen::OperandSize::Byte:
-                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM8 + lhs.first), mSection);
-                                if (reloc)
-                                {
-                                    mOutput.relocSymbol(reloc->getText(), mSection);
-                                    mOutput.write((unsigned char) 0, mSection);
-                                }
-                                else
-                                {
-                                    mOutput.write((unsigned char)immediate, mSection);
-                                }
-                                break;
-                            case codegen::OperandSize::Word:
-                                mOutput.write(SIZE_16, mSection);
-                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
-                                if (reloc)
-                                {
-                                    mOutput.relocSymbol(reloc->getText(), mSection);
-                                    mOutput.write((unsigned short) 0, mSection);
-                                }
-                                else
-                                {
-                                    mOutput.write((unsigned short)immediate, mSection);
-                                }
-                                break;
-                            case codegen::OperandSize::Long:
-                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
-                                if (reloc)
-                                {
-                                    mOutput.relocSymbol(reloc->getText(), mSection);
-                                    mOutput.write((unsigned int) 0, mSection);
-                                }
-                                else
-                                {
-                                    mOutput.write((unsigned int)immediate, mSection);
-                                }
-                                break;
-                            case codegen::OperandSize::Quad:
-                                mOutput.write(codegen::REX::W, mSection);
-                                mOutput.write((unsigned char)(codegen::MOV_REG_IMM + lhs.first), mSection);
-                                if (reloc)
-                                {
-                                    mOutput.relocSymbol(reloc->getText(), mSection);
-                                    mOutput.write((unsigned long)0, mSection);
-                                }
-                                else
-                                {
-                                    mOutput.write((unsigned long)immediate, mSection);
-                                }
-                                break;
-                        }
-                    }
-                    else if (current().getTokenType() == lexing::TokenType::Register)
-                    {
-                        auto token = current();
-                        auto rhs = parseRegister();
-                        if (lhs.second != rhs.second)
-                        {
-                            mErrorReporter.reportError({filename, "Operand size mismatch on 'mov' instruction.", token});
-                        }
-
-                        switch(lhs.second)
-                        {
-                            case codegen::OperandSize::Byte:
-                                mOutput.write(codegen::MOV_REG_REG8, mSection);
-                                break;
-                            case codegen::OperandSize::Word:
-                                mOutput.write(SIZE_16, mSection);
-                                mOutput.write(codegen::MOV_REG_REG, mSection);
-                                break;
-                            case codegen::OperandSize::Long:
-                                mOutput.write(codegen::MOV_REG_REG, mSection);
-                                break;
-                            case codegen::OperandSize::Quad:
-                                mOutput.write(codegen::REX::W, mSection);
-                                mOutput.write(codegen::MOV_REG_REG, mSection);
-                                break;
-                        }
-                        mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                    }
-                }
-            },
-            {
-                "add", [&](){
-                    auto lhs = parseRegister();
-                    expectToken(lexing::TokenType::Comma, "Expected ',' after add destination register.");
-                    consume();
-
-                    if (current().getTokenType() == lexing::TokenType::Register)
-                    {
-                        auto token = current();
-                        auto rhs = parseRegister();
-                        
-                        if (lhs.second != rhs.second)
-                        {
-                            mErrorReporter.reportError({filename, "Operand size mismatch for 'add' instruction.", token});
-                        }
-
-                        switch (lhs.second)
-                        {
-                            case codegen::OperandSize::Byte:
-                                mOutput.write(codegen::ADD_REG_REG8, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Word:
-                                mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                mOutput.write(codegen::ADD_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Long:
-                                mOutput.write(codegen::ADD_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Quad:
-                                mOutput.write(codegen::REX::W, mSection);
-                                mOutput.write(codegen::ADD_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                        }
-                    }
-                    else if (current().getTokenType() == lexing::TokenType::Immediate)
-                    {
-                        auto token = current();
-                        long long rhs = parseImmediate();
-
-                        if (getImmediateSize(rhs) == codegen::OperandSize::Byte)
-                        {
-                            switch (lhs.second)
-                            {
-                                case codegen::OperandSize::Byte:
-                                    mOutput.write(codegen::ADD_REG8_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Word:
-                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Long:
-                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Quad:
-                                    mOutput.write(codegen::REX::W, mSection);
-                                    mOutput.write(codegen::ADD_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                        break;
-                            }
-                        }
-                        else
-                        {
-                            switch (lhs.second)
-                            {
-                                case codegen::OperandSize::Byte:
-                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'add' instruction", token});
-                                case codegen::OperandSize::Word:
-                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned short>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Long:
-                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Quad:
-                                    mOutput.write(codegen::REX::W, mSection);
-                                    mOutput.write(codegen::ADD_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "sub", [&](){
-                    auto lhs = parseRegister();
-                    expectToken(lexing::TokenType::Comma, "Expected ',' after sub destination register.");
-                    consume();
-
-                    if (current().getTokenType() == lexing::TokenType::Register)
-                    {
-                        auto token = current();
-                        auto rhs = parseRegister();
-                        
-                        if (lhs.second != rhs.second)
-                        {
-                            mErrorReporter.reportError({filename, "Operand size mismatch for 'sub' instruction.", token});
-                        }
-
-                        switch (lhs.second)
-                        {
-                            case codegen::OperandSize::Byte:
-                                mOutput.write(codegen::SUB_REG_REG8, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Word:
-                                mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                mOutput.write(codegen::SUB_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Long:
-                                mOutput.write(codegen::SUB_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                            case codegen::OperandSize::Quad:
-                                mOutput.write(codegen::REX::W, mSection);
-                                mOutput.write(codegen::SUB_REG_REG, mSection);
-                                mOutput.write(static_cast<unsigned char>(0xC0 + lhs.first + rhs.first * 8), mSection);
-                                break;
-                        }
-                    }
-                    else if (current().getTokenType() == lexing::TokenType::Immediate)
-                    {
-                        auto token = current();
-                        long long rhs = parseImmediate();
-
-                        if (getImmediateSize(rhs) == codegen::OperandSize::Byte)
-                        {
-                            switch (lhs.second)
-                            {
-                                case codegen::OperandSize::Byte:
-                                    mOutput.write(codegen::SUB_REG8_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Word:
-                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Long:
-                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Quad:
-                                    mOutput.write(codegen::REX::W, mSection);
-                                    mOutput.write(codegen::SUB_REG_IMM8, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned char>(rhs), mSection);
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            switch (lhs.second)
-                            {
-                                case codegen::OperandSize::Byte:
-                                    mErrorReporter.reportError({filename, "Operand size mismatch for 'sub' instruction", token});
-                                case codegen::OperandSize::Word:
-                                    mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned short>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Long:
-                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
-                                    break;
-                                case codegen::OperandSize::Quad:
-                                    mOutput.write(codegen::REX::W, mSection);
-                                    mOutput.write(codegen::SUB_REG_IMM, mSection);
-                                    mOutput.write(static_cast<unsigned char>(0xE8 + lhs.first), mSection);
-                                    mOutput.write(static_cast<unsigned int>(rhs), mSection);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "push", [&](){
-                    auto token = current();
-                    if (current().getTokenType() == lexing::TokenType::Register)
-                    {
-                        auto reg = parseRegister();
-
-                        switch (reg.second)
-                        {
-                            case codegen::OperandSize::Byte:
-                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token});
-                            case codegen::OperandSize::Word:
-                                mOutput.write(codegen::SIZE_PREFIX, mSection);
-                                break;
-                            case codegen::OperandSize::Long:
-                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token}); // TODO: Check if in 32-bit mode
-                            default:
-                                break;
-                        }
-
-                        mOutput.write(static_cast<unsigned char>(codegen::PUSH_REG + reg.first), mSection);
-                    }
-                    else if (current().getTokenType() == lexing::TokenType::Immediate)
-                    {
-                        auto immediate = parseExpression();
-
-                        switch (getImmediateSize(immediate))
-                        {
-                            case codegen::OperandSize::Byte:
-                                mOutput.write(codegen::PUSH_IMM8, mSection);
-                                mOutput.write(static_cast<unsigned char>(immediate), mSection);
-                                break;
-                            case codegen::OperandSize::Word:
-                                mOutput.write(codegen::PUSH_IMM, mSection);
-                                mOutput.write(static_cast<unsigned short>(immediate), mSection);
-                                break;
-                            case codegen::OperandSize::Long:
-                                mOutput.write(codegen::PUSH_IMM, mSection);
-                                mOutput.write(static_cast<unsigned int>(immediate), mSection);
-                                break;
-                            case codegen::OperandSize::Quad:
-                                mErrorReporter.reportError({filename, "Unsupported operand size for 'push' instruction", token});
-                        }
-                    }
-                }
-            },
-            {
-                "pop", [&](){
-                    auto token = current();
-                    auto reg = parseRegister();
-
-                    switch (reg.second)
-                    {
-                        case codegen::OperandSize::Byte:
-                            mErrorReporter.reportError({filename, "pop operand size for 'push' instruction", token});
-                        case codegen::OperandSize::Word:
-                            mOutput.write(codegen::SIZE_PREFIX, mSection);
-                            break;
-                        case codegen::OperandSize::Long:
-                            mErrorReporter.reportError({filename, "Unsupported operand size for 'pop' instruction", token}); // TODO: Check if in 32-bit mode
-                        default:
-                            break;
-                    }
-
-                    mOutput.write(static_cast<unsigned char>(codegen::POP_REG + reg.first), mSection);
-                }
-            },
-            {
-                "int", [&](){
-                    unsigned char vector = parseExpression();
-
-                    mOutput.write(codegen::INT, mSection);
-                    mOutput.write(vector, mSection);
-                }
-            },
-            {
-                "syscall", [&](){
-                    mOutput.write(codegen::SYSCALL, mSection);
-                }
-            },
-            {
-                "nop", [&](){
-                    mOutput.write(codegen::NOP, mSection);
-                }
-            },
-            {
-                "times", [&](){
-                    long long iterations = parseExpression();
-
-                    size_t position = mPosition;
-                    while (--iterations)
-                    {
-                        parseStatement();
-                        mPosition = position;
-                    }
-                }
-            },
+            { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
+            { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },
+            { "dd",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Long>>().parse( mTokenStream); } },
+            { "dq",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Quad>>().parse( mTokenStream); } },
         };
     }
-    
+
+    std::vector<ValuePtr> Parser::parse()
+    {
+        std::vector<ValuePtr> ret;
+
+        while (mPosition < mTokens.size())
+        {
+            ret.push_back(parseStatement());
+        }
+
+        return ret;
+    }
+
     lexing::Token& Parser::current()
     {
         return mTokens[mPosition];
@@ -563,56 +82,8 @@ namespace parsing
             mErrorReporter.reportError({filename, context, token});
         }
     }
-
-    int Parser::getBinaryOperatorPrecedence(lexing::TokenType tokenType)
-    {
-        switch (tokenType)
-        {
-            case lexing::TokenType::Plus:
-            case lexing::TokenType::Minus:
-                return 35;
-            case lexing::TokenType::Star:
-            case lexing::TokenType::Slash:
-                return 45;
-            default:
-                return 0;
-        }
-    }
-
-    codegen::OperandSize Parser::getImmediateSize(long long immediate)
-    {
-        if (immediate <= UINT8_MAX)
-        {
-            return codegen::OperandSize::Byte;
-        }
-        else if (immediate <= UINT16_MAX)
-        {
-            return codegen::OperandSize::Word;
-        }
-        else if (immediate <= UINT32_MAX)
-        {
-            return codegen::OperandSize::Long;
-        }
-        else
-        {
-            return codegen::OperandSize::Quad;
-        }
-    }
-
-    bool Parser::isImmediate(lexing::TokenType tokenType)
-    {
-        return tokenType == lexing::TokenType::Immediate || tokenType == lexing::TokenType::Identifier || tokenType == lexing::TokenType::Dollar || tokenType == lexing::TokenType::DollarDollar;
-    }
-
-    void Parser::parse()
-    {
-        while (mPosition < mTokens.size())
-        {
-            parseStatement();
-        }
-    }
-
-    void Parser::parseStatement()
+    
+    ValuePtr Parser::parseStatement()
     {
         auto token = current();
         switch (token.getTokenType())
@@ -620,119 +91,21 @@ namespace parsing
             case lexing::TokenType::Error:
                 mErrorReporter.reportError({filename, "Found unknown symbol.", token});
                 break;
-                
+
             case lexing::TokenType::Identifier:
-                parseLabel();
-                break;
+            {
+                return Builder<Label>().parse(mTokenStream);
+            }
 
             case lexing::TokenType::Instruction:
             {
                 InstructionParser parser = mInstructionParsers.at(consume().getText());
-                parser();
-                break;
+                return parser();
             }
 
             default:
                 mErrorReporter.reportError({filename, "Expected statement, found '" + token.getText() + "'.", token});
         }
-    }
-
-    void Parser::parseLabel()
-    {
-        const std::string& name = consume().getText();
-
-        expectToken(lexing::TokenType::Colon, "Expected ':' after a label.");
-        consume();
-
-        mOutput.addSymbol(name, mOutput.getPosition(mSection), mSection, codegen::Global(true)); // TODO: Check if global
-    }
-
-    long long Parser::parseExpression(int precedence)
-    {
-        long long lhs = parseImmediate();
-        int binaryOperatorPrecedence;
-        while (mPosition < mTokens.size() && (binaryOperatorPrecedence = getBinaryOperatorPrecedence(current().getTokenType()), binaryOperatorPrecedence > precedence))
-        {
-            lexing::TokenType operatorToken = consume().getTokenType();
-
-            long long rhs = parseExpression(binaryOperatorPrecedence);
-
-            switch(operatorToken)
-            {
-                case lexing::TokenType::Plus:
-                    lhs += rhs;
-                    break;
-                case lexing::TokenType::Minus:
-                    lhs -= rhs;
-                    break;
-                case lexing::TokenType::Star:
-                    lhs *= rhs;
-                    break;
-                case lexing::TokenType::Slash:
-                    lhs /= rhs;
-                    break;
-                default:
-                    break;
-            }
-        }
-        return lhs;
-    }
-
-    long long Parser::parseImmediate()
-    {
-        if(current().getTokenType() == lexing::TokenType::LParen)
-        {
-            consume();
-
-            long long ret = parseExpression();
-            
-            // TODO: Use the location of LParen
-            expectToken(lexing::TokenType::RParen, "Expected matching ')'.");
-            consume();
-
-            return ret;
-        }
-        else if (current().getTokenType() == lexing::TokenType::Immediate)
-        {
-            return std::stoll(consume().getText(), nullptr, 0);
-        }
-        else if (current().getTokenType() == lexing::TokenType::Dollar)
-        {
-            consume();
-            return static_cast<long long>(mOutput.getPosition(mSection));
-        }
-        else if (current().getTokenType() == lexing::TokenType::DollarDollar)
-        {
-            consume();
-            return static_cast<long long>(mOutput.getSectionStart(mSection));
-        }
-        else if (current().getTokenType() == lexing::TokenType::Identifier)
-        {
-            if (!mOutput.hasSymbol(current().getText())) {
-                mErrorReporter.reportError({filename, "Found unknown symbol '" + current().getText() + "'.", current()});
-            }
-            return static_cast<long long>(mOutput.getSymbol(consume().getText()));
-        }
-        else
-            expectToken(lexing::TokenType::Immediate, "Expected an immediate.");
-
-        return -1;
-    }
-
-    Register Parser::parseRegister()
-    {
-        constexpr int REGISTERS_PER_ENCODING = 4;
-
-        long long index;
-        for (index = 0; index < static_cast<long long>(codegen::Registers.size()); index++)
-        {
-            if (codegen::Registers[index] == current().getText())
-            {
-                break;
-            }
-        }
-        consume();
-
-        return std::make_pair(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
+        return nullptr;
     }
 }

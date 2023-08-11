@@ -2,7 +2,6 @@
 
 #include "error/ErrorReporter.h"
 
-#include "parser/NewParser.h"
 #include "parser/Parser.h"
 
 #include "lexer/Token.h"
@@ -44,7 +43,7 @@ namespace ParserTests
             FakeOutputFormat output;
             error::ErrorReporter errorReporter; // TODO: Use FakeErrorReporter
 
-            parsing::NewParser parser("test", tokens, errorReporter);
+            parsing::Parser parser("test", tokens, errorReporter);
             auto instructions = parser.parse();
 
             codegen::OpcodeBuilder builder(&output);

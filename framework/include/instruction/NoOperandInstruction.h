@@ -31,7 +31,7 @@ namespace instruction
         }
     };
 
-    using RetInstruction =     NoOperandInstructionTemplate<codegen::RET>;
+    using RetInstruction     = NoOperandInstructionTemplate<codegen::RET>;
     using SyscallInstruction = NoOperandInstructionTemplate<codegen::SYSCALL>;
 }
 

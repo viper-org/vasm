@@ -1,5 +1,8 @@
-#ifndef VASM_PARSER_PARSER_H
-#define VASM_PARSER_PARSER_H 1
+#ifndef VASM_PARSER_NEW_PARSER_H
+#define VASM_PARSER_NEW_PARSER_H 1
+
+#include "instruction/Value.h"
+#include "instruction/Builder.h"
 
 #include <functional>
 #include <memory>
@@ -11,13 +14,6 @@ namespace lexing
     enum class TokenType;
 }
 
-namespace codegen
-{
-    class IOutputFormat;
-    enum class Section;
-    enum class OperandSize;
-}
-
 namespace error
 {
     class IErrorReporter;
@@ -25,24 +21,21 @@ namespace error
 
 namespace parsing
 {
-    using Register = std::pair<long long, codegen::OperandSize>;
-
     class Parser
     {
     public:
-        Parser(std::string_view filename, std::vector<lexing::Token>& tokens, codegen::IOutputFormat& output, error::IErrorReporter& errorReporter);
+        Parser(std::string_view filename, std::vector<lexing::Token>& tokens,  error::IErrorReporter& errorReporter);
 
-        void parse();
+        std::vector<instruction::ValuePtr> parse();
 
     private:
         std::string_view filename;
         std::vector<lexing::Token>& mTokens;
-        codegen::IOutputFormat& mOutput;
         error::IErrorReporter& mErrorReporter;
         size_t mPosition {0};
-        codegen::Section mSection;
+        instruction::TokenStream mTokenStream;
 
-        using InstructionParser = std::function<void ()>;
+        using InstructionParser = std::function<instruction::ValuePtr()>;
         std::unordered_map<std::string_view, InstructionParser> mInstructionParsers;
 
 
@@ -52,17 +45,7 @@ namespace parsing
         
         void expectToken(lexing::TokenType tokenType, std::string_view context);
         
-        static int getBinaryOperatorPrecedence(lexing::TokenType tokenType);
-        static bool isImmediate(lexing::TokenType tokenType);
-
-        static codegen::OperandSize getImmediateSize(long long immediate);
-        
-        void parseStatement();
-
-        void parseLabel();
-        long long parseExpression(int precedence = 1);
-        long long parseImmediate();
-        Register parseRegister();
+        instruction::ValuePtr parseStatement();
     };
 }
 

@@ -17,7 +17,6 @@ file(GLOB vasm_framework_project_sources
 
 
     src/parser/Parser.cpp
-    src/parser/NewParser.cpp
 
 
     src/codegen/Binary.cpp
