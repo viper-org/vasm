@@ -9,7 +9,7 @@ namespace instruction
     {
     }
 
-    void SyscallInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void SyscallInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
         builder.createInstruction(section)
                .opcode(codegen::SYSCALL)

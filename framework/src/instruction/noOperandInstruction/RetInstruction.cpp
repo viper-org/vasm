@@ -9,7 +9,7 @@ namespace instruction
     {
     }
 
-    void RetInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void RetInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
         builder.createInstruction(section)
                .opcode(codegen::RET)

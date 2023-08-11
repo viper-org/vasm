@@ -14,7 +14,7 @@ namespace instruction
     public:
         virtual ~Value() { }
 
-        virtual void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const = 0;
+        virtual void emit(codegen::OpcodeBuilder& builder, codegen::Section section) = 0;
     };
 
     using ValuePtr = std::unique_ptr<Value>;

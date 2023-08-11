@@ -5,7 +5,10 @@
 
 #include "instruction/Value.h"
 
+#include <tuple>
 #include <memory>
+#include <vector>
+#include <type_traits>
 
 namespace instruction
 {

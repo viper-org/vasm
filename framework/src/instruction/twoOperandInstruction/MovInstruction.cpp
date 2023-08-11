@@ -12,17 +12,12 @@
 
 namespace instruction
 {
-    MovInstruction::MovInstruction(OperandPtr left, OperandPtr right)
-        : TwoOperandInstruction(std::move(left), std::move(right))
-    {
-    }
-
-    void MovInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void MovInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovInstruction& instruction)
     {
         // Assume LHS is a register for now
-        Register* lhs = static_cast<Register*>(mLeft.get());
+        Register* lhs = static_cast<Register*>(instruction.getLeft().get());
         
-        if (Register* rhs = dynamic_cast<Register*>(mRight.get()))
+        if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
         {
             switch (rhs->getSize())
             {
@@ -54,7 +49,7 @@ namespace instruction
                     break;
             }
         }
-        else if (Immediate* rhs = dynamic_cast<Immediate*>(mRight.get()))
+        else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
         {
             int size = 0;
             switch (lhs->getSize())
@@ -90,7 +85,7 @@ namespace instruction
                     size = 8;
                     break;
             }
-            if (LabelOperand* label = dynamic_cast<LabelOperand*>(mRight.get()))
+            if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getRight().get()))
             {
                 label->reloc(builder, section, -size);
             }

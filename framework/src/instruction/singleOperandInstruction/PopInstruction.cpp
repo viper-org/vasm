@@ -13,7 +13,7 @@ namespace instruction
     {
     }
 
-    void PopInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void PopInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
         if (Register* reg = dynamic_cast<Register*>(mOperand.get()))
         {

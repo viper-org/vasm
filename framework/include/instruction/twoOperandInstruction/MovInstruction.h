@@ -7,12 +7,12 @@
 
 namespace instruction
 {
-    class MovInstruction : public TwoOperandInstruction
-    {
-    public:
-        MovInstruction(OperandPtr left, OperandPtr right);
+    struct MovInstructionImpl;
+    using MovInstruction = TwoOperandInstructionTemplate<MovInstructionImpl>;
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const;
+    struct MovInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovInstruction& instruction);
     };
 }
 

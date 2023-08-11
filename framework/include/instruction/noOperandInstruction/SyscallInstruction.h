@@ -12,7 +12,7 @@ namespace instruction
     public:
         SyscallInstruction();
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const;
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
     };
 }
 

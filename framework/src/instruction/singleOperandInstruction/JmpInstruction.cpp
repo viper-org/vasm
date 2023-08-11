@@ -13,7 +13,7 @@ namespace instruction
     {
     }
 
-    void JmpInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void JmpInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
         if (LabelOperand* label = dynamic_cast<LabelOperand*>(mOperand.get()))
         {

@@ -12,7 +12,7 @@ namespace instruction
     public:
         PopInstruction(OperandPtr operand);
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const;
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
     };
 }
 

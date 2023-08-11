@@ -19,6 +19,28 @@ namespace instruction
         OperandPtr mLeft;
         OperandPtr mRight;
     };
+
+    template <typename T>
+    class TwoOperandInstructionTemplate : public TwoOperandInstruction
+    {
+    public:
+        TwoOperandInstructionTemplate(OperandPtr left, OperandPtr right) : TwoOperandInstruction(std::move(left), std::move(right)) { }
+
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
+        {
+            T::emit(builder, section, *this);
+        }
+
+        OperandPtr& getLeft()
+        {
+            return mLeft;
+        }
+
+        OperandPtr& getRight()
+        {
+            return mRight;
+        }
+    };
 }
 
 #endif

@@ -10,7 +10,7 @@ namespace instruction
     {
     }
 
-    void Label::emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    void Label::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
         builder.addLabel(mName, section);
     }

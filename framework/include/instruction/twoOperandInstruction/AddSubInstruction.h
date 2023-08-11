@@ -16,20 +16,39 @@ namespace instruction
               codegen::ByteOpcodes RegImm8,
               codegen::ByteOpcodes RegImm,
               unsigned char ModRM>
-    class AddSubInstruction : public TwoOperandInstruction
-    {
-    public:
-        AddSubInstruction(OperandPtr left, OperandPtr right)
-            : TwoOperandInstruction(std::move(left), std::move(right))
-        {
-        }
+    struct AddSubInstructionImpl;
+    template <codegen::ByteOpcodes RegReg8,
+              codegen::ByteOpcodes RegReg,
+              codegen::ByteOpcodes Reg8Imm8,
+              codegen::ByteOpcodes RegImm8,
+              codegen::ByteOpcodes RegImm,
+              unsigned char ModRM>
+    using AddSubInstruction = TwoOperandInstructionTemplate<AddSubInstructionImpl<RegReg8,
+                                                                                  RegReg,
+                                                                                  Reg8Imm8,
+                                                                                  RegImm8,
+                                                                                  RegImm,
+                                                                                  ModRM>>;
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    template <codegen::ByteOpcodes RegReg8,
+              codegen::ByteOpcodes RegReg,
+              codegen::ByteOpcodes Reg8Imm8,
+              codegen::ByteOpcodes RegImm8,
+              codegen::ByteOpcodes RegImm,
+              unsigned char ModRM>
+    struct AddSubInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, AddSubInstruction<RegReg8,
+                                                                                                      RegReg,
+                                                                                                      Reg8Imm8,
+                                                                                                      RegImm8,
+                                                                                                      RegImm,
+                                                                                                      ModRM>& instruction)
         {
             // Assume lhs is a register for now
-            Register* lhs = static_cast<Register*>(mLeft.get());
+            Register* lhs = static_cast<Register*>(instruction.getLeft().get());
 
-            if (Register* rhs = dynamic_cast<Register*>(mRight.get()))
+            if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
             {
                 switch (lhs->getSize())
                 {
@@ -61,7 +80,7 @@ namespace instruction
                             break;
                 }
             }
-            else if (Immediate* rhs = dynamic_cast<Immediate*>(mRight.get()))
+            else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
             {
                 if (rhs->getSize() == codegen::OperandSize::Byte)
                 {

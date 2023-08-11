@@ -19,7 +19,7 @@ namespace instruction
         {
         }
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) const
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section section)
         {
             if (Immediate* imm = dynamic_cast<Immediate*>(mOperand.get()))
             {
