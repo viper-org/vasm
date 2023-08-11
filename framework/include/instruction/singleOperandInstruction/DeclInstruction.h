@@ -10,20 +10,19 @@
 
 namespace instruction
 {
-    template <codegen::OperandSize _mSize>
-    class DeclInstruction : public SingleOperandInstruction
-    {
-    public:
-        DeclInstruction(OperandPtr operand)
-            : SingleOperandInstruction(std::move(operand))
-        {
-        }
+    template <codegen::OperandSize Size>
+    struct DeclInstructionImpl;
+    template <codegen::OperandSize Size>
+    using DeclInstruction = SingleOperandInstructionTemplate<DeclInstructionImpl<Size>>;
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section)
+    template <codegen::OperandSize Size>
+    struct DeclInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, DeclInstruction<Size>& instruction)
         {
-            if (Immediate* imm = dynamic_cast<Immediate*>(mOperand.get()))
+            if (Immediate* imm = dynamic_cast<Immediate*>(instruction.getOperand().get()))
             {
-                switch(_mSize)
+                switch(Size)
                 {
                     case codegen::OperandSize::Byte:
                         builder.createInstruction(section)
@@ -47,7 +46,7 @@ namespace instruction
                         break;
                 }
             }
-            else if (String* str = dynamic_cast<String*>(mOperand.get()))
+            else if (String* str = dynamic_cast<String*>(instruction.getOperand().get()))
             {
                 builder.createInstruction(section)
                        .string(str->getText())

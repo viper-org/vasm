@@ -7,12 +7,12 @@
 
 namespace instruction
 {
-    class PopInstruction : public SingleOperandInstruction
+    struct PopInstructionImpl;
+    using PopInstruction = SingleOperandInstructionTemplate<PopInstructionImpl>;
+    
+    struct PopInstructionImpl
     {
-    public:
-        PopInstruction(OperandPtr operand);
-
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, PopInstruction& instruction);
     };
 }
 

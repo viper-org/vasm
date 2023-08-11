@@ -8,14 +8,9 @@
 
 namespace instruction
 {
-    CallInstruction::CallInstruction(OperandPtr operand)
-        : SingleOperandInstruction(std::move(operand))
+    void CallInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, CallInstruction& instruction)
     {
-    }
-
-    void CallInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
-    {
-        if (LabelOperand* label = dynamic_cast<LabelOperand*>(mOperand.get()))
+        if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getOperand().get()))
         {
             builder.createInstruction(section)
                    .opcode(codegen::CALL_REL32)

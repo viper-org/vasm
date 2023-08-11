@@ -9,14 +9,10 @@
 
 namespace instruction
 {
-    PushInstruction::PushInstruction(OperandPtr operand)
-        : SingleOperandInstruction(std::move(operand))
-    {
-    }
 
-    void PushInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
+    void PushInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, PushInstruction& instruction)
     {
-        if (Register* reg = dynamic_cast<Register*>(mOperand.get()))
+        if (Register* reg = dynamic_cast<Register*>(instruction.getOperand().get()))
         {
             switch (reg->getSize())
             {
@@ -36,7 +32,7 @@ namespace instruction
                 break;
             }
         }
-        else if (Immediate* imm = dynamic_cast<Immediate*>(mOperand.get()))
+        else if (Immediate* imm = dynamic_cast<Immediate*>(instruction.getOperand().get()))
         {
             switch (imm->getSize())
             {

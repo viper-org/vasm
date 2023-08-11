@@ -8,14 +8,9 @@
 
 namespace instruction
 {
-    PopInstruction::PopInstruction(OperandPtr operand)
-        : SingleOperandInstruction(std::move(operand))
+    void PopInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, PopInstruction& instruction)
     {
-    }
-
-    void PopInstruction::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
-    {
-        if (Register* reg = dynamic_cast<Register*>(mOperand.get()))
+        if (Register* reg = dynamic_cast<Register*>(instruction.getOperand().get()))
         {
             switch (reg->getSize())
             {

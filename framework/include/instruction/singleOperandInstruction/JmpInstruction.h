@@ -7,12 +7,12 @@
 
 namespace instruction
 {
-    class JmpInstruction : public SingleOperandInstruction
-    {
-    public:
-        JmpInstruction(OperandPtr operand);
+    struct JmpInstructionImpl;
+    using JmpInstruction = SingleOperandInstructionTemplate<JmpInstructionImpl>;
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
+    struct JmpInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, JmpInstruction& instruction);
     };
 }
 

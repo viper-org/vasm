@@ -7,12 +7,12 @@
 
 namespace instruction
 {
-    class PushInstruction : public SingleOperandInstruction
-    {
-    public:
-        PushInstruction(OperandPtr operand);
+    struct PushInstructionImpl;
+    using PushInstruction = SingleOperandInstructionTemplate<PushInstructionImpl>;
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
+    struct PushInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, PushInstruction& instruction);
     };
 }
 
