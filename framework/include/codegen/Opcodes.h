@@ -27,17 +27,17 @@ namespace codegen
         ADD_REG_REG8 = 0x00,
         ADD_REG_REG = 0x01,
 
-        ADD_REG8_IMM8 = 0x80,
-        ADD_REG_IMM = 0x81,
-        ADD_REG_IMM8 = 0x83,
+        ADD_SUB_CMP_REG8_IMM8 = 0x80,
+        ADD_SUB_CMP_REG_IMM = 0x81,
+        ADD_SUB_CMP_REG_IMM8 = 0x83,
 
 
         SUB_REG_REG8 = 0x28,
         SUB_REG_REG = 0x29,
 
-        SUB_REG8_IMM8 = 0x80,
-        SUB_REG_IMM = 0x81,
-        SUB_REG_IMM8 = 0x83,
+
+        CMP_REG_REG8 = 0x38,
+        CMP_REG_REG = 0x39,
 
 
         INC_DEC_REG8 = 0xFE,

@@ -22,6 +22,7 @@ namespace lexing
         "lea",
         "add",
         "sub",
+        "cmp",
         "push",
         "pop",
         "inc",

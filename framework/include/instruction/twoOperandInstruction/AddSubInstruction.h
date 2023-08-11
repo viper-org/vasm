@@ -145,15 +145,21 @@ namespace instruction
 
     using AddInstruction = AddSubInstruction<codegen::ADD_REG_REG8, 
                                              codegen::ADD_REG_REG, 
-                                             codegen::ADD_REG8_IMM8, 
-                                             codegen::ADD_REG_IMM8, 
-                                             codegen::ADD_REG_IMM, 0>;
+                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM, 0>;
 
     using SubInstruction = AddSubInstruction<codegen::SUB_REG_REG8, 
                                              codegen::SUB_REG_REG, 
-                                             codegen::SUB_REG8_IMM8, 
-                                             codegen::SUB_REG_IMM8, 
-                                             codegen::SUB_REG_IMM, 5>;
+                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM, 5>;
+
+    using CmpInstruction = AddSubInstruction<codegen::CMP_REG_REG8,
+                                             codegen::CMP_REG_REG,
+                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM8, 
+                                             codegen::ADD_SUB_CMP_REG_IMM, 7>;
 }
 
 #endif
