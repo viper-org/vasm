@@ -14,4 +14,9 @@ namespace codegen
     {
         return Instruction(mOutputFormat, section);
     }
+
+    void OpcodeBuilder::addLabel(std::string name, codegen::Section section)
+    {
+        mOutputFormat->addSymbol(name, mOutputFormat->getPosition(section), section, true);
+    }
 }

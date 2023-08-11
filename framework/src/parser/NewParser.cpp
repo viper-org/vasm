@@ -37,9 +37,9 @@ namespace parsing
         };
     }
 
-    std::vector<InstructionPtr> NewParser::parse()
+    std::vector<ValuePtr> NewParser::parse()
     {
-        std::vector<InstructionPtr> ret;
+        std::vector<ValuePtr> ret;
 
         while (mPosition < mTokens.size())
         {
@@ -73,7 +73,7 @@ namespace parsing
         }
     }
     
-    InstructionPtr NewParser::parseStatement()
+    ValuePtr NewParser::parseStatement()
     {
         auto token = current();
         switch (token.getTokenType())
@@ -81,6 +81,11 @@ namespace parsing
             case lexing::TokenType::Error:
                 mErrorReporter.reportError({filename, "Found unknown symbol.", token});
                 break;
+
+            case lexing::TokenType::Identifier:
+            {
+                return Builder<Label>().parse(mTokenStream);
+            }
 
             case lexing::TokenType::Instruction:
             {

@@ -1,7 +1,7 @@
 #ifndef VASM_PARSER_NEW_PARSER_H
 #define VASM_PARSER_NEW_PARSER_H 1
 
-#include "instruction/Instruction.h"
+#include "instruction/Value.h"
 #include "instruction/Builder.h"
 
 #include <functional>
@@ -26,7 +26,7 @@ namespace parsing
     public:
         NewParser(std::string_view filename, std::vector<lexing::Token>& tokens,  error::IErrorReporter& errorReporter);
 
-        std::vector<instruction::InstructionPtr> parse();
+        std::vector<instruction::ValuePtr> parse();
 
     private:
         std::string_view filename;
@@ -35,7 +35,7 @@ namespace parsing
         size_t mPosition {0};
         instruction::TokenStream mTokenStream;
 
-        using InstructionParser = std::function<instruction::InstructionPtr()>;
+        using InstructionParser = std::function<instruction::ValuePtr()>;
         std::unordered_map<std::string_view, InstructionParser> mInstructionParsers;
 
 
@@ -45,7 +45,7 @@ namespace parsing
         
         void expectToken(lexing::TokenType tokenType, std::string_view context);
         
-        instruction::InstructionPtr parseStatement();
+        instruction::ValuePtr parseStatement();
     };
 }
 

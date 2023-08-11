@@ -1,12 +1,13 @@
 // Copyright 2023 solar-mist
 
-#include "codegen/Opcodes.h"
 #ifndef VASM_INSTRUCTION_BUILDER_H
 #define VASM_INSTRUCTION_BUILDER_H 1
 
 #include "instruction/NoOperandInstruction.h"
 #include "instruction/SingleOperandInstruction.h"
 #include "instruction/TwoOperandInstruction.h"
+
+#include "instruction/Label.h"
 
 #include "instruction/operand/Immediate.h"
 #include "instruction/operand/Register.h"
@@ -47,6 +48,14 @@ namespace instruction
                 consume();
                 OperandPtr right = parseOperand();
                 return std::make_unique<T>(std::move(left), std::move(right));
+            }
+            else if constexpr (std::is_same_v<Label, T>)
+            {
+                std::string name = consume().getText();
+                // TODO: expectToken(lexing::TokenType::Comma);
+                consume();
+
+                return std::make_unique<T>(name);
             }
         }
 

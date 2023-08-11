@@ -59,23 +59,20 @@ namespace instruction
             {
                 case codegen::OperandSize::Byte:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOV_REG_IMM8)
-                           .modrm(codegen::AddressingMode::RegisterDirect, codegen::ModRM::NullRegister, lhs->getID())
+                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM8 + lhs->getID()))
                            .immediate(rhs->imm8())
                            .emit();
                     break;
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
                            .prefix(codegen::SIZE_PREFIX)
-                           .opcode(codegen::MOV_REG_IMM)
-                           .modrm(codegen::AddressingMode::RegisterDirect, codegen::ModRM::NullRegister, lhs->getID())
+                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                            .immediate(rhs->imm16())
                            .emit();
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOV_REG_IMM)
-                           .modrm(codegen::AddressingMode::RegisterDirect, codegen::ModRM::NullRegister, lhs->getID())
+                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                            .immediate(rhs->imm32())
                            .emit();
                     break;
@@ -84,16 +81,14 @@ namespace instruction
                     {
                         builder.createInstruction(section)
                                .prefix(codegen::REX::W)
-                               .opcode(codegen::MOV_REG_IMM)
-                               .modrm(codegen::AddressingMode::RegisterDirect, codegen::ModRM::NullRegister, lhs->getID())
+                               .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                                .immediate(rhs->imm64())
                                .emit();
                     }
                     else
                     {
                         builder.createInstruction(section)
-                               .opcode(codegen::MOV_REG_IMM)
-                               .modrm(codegen::AddressingMode::RegisterDirect, codegen::ModRM::NullRegister, lhs->getID())
+                               .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                                .immediate(rhs->imm32())
                                .emit();
                     }

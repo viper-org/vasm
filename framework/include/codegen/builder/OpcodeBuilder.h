@@ -14,6 +14,8 @@ namespace codegen
 
         Instruction createInstruction(codegen::Section section);
 
+        void addLabel(std::string name, codegen::Section section);
+
     private:
         codegen::IOutputFormat* mOutputFormat;
     };
