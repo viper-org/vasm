@@ -12,6 +12,7 @@
 
 #include "instruction/singleOperandInstruction/CallInstruction.h"
 #include "instruction/singleOperandInstruction/JmpInstruction.h"
+#include "instruction/singleOperandInstruction/JccInstruction.h"
 #include "instruction/singleOperandInstruction/PushInstruction.h"
 #include "instruction/singleOperandInstruction/PopInstruction.h"
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
@@ -33,16 +34,54 @@ namespace parsing
         mInstructionParsers = {
             { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
             { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
+
             { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()    .parse(mTokenStream); } },
+            { "ja",       [this]() -> InstructionPtr { return Builder<JaInstruction>()     .parse(mTokenStream); } },
+            { "jae",      [this]() -> InstructionPtr { return Builder<JaeInstruction>()    .parse(mTokenStream); } },
+            { "jb",       [this]() -> InstructionPtr { return Builder<JbInstruction>()     .parse(mTokenStream); } },
+            { "jbe",      [this]() -> InstructionPtr { return Builder<JbeInstruction>()    .parse(mTokenStream); } },
+            { "jcxz",     [this]() -> InstructionPtr { return Builder<JcxzInstruction>()   .parse(mTokenStream); } },
+            { "jecxz",    [this]() -> InstructionPtr { return Builder<JecxzInstruction>()  .parse(mTokenStream); } },
+            { "jrcxz",    [this]() -> InstructionPtr { return Builder<JrcxzInstruction>()  .parse(mTokenStream); } },
+            { "je",       [this]() -> InstructionPtr { return Builder<JeInstruction>()     .parse(mTokenStream); } },
+            { "jg",       [this]() -> InstructionPtr { return Builder<JgInstruction>()     .parse(mTokenStream); } },
+            { "jge",      [this]() -> InstructionPtr { return Builder<JgeInstruction>()    .parse(mTokenStream); } },
+            { "jl",       [this]() -> InstructionPtr { return Builder<JlInstruction>()     .parse(mTokenStream); } },
+            { "jle",      [this]() -> InstructionPtr { return Builder<JleInstruction>()    .parse(mTokenStream); } },
+            { "jna",      [this]() -> InstructionPtr { return Builder<JnaInstruction>()    .parse(mTokenStream); } },
+            { "jnae",     [this]() -> InstructionPtr { return Builder<JnaeInstruction>()   .parse(mTokenStream); } },
+            { "jnb",      [this]() -> InstructionPtr { return Builder<JnbInstruction>()    .parse(mTokenStream); } },
+            { "jnbe",     [this]() -> InstructionPtr { return Builder<JnbeInstruction>()   .parse(mTokenStream); } },
+            { "jnc",      [this]() -> InstructionPtr { return Builder<JncInstruction>()    .parse(mTokenStream); } },
+            { "jne",      [this]() -> InstructionPtr { return Builder<JneInstruction>()    .parse(mTokenStream); } },
+            { "jng",      [this]() -> InstructionPtr { return Builder<JngInstruction>()    .parse(mTokenStream); } },
+            { "jnge",     [this]() -> InstructionPtr { return Builder<JngeInstruction>()   .parse(mTokenStream); } },
+            { "jnl",      [this]() -> InstructionPtr { return Builder<JnlInstruction>()    .parse(mTokenStream); } },
+            { "jnle",     [this]() -> InstructionPtr { return Builder<JnleInstruction>()   .parse(mTokenStream); } },
+            { "jno",      [this]() -> InstructionPtr { return Builder<JnoInstruction>()    .parse(mTokenStream); } },
+            { "jnp",      [this]() -> InstructionPtr { return Builder<JnpInstruction>()    .parse(mTokenStream); } },
+            { "jns",      [this]() -> InstructionPtr { return Builder<JnsInstruction>()    .parse(mTokenStream); } },
+            { "jnz",      [this]() -> InstructionPtr { return Builder<JnzInstruction>()    .parse(mTokenStream); } },
+            { "jo",       [this]() -> InstructionPtr { return Builder<JoInstruction>()     .parse(mTokenStream); } },
+            { "jp",       [this]() -> InstructionPtr { return Builder<JpInstruction>()     .parse(mTokenStream); } },
+            { "jpe",      [this]() -> InstructionPtr { return Builder<JpeInstruction>()    .parse(mTokenStream); } },
+            { "jpo",      [this]() -> InstructionPtr { return Builder<JpoInstruction>()    .parse(mTokenStream); } },
+            { "js",       [this]() -> InstructionPtr { return Builder<JsInstruction>()     .parse(mTokenStream); } },
+            { "jz",       [this]() -> InstructionPtr { return Builder<JzInstruction>()     .parse(mTokenStream); } },
+
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
             { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
             { "cmp",      [this]() -> InstructionPtr { return Builder<CmpInstruction>()    .parse(mTokenStream); } },
+
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
+
             { "inc",      [this]() -> InstructionPtr { return Builder<IncInstruction>()    .parse(mTokenStream); } },
             { "dec",      [this]() -> InstructionPtr { return Builder<DecInstruction>()    .parse(mTokenStream); } },
+
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse(mTokenStream); } },
+
 
             { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
             { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },

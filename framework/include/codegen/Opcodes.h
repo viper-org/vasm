@@ -46,6 +46,39 @@ namespace codegen
 
         JMP_REL8 = 0xEB,
 
+        JA_REL8 = 0x77,
+        JAE_REL8 = 0x73,
+        JB_REL8 = 0x72,
+        JBE_REL8 = 0x76,
+        JCXZ_REL8 = 0xE3,
+        JECXZ_REL8 = 0xE3,
+        JRCXZ_REL8 = 0xE3,
+        JE_REL8 = 0x74,
+        JG_REL8 = 0x7F,
+        JGE_REL8 = 0x7D,
+        JL_REL8 = 0x7C,
+        JLE_REL8 = 0x7E,
+        JNA_REL8 = 0x76,
+        JNAE_REL8 = 0x72,
+        JNB_REL8 = 0x73,
+        JNBE_REL8 = 0x77,
+        JNC_REL8 = 0x73,
+        JNE_REL8 = 0x75,
+        JNG_REL8 = 0x7E,
+        JNGE_REL8 = 0x7C,
+        JNL_REL8 = 0x7D,
+        JNLE_REL8 = 0x7F,
+        JNO_REL8 = 0x71,
+        JNP_REL8 = 0x7B,
+        JNS_REL8 = 0x79,
+        JNZ_REL8 = 0x75,
+        JO_REL8 = 0x70,
+        JP_REL8 = 0x7A,
+        JPE_REL8 = 0x7A,
+        JPO_REL8 = 0x7B,
+        JS_REL8 = 0x78,
+        JZ_REL8 = 0x74,
+
 
         CALL_REL32 = 0xE8,
         RET = 0xC3,
@@ -74,9 +107,9 @@ namespace codegen
         INT = 0xCD,
     };
 
-    enum WordOpcodes : unsigned short
+    enum WordOpcodes : unsigned char
     {
-        SYSCALL = 0x050F,
+        SYSCALL = 0x05,
     };
 
     using namespace std::literals;

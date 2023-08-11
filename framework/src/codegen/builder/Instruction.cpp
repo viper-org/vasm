@@ -86,6 +86,10 @@ namespace codegen
 
         std::visit(overloaded {
             [this](auto arg) { mOutputFormat->write(arg, mSection); },
+            [this](codegen::WordOpcodes arg) { 
+                mOutputFormat->write(static_cast<unsigned char>(0x0F), mSection);
+                mOutputFormat->write(arg, mSection);
+            },
             [](std::monostate) {}
         }, mOpcode);
 

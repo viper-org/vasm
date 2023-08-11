@@ -14,9 +14,6 @@ namespace instruction
         virtual ~NoOperandInstruction() { }
     };
 
-    template <typename T>
-    concept OpcodeT = std::is_same_v<codegen::ByteOpcodes, T> || std::is_same_v<codegen::WordOpcodes, T>;
-
     template <OpcodeT auto Opcode>
     class NoOperandInstructionTemplate : public NoOperandInstruction
     {

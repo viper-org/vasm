@@ -12,6 +12,9 @@
 
 namespace instruction
 {
+    template <typename T>
+    concept OpcodeT = std::is_same_v<codegen::ByteOpcodes, T> || std::is_same_v<codegen::WordOpcodes, T>;
+
     class Instruction : public Value
     {
     public:

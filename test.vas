@@ -1,14 +1,15 @@
 message: db "Hello world!\n"
 
-actualReturn:
+return:
     mov rax, 60
-    pop rdi
-    dec rdi
     syscall
 
-return:
-    push 1
-    jmp actualReturn
+true:
+    call return
+
+false:
+    mov rdi, 0
+    call return
 
 _start:
     mov rax, 1
@@ -18,4 +19,7 @@ _start:
     mov rdx, 13
     syscall
     
-    call return
+    mov rdi, 2
+    cmp rdi, 6
+    je true
+    jmp false
