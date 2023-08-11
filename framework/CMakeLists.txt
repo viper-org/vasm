@@ -11,14 +11,32 @@ set(CMAKE_BUILD_TYPE Debug)
 file(GLOB vasm_framework_project_sources
     src/main.cpp
 
+
     src/lexer/Lexer.cpp
     src/lexer/Token.cpp
 
+
     src/parser/Parser.cpp
+    src/parser/NewParser.cpp
+
 
     src/codegen/Binary.cpp
     src/codegen/Elf.cpp
 	src/codegen/Pe.cpp
+
+    src/codegen/builder/OpcodeBuilder.cpp
+    src/codegen/builder/Instruction.cpp
+    src/codegen/builder/ModRM.cpp
+
+
+    src/instruction/operand/Immediate.cpp
+    src/instruction/operand/Register.cpp
+
+    src/instruction/noOperandInstruction/RetInstruction.cpp
+
+    src/instruction/singleOperandInstruction/PushInstruction.cpp
+    src/instruction/singleOperandInstruction/PopInstruction.cpp
+
 
     src/error/ErrorReporter.cpp
 )

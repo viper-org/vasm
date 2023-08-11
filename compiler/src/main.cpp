@@ -1,6 +1,7 @@
 #include "lexer/Lexer.h"
 #include "lexer/Token.h"
 
+#include "parser/NewParser.h"
 #include "parser/Parser.h"
 
 #include "codegen/Elf.h"
@@ -138,7 +139,15 @@ int main(int argc, char** argv)
     std::unique_ptr<error::IErrorReporter> errorReporter = std::make_unique<error::ErrorReporter>();
 
     parsing::Parser parser(inPath, tokens, *outputFormat, *errorReporter);
-    parser.parse();
+    parsing::NewParser newParser(inPath, tokens, *errorReporter);
+    //parser.parse();
+
+    auto instructions = newParser.parse();
+    codegen::OpcodeBuilder builder(outputFormat.get());
+    for (auto&& instruction : instructions)
+    {
+        instruction->emit(builder, codegen::Section::Text);
+    }
 
     std::ofstream outFile(*outputFile, std::ios::out | std::ios::binary);
     outputFormat->print(outFile);
