@@ -7,6 +7,7 @@
 #include "instruction/TwoOperandInstruction.h"
 
 #include "instruction/operand/Immediate.h"
+#include "instruction/operand/Label.h"
 #include "instruction/operand/Register.h"
 
 namespace instruction
@@ -55,6 +56,7 @@ namespace instruction
         }
         else if (Immediate* rhs = dynamic_cast<Immediate*>(mRight.get()))
         {
+            int size = 0;
             switch (lhs->getSize())
             {
                 case codegen::OperandSize::Byte:
@@ -62,6 +64,7 @@ namespace instruction
                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM8 + lhs->getID()))
                            .immediate(rhs->imm8())
                            .emit();
+                    size = 1;
                     break;
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
@@ -69,21 +72,24 @@ namespace instruction
                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                            .immediate(rhs->imm16())
                            .emit();
+                    size = 2;
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                            .immediate(rhs->imm32())
                            .emit();
+                    size = 4;
                     break;
                 case codegen::OperandSize::Quad:
-                    if (rhs->getSize() == codegen::OperandSize::Quad)
+                    if (rhs->getSize() == codegen::OperandSize::Quad || dynamic_cast<LabelOperand*>(mRight.get()))
                     {
                         builder.createInstruction(section)
                                .prefix(codegen::REX::W)
                                .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                                .immediate(rhs->imm64())
                                .emit();
+                        size = 8;
                     }
                     else
                     {
@@ -91,8 +97,13 @@ namespace instruction
                                .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
                                .immediate(rhs->imm32())
                                .emit();
+                        size = 4;
                     }
                     break;
+            }
+            if (LabelOperand* label = dynamic_cast<LabelOperand*>(mRight.get()))
+            {
+                label->reloc(builder, section, -size);
             }
         }
     }

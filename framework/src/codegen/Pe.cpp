@@ -225,14 +225,14 @@ namespace codegen {
         return mSymbolIndices.contains(name);
     }
     
-    void PEFormat::relocSymbol(const std::string& name, Section section)
+    void PEFormat::relocSymbol(const std::string& name, Section section, int offset)
     {
         PESection* sect = getOrCreateSection(section);
         
         uint16_t symbolIndex = mSymbolIndices[name];
         
         PESection::Relocation reloc {
-            .mVirtualAddress = static_cast<uint32_t>(getPosition(section)),
+            .mVirtualAddress = static_cast<uint32_t>(getPosition(section) + offset),
             .mSymbolTableIndex = symbolIndex,
             .mType = IMAGE_REL_AMD64_ADDR64
         };

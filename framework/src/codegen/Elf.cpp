@@ -172,7 +172,7 @@ namespace codegen
         return mSymbols.contains(name);
     }
 
-    void ELFFormat::relocSymbol(const std::string& name, Section section)
+    void ELFFormat::relocSymbol(const std::string& name, Section section, int offset)
     {
         ELFSection* sect = getOrCreateSection(section);
         ELFSection* rela = getSection(".rela" + sect->mName);
@@ -202,7 +202,7 @@ namespace codegen
 
         unsigned long symbol = mSymbols.at(name);
         
-        rela->write(getPosition(section));
+        rela->write(getPosition(section) + offset);
         rela->write(0x200000001UL);
         rela->write(symbol);
     }

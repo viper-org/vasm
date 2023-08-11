@@ -15,6 +15,8 @@ namespace codegen
         Instruction createInstruction(codegen::Section section);
 
         void addLabel(std::string name, codegen::Section section);
+        void relocLabel(std::string name, codegen::Section section, int offset = 0);
+        unsigned long long getLabel(std::string name);
 
     private:
         codegen::IOutputFormat* mOutputFormat;

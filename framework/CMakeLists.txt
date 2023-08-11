@@ -30,6 +30,7 @@ file(GLOB vasm_framework_project_sources
 
 
     src/instruction/operand/Immediate.cpp
+    src/instruction/operand/Label.cpp
     src/instruction/operand/Register.cpp
 
     src/instruction/Label.cpp

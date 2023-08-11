@@ -62,7 +62,7 @@ namespace codegen
         return mSymbols.contains(name);
     }
 
-    void BinaryFormat::relocSymbol(const std::string&, Section const)
+    void BinaryFormat::relocSymbol(const std::string&, Section, int)
     {
     }
 

@@ -10,6 +10,7 @@
 #include "instruction/Label.h"
 
 #include "instruction/operand/Immediate.h"
+#include "instruction/operand/Label.h"
 #include "instruction/operand/Register.h"
 
 #include "lexer/Token.h"
@@ -79,12 +80,17 @@ namespace instruction
                     return parseRegister();
 
                 case lexing::TokenType::Immediate:
+                case lexing::TokenType::Identifier:
                     return parseImmediate();
             }
         }
 
         ImmediatePtr parseImmediate()
         {
+            if (current().getTokenType() == lexing::TokenType::Identifier)
+            {
+                return std::make_unique<LabelOperand>(consume().getText());
+            }
             return std::make_unique<Immediate>(std::stoi(consume().getText()));
         }
 

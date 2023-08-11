@@ -19,4 +19,14 @@ namespace codegen
     {
         mOutputFormat->addSymbol(name, mOutputFormat->getPosition(section), section, true);
     }
+
+    void OpcodeBuilder::relocLabel(std::string name, codegen::Section section, int offset)
+    {
+        mOutputFormat->relocSymbol(name, section, offset);
+    }
+
+    unsigned long long OpcodeBuilder::getLabel(std::string name)
+    {
+        return mOutputFormat->getSymbol(name);
+    }
 }
