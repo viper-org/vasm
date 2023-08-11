@@ -6,6 +6,7 @@
 
 #include "instruction/NoOperandInstruction.h"
 #include "instruction/SingleOperandInstruction.h"
+#include "instruction/TwoOperandInstruction.h"
 
 #include "instruction/operand/Immediate.h"
 #include "instruction/operand/Register.h"
@@ -37,41 +38,60 @@ namespace instruction
             }
             else if constexpr (std::derived_from<T, SingleOperandInstruction>)
             {
-                return std::make_unique<T>(ParseOperand());
+                return std::make_unique<T>(parseOperand());
+            }
+            else if constexpr (std::derived_from<T, TwoOperandInstruction>)
+            {
+                OperandPtr left = parseOperand();
+                // TODO: expectToken(lexing::TokenType::Comma);
+                consume();
+                OperandPtr right = parseOperand();
+                return std::make_unique<T>(std::move(left), std::move(right));
             }
         }
 
     private:
-        OperandPtr ParseOperand()
+        lexing::Token& current()
+        {
+            return mTokens.tokens->at(*mTokens.position);
+        }
+
+        lexing::Token& consume()
+        {
+            return mTokens.tokens->at((*mTokens.position)++);
+        }
+
+
+        OperandPtr parseOperand()
         {
             switch (mTokens.tokens->at(*mTokens.position).getTokenType())
             {
                 case lexing::TokenType::Register:
-                    return ParseRegister();
+                    return parseRegister();
 
                 case lexing::TokenType::Immediate:
-                    return ParseImmediate();
+                    return parseImmediate();
             }
         }
 
-        ImmediatePtr ParseImmediate()
+        ImmediatePtr parseImmediate()
         {
-            return std::make_unique<Immediate>(std::stoi(mTokens.tokens->at((*mTokens.position)++).getText()));
+            return std::make_unique<Immediate>(std::stoi(consume().getText()));
         }
 
-        RegisterPtr ParseRegister()
+        RegisterPtr parseRegister()
         {
             constexpr int REGISTERS_PER_ENCODING = 4;
 
             unsigned long long index;
             for (index = 0; index < static_cast<unsigned long long>(codegen::Registers.size()); index++)
             {
-                if (codegen::Registers[index] == mTokens.tokens->at(*mTokens.position).getText())
+                if (codegen::Registers[index] == current().getText())
                 {
                     break;
                 }
             }
-            *mTokens.position += 1;
+            consume();
 
             return std::make_unique<Register>(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
         }

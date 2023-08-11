@@ -15,4 +15,9 @@ namespace instruction
     {
         return mID;
     }
+
+    codegen::OperandSize Register::getSize() const
+    {
+        return mSize;
+    }
 }
