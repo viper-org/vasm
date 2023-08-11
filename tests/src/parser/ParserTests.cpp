@@ -457,7 +457,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG8_IMM8, 0xC0, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG8_IMM8, 0xC0, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -468,7 +468,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM8, 0xC0, 0x01 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM8, 0xC0, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -479,7 +479,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM8, 0xC0, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM8, 0xC0, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -490,7 +490,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM8, 0xC0, 0x01 })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM8, 0xC0, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -507,7 +507,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFF" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM, 0xC0, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM, 0xC0, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -518,7 +518,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -529,7 +529,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM, 0xC0, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -604,7 +604,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG8_IMM8, 0xE8, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG8_IMM8, 0xE8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -615,7 +615,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM8, 0xE8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -626,7 +626,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM8, 0xE8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -637,7 +637,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM8, 0xE8, 0x01 })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM8, 0xE8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -654,7 +654,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFF" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM, 0xE8, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM, 0xE8, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -665,7 +665,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -676,7 +676,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM, 0xE8, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -751,7 +751,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG8_IMM8, 0xF8, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG8_IMM8, 0xF8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -762,7 +762,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM8, 0xF8, 0x01 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM8, 0xF8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -773,7 +773,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM8, 0xF8, 0x01 })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM8, 0xF8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -784,7 +784,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "1" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM8, 0xF8, 0x01 })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM8, 0xF8, 0x01 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -801,7 +801,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFF" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::ADD_SUB_CMP_REG_IMM, 0xF8, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LOGICAL_REG_IMM, 0xF8, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -812,7 +812,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::ADD_SUB_CMP_REG_IMM, 0xF8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::LOGICAL_REG_IMM, 0xF8, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -823,7 +823,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Immediate, "0xFFFFFFFF" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::ADD_SUB_CMP_REG_IMM, 0xF8, 0xFF, 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::REX::W, codegen::LOGICAL_REG_IMM, 0xF8, 0xFF, 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),

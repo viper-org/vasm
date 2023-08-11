@@ -18,7 +18,7 @@
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
-#include "instruction/twoOperandInstruction/AddSubInstruction.h"
+#include "instruction/twoOperandInstruction/LogicalInstruction.h"
 
 namespace parsing
 {
@@ -70,8 +70,12 @@ namespace parsing
             { "jz",       [this]() -> InstructionPtr { return Builder<JzInstruction>()     .parse(mTokenStream); } },
 
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
+
             { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
+            { "or",       [this]() -> InstructionPtr { return Builder<OrInstruction>()    .parse(mTokenStream); } },
+            { "and",      [this]() -> InstructionPtr { return Builder<AndInstruction>()    .parse(mTokenStream); } },
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
+            { "xor",      [this]() -> InstructionPtr { return Builder<XorInstruction>()    .parse(mTokenStream); } },
             { "cmp",      [this]() -> InstructionPtr { return Builder<CmpInstruction>()    .parse(mTokenStream); } },
 
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },

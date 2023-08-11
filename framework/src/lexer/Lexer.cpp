@@ -15,6 +15,7 @@ namespace lexing
         "dw",
         "dd",
         "dq",
+
         "jmp",
         "ja",
         "jae",
@@ -49,20 +50,31 @@ namespace lexing
         "jpo",
         "js",
         "jz",
+
         "call",
         "ret",
+
         "mov",
         "lea",
+
         "add",
+        "or",
+        "and",
         "sub",
+        "xor",
         "cmp",
+
         "push",
         "pop",
+
         "inc",
         "dec",
+
         "int",
         "syscall",
+
         "nop",
+
         "times",
     };
 

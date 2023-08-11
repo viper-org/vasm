@@ -12,27 +12,18 @@ namespace instruction
 {
     template <codegen::ByteOpcodes RegReg8,
               codegen::ByteOpcodes RegReg,
-              codegen::ByteOpcodes Reg8Imm8,
-              codegen::ByteOpcodes RegImm8,
-              codegen::ByteOpcodes RegImm,
               unsigned char ModRM>
-    struct AddSubInstructionImpl;
+    struct LogicalInstructionImpl;
     template <auto... Ts>
-    using AddSubInstruction = TwoOperandInstructionTemplate<AddSubInstructionImpl<Ts...>>;
+    using LogicalInstruction = TwoOperandInstructionTemplate<LogicalInstructionImpl<Ts...>>;
 
     template <codegen::ByteOpcodes RegReg8,
               codegen::ByteOpcodes RegReg,
-              codegen::ByteOpcodes Reg8Imm8,
-              codegen::ByteOpcodes RegImm8,
-              codegen::ByteOpcodes RegImm,
               unsigned char ModRM>
-    struct AddSubInstructionImpl
+    struct LogicalInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, AddSubInstruction<RegReg8,
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<RegReg8,
                                                                                                       RegReg,
-                                                                                                      Reg8Imm8,
-                                                                                                      RegImm8,
-                                                                                                      RegImm,
                                                                                                       ModRM>& instruction)
         {
             // Assume lhs is a register for now
@@ -78,7 +69,7 @@ namespace instruction
                     {
                         case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
-                                .opcode(Reg8Imm8)
+                                .opcode(codegen::LOGICAL_REG8_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
@@ -86,14 +77,14 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
-                                .opcode(RegImm8)
+                                .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
-                                .opcode(RegImm8)
+                                .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
@@ -101,7 +92,7 @@ namespace instruction
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
                                 .prefix(codegen::REX::W)
-                                .opcode(RegImm8)
+                                .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
@@ -117,14 +108,14 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
-                                .opcode(RegImm)
+                                .opcode(codegen::LOGICAL_REG_IMM)
                                 .immediate(rhs->imm16())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
-                                .opcode(RegImm)
+                                .opcode(codegen::LOGICAL_REG_IMM)
                                 .immediate(rhs->imm32())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
@@ -132,7 +123,7 @@ namespace instruction
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
                                 .prefix(codegen::REX::W)
-                                .opcode(RegImm)
+                                .opcode(codegen::LOGICAL_REG_IMM)
                                 .immediate(rhs->imm32())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
                                 .emit();
@@ -143,23 +134,23 @@ namespace instruction
         }
     };
 
-    using AddInstruction = AddSubInstruction<codegen::ADD_REG_REG8, 
-                                             codegen::ADD_REG_REG, 
-                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM, 0>;
+    using AddInstruction = LogicalInstruction<codegen::ADD_REG_REG8, 
+                                              codegen::ADD_REG_REG, 0>;
 
-    using SubInstruction = AddSubInstruction<codegen::SUB_REG_REG8, 
-                                             codegen::SUB_REG_REG, 
-                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM, 5>;
+    using OrInstruction  = LogicalInstruction<codegen::OR_REG_REG8, 
+                                              codegen::OR_REG_REG,  1>;                                              
 
-    using CmpInstruction = AddSubInstruction<codegen::CMP_REG_REG8,
-                                             codegen::CMP_REG_REG,
-                                             codegen::ADD_SUB_CMP_REG8_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM8, 
-                                             codegen::ADD_SUB_CMP_REG_IMM, 7>;
+    using AndInstruction = LogicalInstruction<codegen::AND_REG_REG8,
+                                              codegen::AND_REG_REG, 4>;
+
+    using SubInstruction = LogicalInstruction<codegen::SUB_REG_REG8, 
+                                              codegen::SUB_REG_REG, 5>;
+
+    using XorInstruction = LogicalInstruction<codegen::XOR_REG_REG8, 
+                                              codegen::XOR_REG_REG, 6>;
+
+    using CmpInstruction = LogicalInstruction<codegen::CMP_REG_REG8,
+                                              codegen::CMP_REG_REG, 7>;
 }
 
 #endif
