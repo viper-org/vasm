@@ -151,8 +151,7 @@ namespace ParserTests
             check(testCases);
         }
 
-        void a()
-        //TEST(JumpInst, ParserTests)
+        TEST(JumpInst, ParserTests)
         {
             TestCases testCases = {
 

@@ -13,6 +13,7 @@
 #include "instruction/noOperandInstruction/SyscallInstruction.h"
 
 #include "instruction/singleOperandInstruction/CallInstruction.h"
+#include "instruction/singleOperandInstruction/JmpInstruction.h"
 #include "instruction/singleOperandInstruction/PushInstruction.h"
 #include "instruction/singleOperandInstruction/PopInstruction.h"
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
@@ -34,6 +35,7 @@ namespace parsing
         mInstructionParsers = {
             { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
             { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
+            { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()    .parse(mTokenStream); } },
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
             { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
