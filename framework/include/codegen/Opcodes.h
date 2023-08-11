@@ -33,6 +33,10 @@ namespace codegen
         INC_DEC_REG = 0xFF,
 
 
+        XCHG_REG_REG8 = 0x86,
+        XCHG_REG_REG = 0x87,
+
+
         JMP_REL8 = 0xEB,
 
         JA_REL8 = 0x77,

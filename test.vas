@@ -8,7 +8,8 @@ true:
     call return
 
 false:
-    mov rdi, 0
+    mov rax, 0
+    xchg rdi, rax
     call return
 
 _start:

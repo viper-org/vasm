@@ -57,6 +57,8 @@ namespace lexing
         "mov",
         "lea",
 
+        "xchg",
+
         "add",
         "adc",
         "sbb",
