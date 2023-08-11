@@ -9,9 +9,6 @@
 
 #include "instruction/Builder.h"
 
-#include "instruction/noOperandInstruction/RetInstruction.h"
-#include "instruction/noOperandInstruction/SyscallInstruction.h"
-
 #include "instruction/singleOperandInstruction/CallInstruction.h"
 #include "instruction/singleOperandInstruction/JmpInstruction.h"
 #include "instruction/singleOperandInstruction/PushInstruction.h"

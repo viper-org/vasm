@@ -17,18 +17,8 @@ namespace instruction
               codegen::ByteOpcodes RegImm,
               unsigned char ModRM>
     struct AddSubInstructionImpl;
-    template <codegen::ByteOpcodes RegReg8,
-              codegen::ByteOpcodes RegReg,
-              codegen::ByteOpcodes Reg8Imm8,
-              codegen::ByteOpcodes RegImm8,
-              codegen::ByteOpcodes RegImm,
-              unsigned char ModRM>
-    using AddSubInstruction = TwoOperandInstructionTemplate<AddSubInstructionImpl<RegReg8,
-                                                                                  RegReg,
-                                                                                  Reg8Imm8,
-                                                                                  RegImm8,
-                                                                                  RegImm,
-                                                                                  ModRM>>;
+    template <auto... Ts>
+    using AddSubInstruction = TwoOperandInstructionTemplate<AddSubInstructionImpl<Ts...>>;
 
     template <codegen::ByteOpcodes RegReg8,
               codegen::ByteOpcodes RegReg,
