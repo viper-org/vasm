@@ -1,14 +1,12 @@
 // Copyright 2023 solar-mist
 
-#include "codegen/Opcodes.h"
-#include "codegen/builder/ModRM.h"
-#include "instruction/operand/Immediate.h"
 #ifndef VASM_INSTRUCTION_TWO_OPERAND_INSTRUCTION_ADD_SUB_H
 #define VASM_INSTRUCTION_TWO_OPERAND_INSTRUCTION_ADD_SUB_H 1
 
 #include "instruction/TwoOperandInstruction.h"
 
 #include "instruction/operand/Register.h"
+#include "instruction/operand/Immediate.h"
 
 namespace instruction
 {

@@ -1,26 +1,16 @@
-string:  db "Hello, "
-string2: db "world!\n"
+message: db "Hello world!\n"
 
 return:
     mov rax, 60
-    mov rdi, 13
+    mov rdi, 0
     syscall
 
 _start:
-    mov rax, 2
-    sub rax, 1
-    mov rdi, 2
-    sub rdi, rax
-    lea rsi, [rel string]
-    mov rdx, 7
-    syscall
-
-    push 1
-    pop rax
+    mov rax, 1
     mov rdi, 0
-    add rdi, rax
-    mov rsi, string2
-    mov rdx, 7
+    add rdi, 1
+    mov rsi, message
+    mov rdx, 13
     syscall
 
     call return

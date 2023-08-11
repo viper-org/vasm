@@ -30,7 +30,7 @@ namespace instruction
         return mValue;
     }
 
-    unsigned long long Immediate::getValue(codegen::OpcodeBuilder&) const
+    unsigned long long Immediate::getValue(codegen::OpcodeBuilder&, codegen::Section) const
     {
         return mValue;
     }

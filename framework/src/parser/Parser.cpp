@@ -8,7 +8,6 @@
 #include "error/IErrorReporter.h"
 
 #include <cstdint>
-#include <iostream>
 
 namespace parsing
 {

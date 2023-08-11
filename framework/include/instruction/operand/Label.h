@@ -14,7 +14,7 @@ namespace instruction
     public:
         LabelOperand(std::string name);
 
-        unsigned long long getValue(codegen::OpcodeBuilder& builder) const override;
+        unsigned long long getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const override;
 
         void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, int offset = 0);
 

@@ -75,13 +75,14 @@ namespace instruction
 
         OperandPtr parseOperand()
         {
-            switch (mTokens.tokens->at(*mTokens.position).getTokenType())
+            switch (current().getTokenType())
             {
                 case lexing::TokenType::Register:
                     return parseRegister();
 
                 case lexing::TokenType::Immediate:
                 case lexing::TokenType::Identifier:
+                case lexing::TokenType::Dollar:
                     return parseImmediate();
 
                 case lexing::TokenType::String:
@@ -95,7 +96,12 @@ namespace instruction
             {
                 return std::make_unique<LabelOperand>(consume().getText());
             }
-            return std::make_unique<Immediate>(std::stoi(consume().getText()));
+            else if (current().getTokenType() == lexing::TokenType::Dollar)
+            {
+                consume();
+                return std::make_unique<LabelOperand>("$");
+            }
+            return std::make_unique<Immediate>(std::stoull(consume().getText(), 0, 0));
         }
 
         RegisterPtr parseRegister()

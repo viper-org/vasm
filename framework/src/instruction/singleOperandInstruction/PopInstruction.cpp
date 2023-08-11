@@ -17,9 +17,23 @@ namespace instruction
     {
         if (Register* reg = dynamic_cast<Register*>(mOperand.get()))
         {
-            builder.createInstruction(section)
-                .opcode(static_cast<codegen::ByteOpcodes>(codegen::POP_REG + reg->getID()))
-                .emit();
+            switch (reg->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                case codegen::OperandSize::Long:
+                    break; // TODO: Error
+                case codegen::OperandSize::Word:
+                    builder.createInstruction(section)
+                           .prefix(codegen::SIZE_PREFIX)
+                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::POP_REG + reg->getID()))
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::POP_REG + reg->getID()))
+                           .emit();
+                    break;
+            }
         }
     }
 }

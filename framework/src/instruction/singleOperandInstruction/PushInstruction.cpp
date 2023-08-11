@@ -18,9 +18,23 @@ namespace instruction
     {
         if (Register* reg = dynamic_cast<Register*>(mOperand.get()))
         {
-            builder.createInstruction(section)
-                .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
-                .emit();
+            switch (reg->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                case codegen::OperandSize::Long:
+                    break; // TODO: Error
+            case codegen::OperandSize::Word:
+                builder.createInstruction(section)
+                       .prefix(codegen::SIZE_PREFIX)
+                       .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
+                       .emit();
+                break;
+            case codegen::OperandSize::Quad:
+                builder.createInstruction(section)
+                       .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
+                       .emit();
+                break;
+            }
         }
         else if (Immediate* imm = dynamic_cast<Immediate*>(mOperand.get()))
         {
@@ -38,13 +52,7 @@ namespace instruction
                            .immediate(imm->imm16())
                            .emit();
                     break;
-                case codegen::OperandSize::Long:
-                    builder.createInstruction(section)
-                           .opcode(codegen::PUSH_IMM)
-                           .immediate(imm->imm32())
-                           .emit();
-                    break;
-                default:
+                default: // TODO: Error
                     break;
             }
         }

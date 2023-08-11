@@ -13,11 +13,18 @@ namespace instruction
 
     void LabelOperand::reloc(codegen::OpcodeBuilder& builder, codegen::Section section, int offset)
     {
-        builder.relocLabel(mName, section, offset);
+        if (mName != "$")
+        {
+            builder.relocLabel(mName, section, offset);
+        }
     }
 
-    unsigned long long LabelOperand::getValue(codegen::OpcodeBuilder& builder) const
+    unsigned long long LabelOperand::getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const
     {
+        if (mName == "$")
+        {
+            return builder.getPosition(section);
+        }
         return builder.getLabel(mName);
     }
 }

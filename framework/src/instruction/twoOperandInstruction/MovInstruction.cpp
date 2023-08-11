@@ -82,23 +82,12 @@ namespace instruction
                     size = 4;
                     break;
                 case codegen::OperandSize::Quad:
-                    if (rhs->getSize() == codegen::OperandSize::Quad || dynamic_cast<LabelOperand*>(mRight.get()))
-                    {
-                        builder.createInstruction(section)
-                               .prefix(codegen::REX::W)
-                               .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
-                               .immediate(rhs->imm64())
-                               .emit();
-                        size = 8;
-                    }
-                    else
-                    {
-                        builder.createInstruction(section)
-                               .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
-                               .immediate(rhs->imm32())
-                               .emit();
-                        size = 4;
-                    }
+                    builder.createInstruction(section)
+                            .prefix(codegen::REX::W)
+                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + lhs->getID()))
+                            .immediate(rhs->imm64())
+                            .emit();
+                    size = 8;
                     break;
             }
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(mRight.get()))

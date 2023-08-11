@@ -19,7 +19,7 @@ namespace instruction
         {
             builder.createInstruction(section)
                    .opcode(codegen::CALL_REL32)
-                   .immediate(static_cast<unsigned int>(label->getValue(builder) - builder.getPosition(section) - 5))
+                   .immediate(static_cast<unsigned int>(label->getValue(builder, section) - builder.getPosition(section) - 5))
                    .emit();
         }
         // TODO: Add call r/m
