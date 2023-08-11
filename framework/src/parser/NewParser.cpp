@@ -14,6 +14,7 @@
 
 #include "instruction/singleOperandInstruction/PushInstruction.h"
 #include "instruction/singleOperandInstruction/PopInstruction.h"
+#include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
 
@@ -34,6 +35,11 @@ namespace parsing
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse( mTokenStream); } },
+
+            { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
+            { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },
+            { "dd",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Long>>().parse( mTokenStream); } },
+            { "dq",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Quad>>().parse( mTokenStream); } },
         };
     }
 
