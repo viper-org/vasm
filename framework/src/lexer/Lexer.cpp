@@ -24,6 +24,8 @@ namespace lexing
         "sub",
         "push",
         "pop",
+        "inc",
+        "dec",
         "int",
         "syscall",
         "nop",

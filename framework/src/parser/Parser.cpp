@@ -3,6 +3,7 @@
 
 #include "parser/Parser.h"
 
+#include "instruction/singleOperandInstruction/IncDecInstruction.h"
 #include "lexer/Token.h"
 
 #include "error/IErrorReporter.h"
@@ -38,7 +39,9 @@ namespace parsing
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
-            { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse( mTokenStream); } },
+            { "inc",      [this]() -> InstructionPtr { return Builder<IncInstruction>()    .parse(mTokenStream); } },
+            { "dec",      [this]() -> InstructionPtr { return Builder<DecInstruction>()    .parse(mTokenStream); } },
+            { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse(mTokenStream); } },
 
             { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
             { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },

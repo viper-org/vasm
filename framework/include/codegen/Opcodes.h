@@ -40,6 +40,10 @@ namespace codegen
         SUB_REG_IMM8 = 0x83,
 
 
+        INC_DEC_REG8 = 0xFE,
+        INC_DEC_REG = 0xFF,
+
+
         JMP_REL8 = 0xEB,
 
 
