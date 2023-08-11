@@ -72,7 +72,9 @@ namespace parsing
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
 
             { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
-            { "or",       [this]() -> InstructionPtr { return Builder<OrInstruction>()    .parse(mTokenStream); } },
+            { "adc",      [this]() -> InstructionPtr { return Builder<AdcInstruction>()    .parse(mTokenStream); } },
+            { "sbb",      [this]() -> InstructionPtr { return Builder<SbbInstruction>()    .parse(mTokenStream); } },
+            { "or",       [this]() -> InstructionPtr { return Builder<OrInstruction>()     .parse(mTokenStream); } },
             { "and",      [this]() -> InstructionPtr { return Builder<AndInstruction>()    .parse(mTokenStream); } },
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
             { "xor",      [this]() -> InstructionPtr { return Builder<XorInstruction>()    .parse(mTokenStream); } },

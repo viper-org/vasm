@@ -10,21 +10,15 @@
 
 namespace instruction
 {
-    template <codegen::ByteOpcodes RegReg8,
-              codegen::ByteOpcodes RegReg,
-              unsigned char ModRM>
+    template <unsigned char ModRM>
     struct LogicalInstructionImpl;
     template <auto... Ts>
     using LogicalInstruction = TwoOperandInstructionTemplate<LogicalInstructionImpl<Ts...>>;
 
-    template <codegen::ByteOpcodes RegReg8,
-              codegen::ByteOpcodes RegReg,
-              unsigned char ModRM>
+    template <unsigned char ModRM>
     struct LogicalInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<RegReg8,
-                                                                                                      RegReg,
-                                                                                                      ModRM>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<ModRM>& instruction)
         {
             // Assume lhs is a register for now
             Register* lhs = static_cast<Register*>(instruction.getLeft().get());
@@ -35,27 +29,27 @@ namespace instruction
                 {
                     case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
-                                .opcode(RegReg8)
+                                .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
-                                .opcode(RegReg)
+                                .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
-                                .opcode(RegReg)
+                                .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
                                 .prefix(codegen::REX::W)
-                                .opcode(RegReg)
+                                .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
@@ -134,23 +128,14 @@ namespace instruction
         }
     };
 
-    using AddInstruction = LogicalInstruction<codegen::ADD_REG_REG8, 
-                                              codegen::ADD_REG_REG, 0>;
-
-    using OrInstruction  = LogicalInstruction<codegen::OR_REG_REG8, 
-                                              codegen::OR_REG_REG,  1>;                                              
-
-    using AndInstruction = LogicalInstruction<codegen::AND_REG_REG8,
-                                              codegen::AND_REG_REG, 4>;
-
-    using SubInstruction = LogicalInstruction<codegen::SUB_REG_REG8, 
-                                              codegen::SUB_REG_REG, 5>;
-
-    using XorInstruction = LogicalInstruction<codegen::XOR_REG_REG8, 
-                                              codegen::XOR_REG_REG, 6>;
-
-    using CmpInstruction = LogicalInstruction<codegen::CMP_REG_REG8,
-                                              codegen::CMP_REG_REG, 7>;
+    using AddInstruction = LogicalInstruction<0>;
+    using AdcInstruction = LogicalInstruction<1>;
+    using SbbInstruction = LogicalInstruction<2>;
+    using OrInstruction  = LogicalInstruction<1>;
+    using AndInstruction = LogicalInstruction<4>;
+    using SubInstruction = LogicalInstruction<5>;
+    using XorInstruction = LogicalInstruction<6>;
+    using CmpInstruction = LogicalInstruction<7>;
 }
 
 #endif

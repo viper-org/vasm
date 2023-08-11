@@ -28,30 +28,6 @@ namespace codegen
         LOGICAL_REG_IMM = 0x81,
         LOGICAL_REG_IMM8 = 0x83,
 
-    
-        ADD_REG_REG8 = 0x00,
-        ADD_REG_REG = 0x01,
-
-        
-        OR_REG_REG8 = 0x08,
-        OR_REG_REG = 0x09,
-
-
-        AND_REG_REG8 = 0x20,
-        AND_REG_REG = 0x21,
-
-
-        SUB_REG_REG8 = 0x28,
-        SUB_REG_REG = 0x29,
-
-
-        XOR_REG_REG8 = 0x30,
-        XOR_REG_REG = 0x31,
-
-
-        CMP_REG_REG8 = 0x38,
-        CMP_REG_REG = 0x39,
-
 
         INC_DEC_REG8 = 0xFE,
         INC_DEC_REG = 0xFF,

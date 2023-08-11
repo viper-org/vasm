@@ -58,6 +58,8 @@ namespace lexing
         "lea",
 
         "add",
+        "adc",
+        "sbb",
         "or",
         "and",
         "sub",
