@@ -3,6 +3,7 @@
 
 #include "parser/NewParser.h"
 
+#include "instruction/noOperandInstruction/SyscallInstruction.h"
 #include "lexer/Token.h"
 
 #include "error/IErrorReporter.h"
@@ -26,9 +27,10 @@ namespace parsing
         , mPosition(0)
     {
         mInstructionParsers = {
-            { "ret",  [this]() -> InstructionPtr { return Builder<RetInstruction>().parse( mTokenStream); } },
-            { "push", [this]() -> InstructionPtr { return Builder<PushInstruction>().parse(mTokenStream); } },
-            { "pop",  [this]() -> InstructionPtr { return Builder<PopInstruction>().parse( mTokenStream); } },
+            { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
+            { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
+            { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
+            { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse( mTokenStream); } },
         };
     }
 

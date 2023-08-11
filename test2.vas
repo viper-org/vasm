@@ -3,3 +3,4 @@ push rax
 push 1
 pop rcx
 pop rdx
+syscall
