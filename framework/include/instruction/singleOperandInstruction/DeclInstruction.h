@@ -1,12 +1,12 @@
 // Copyright 2023 solar-mist
 
-#include "instruction/operand/String.h"
 #ifndef VASM_INSTRUCTION_SINGLE_OPERAND_INSTRUCTION_DECL_H
 #define VASM_INSTRUCTION_SINGLE_OPERAND_INSTRUCTION_DECL_H 1
 
 #include "instruction/SingleOperandInstruction.h"
 
 #include "instruction/operand/Immediate.h"
+#include "instruction/operand/String.h"
 
 namespace instruction
 {

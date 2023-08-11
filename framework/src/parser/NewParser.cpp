@@ -18,6 +18,7 @@
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
+#include "instruction/twoOperandInstruction/AddSubInstruction.h"
 
 namespace parsing
 {
@@ -34,6 +35,8 @@ namespace parsing
             { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
             { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
+            { "add",      [this]() -> InstructionPtr { return Builder<AddInstruction>()    .parse(mTokenStream); } },
+            { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse( mTokenStream); } },
