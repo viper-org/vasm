@@ -29,4 +29,9 @@ namespace codegen
     {
         return mOutputFormat->getSymbol(name);
     }
+
+    unsigned long long OpcodeBuilder::getPosition(codegen::Section section)
+    {
+        return mOutputFormat->getPosition(section);
+    }
 }

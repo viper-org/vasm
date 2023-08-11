@@ -39,6 +39,7 @@ file(GLOB vasm_framework_project_sources
     src/instruction/noOperandInstruction/RetInstruction.cpp
     src/instruction/noOperandInstruction/SyscallInstruction.cpp
 
+    src/instruction/singleOperandInstruction/CallInstruction.cpp
     src/instruction/singleOperandInstruction/PushInstruction.cpp
     src/instruction/singleOperandInstruction/PopInstruction.cpp
 
