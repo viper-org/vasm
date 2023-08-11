@@ -1,5 +1,6 @@
 // Copyright 2023 solar-mist
 
+#include "instruction/operand/String.h"
 #ifndef VASM_INSTRUCTION_SINGLE_OPERAND_INSTRUCTION_DECL_H
 #define VASM_INSTRUCTION_SINGLE_OPERAND_INSTRUCTION_DECL_H 1
 
@@ -45,6 +46,12 @@ namespace instruction
                                .emit();
                         break;
                 }
+            }
+            else if (String* str = dynamic_cast<String*>(mOperand.get()))
+            {
+                builder.createInstruction(section)
+                       .string(str->getText())
+                       .emit();
             }
         }
     };

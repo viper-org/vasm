@@ -69,6 +69,13 @@ namespace codegen
     }
 
 
+    Instruction& Instruction::string(std::string_view str)
+    {
+        mString = str;
+        return *this;
+    }
+
+
     void Instruction::emit()
     {
         
@@ -91,6 +98,14 @@ namespace codegen
             [this](auto arg) { mOutputFormat->write(arg, mSection); },
             [](std::monostate) {}
         }, mImmediate);
+
+        if (mString)
+        {
+            for (unsigned char ch : *mString)
+            {
+                mOutputFormat->write(ch, mSection);
+            }
+        }
     }
 
 

@@ -34,6 +34,8 @@ namespace codegen
         Instruction& immediate(unsigned int   imm32);
         Instruction& immediate(unsigned long  imm64);
 
+        Instruction& string(std::string_view str);
+
         void emit();
 
     private:
@@ -43,6 +45,7 @@ namespace codegen
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
         std::variant<std::monostate, unsigned char, unsigned short, unsigned int, unsigned long> mImmediate;
+        std::optional<std::string_view> mString;
 
         codegen::IOutputFormat* mOutputFormat;
         codegen::Section mSection;

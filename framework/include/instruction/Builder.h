@@ -12,6 +12,7 @@
 #include "instruction/operand/Immediate.h"
 #include "instruction/operand/Label.h"
 #include "instruction/operand/Register.h"
+#include "instruction/operand/String.h"
 
 #include "lexer/Token.h"
 
@@ -82,6 +83,9 @@ namespace instruction
                 case lexing::TokenType::Immediate:
                 case lexing::TokenType::Identifier:
                     return parseImmediate();
+
+                case lexing::TokenType::String:
+                    return parseString();
             }
         }
 
@@ -109,6 +113,11 @@ namespace instruction
             consume();
 
             return std::make_unique<Register>(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
+        }
+
+        StringPtr parseString()
+        {
+            return std::make_unique<String>(consume().getText());
         }
 
         TokenStream mTokens;
