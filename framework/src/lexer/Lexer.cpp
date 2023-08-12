@@ -74,6 +74,9 @@ namespace lexing
         "inc",
         "dec",
 
+        "in",
+        "out",
+
         "int",
         "syscall",
 

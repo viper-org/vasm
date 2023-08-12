@@ -97,6 +97,17 @@ namespace codegen
         PUSH_IMM8 = 0x6A,
 
 
+        IN_AL_IMM8 = 0xE4,
+        IN_AX_IMM8 = 0xE5,
+        IN_AL_DX = 0xEC,
+        IN_AX_DX = 0xED,
+
+        OUT_IMM8_AL = 0xE6,
+        OUT_IMM8_AX = 0xE7,
+        OUT_DX_AL = 0xEE,
+        OUT_DX_AX = 0xEF,
+
+
         INT = 0xCD,
     };
 

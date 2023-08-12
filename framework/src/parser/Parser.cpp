@@ -2,8 +2,6 @@
 
 
 #include "parser/Parser.h"
-
-#include "instruction/singleOperandInstruction/IncDecInstruction.h"
 #include "lexer/Token.h"
 
 #include "error/IErrorReporter.h"
@@ -15,11 +13,13 @@
 #include "instruction/singleOperandInstruction/JccInstruction.h"
 #include "instruction/singleOperandInstruction/PushInstruction.h"
 #include "instruction/singleOperandInstruction/PopInstruction.h"
+#include "instruction/singleOperandInstruction/IncDecInstruction.h"
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
 #include "instruction/twoOperandInstruction/XchgInstruction.h"
 #include "instruction/twoOperandInstruction/LogicalInstruction.h"
+#include "instruction/twoOperandInstruction/OutInInstruction.h"
 
 namespace parsing
 {
@@ -88,6 +88,9 @@ namespace parsing
 
             { "inc",      [this]() -> InstructionPtr { return Builder<IncInstruction>()    .parse(mTokenStream); } },
             { "dec",      [this]() -> InstructionPtr { return Builder<DecInstruction>()    .parse(mTokenStream); } },
+
+            { "in",       [this]() -> InstructionPtr { return Builder<InInstruction>()     .parse(mTokenStream); } },
+            { "out",      [this]() -> InstructionPtr { return Builder<OutInstruction>()    .parse(mTokenStream); } },
 
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse(mTokenStream); } },
 
