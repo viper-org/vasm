@@ -28,6 +28,15 @@ namespace codegen
         LOGICAL_REG_IMM = 0x81,
         LOGICAL_REG_IMM8 = 0x83,
 
+        
+        SHIFT_ROTATE_RM8_1 = 0xD0,
+        SHIFT_ROTATE_RM8_CL = 0xD2,
+        SHIFT_ROTATE_RM8_IMM = 0xC0,
+
+        SHIFT_ROTATE_RM_1 = 0xD1,
+        SHIFT_ROTATE_RM_CL = 0xD3,
+        SHIFT_ROTATE_RM_IMM = 0xC1,
+
 
         INC_DEC_REG8 = 0xFE,
         INC_DEC_REG = 0xFF,

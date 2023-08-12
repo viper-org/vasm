@@ -60,6 +60,15 @@ namespace lexing
         "mov",
         "lea",
 
+        "rol",
+        "ror",
+        "rcl",
+        "rcr",
+        "shl",
+        "shr",
+        "sal",
+        "sar",
+
         "xchg",
 
         "add",

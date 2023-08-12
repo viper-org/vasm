@@ -18,6 +18,7 @@
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
 #include "instruction/twoOperandInstruction/LeaInstruction.h"
+#include "instruction/twoOperandInstruction/ShiftRotateInstruction.h"
 #include "instruction/twoOperandInstruction/XchgInstruction.h"
 #include "instruction/twoOperandInstruction/LogicalInstruction.h"
 #include "instruction/twoOperandInstruction/OutInInstruction.h"
@@ -76,6 +77,15 @@ namespace parsing
 
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
             { "lea",      [this]() -> InstructionPtr { return Builder<LeaInstruction>()    .parse(mTokenStream); } },
+
+            { "rol",      [this]() -> InstructionPtr { return Builder<RolInstruction>()    .parse(mTokenStream); } },
+            { "ror",      [this]() -> InstructionPtr { return Builder<RorInstruction>()    .parse(mTokenStream); } },
+            { "rcl",      [this]() -> InstructionPtr { return Builder<RclInstruction>()    .parse(mTokenStream); } },
+            { "rcl",      [this]() -> InstructionPtr { return Builder<RcrInstruction>()    .parse(mTokenStream); } },
+            { "shl",      [this]() -> InstructionPtr { return Builder<ShlInstruction>()    .parse(mTokenStream); } },
+            { "shr",      [this]() -> InstructionPtr { return Builder<ShrInstruction>()    .parse(mTokenStream); } },
+            { "sal",      [this]() -> InstructionPtr { return Builder<SalInstruction>()    .parse(mTokenStream); } },
+            { "sar",      [this]() -> InstructionPtr { return Builder<SarInstruction>()    .parse(mTokenStream); } },
 
             { "xchg",     [this]() -> InstructionPtr { return Builder<XchgInstruction>()   .parse(mTokenStream); } },
 
