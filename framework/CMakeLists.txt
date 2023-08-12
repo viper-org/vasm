@@ -44,6 +44,7 @@ file(GLOB vasm_framework_project_sources
     src/instruction/twoOperandInstruction/MovInstruction.cpp
     src/instruction/twoOperandInstruction/LeaInstruction.cpp
     src/instruction/twoOperandInstruction/XchgInstruction.cpp
+    src/instruction/twoOperandInstruction/TestInstruction.cpp
 
 
     src/error/ErrorReporter.cpp

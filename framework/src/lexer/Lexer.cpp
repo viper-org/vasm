@@ -80,6 +80,8 @@ namespace lexing
         "xor",
         "cmp",
 
+        "test",
+
         "push",
         "pop",
 

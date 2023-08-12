@@ -2,6 +2,7 @@
 
 
 #include "parser/Parser.h"
+
 #include "lexer/Token.h"
 
 #include "error/IErrorReporter.h"
@@ -22,6 +23,7 @@
 #include "instruction/twoOperandInstruction/XchgInstruction.h"
 #include "instruction/twoOperandInstruction/LogicalInstruction.h"
 #include "instruction/twoOperandInstruction/OutInInstruction.h"
+#include "instruction/twoOperandInstruction/TestInstruction.h"
 
 namespace parsing
 {
@@ -97,6 +99,8 @@ namespace parsing
             { "sub",      [this]() -> InstructionPtr { return Builder<SubInstruction>()    .parse(mTokenStream); } },
             { "xor",      [this]() -> InstructionPtr { return Builder<XorInstruction>()    .parse(mTokenStream); } },
             { "cmp",      [this]() -> InstructionPtr { return Builder<CmpInstruction>()    .parse(mTokenStream); } },
+
+            { "test",     [this]() -> InstructionPtr { return Builder<TestInstruction>()    .parse(mTokenStream); } },
 
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },

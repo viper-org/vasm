@@ -21,6 +21,6 @@ _start:
     syscall
     
     mov rdi, 2
-    cmp rdi, 6
+    test rdi, 6
     je true
     jmp false
