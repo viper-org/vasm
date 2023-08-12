@@ -3,6 +3,9 @@
 
 #include "codegen/builder/Instruction.h"
 
+#include <cstdint>
+#include <iostream>
+
 namespace codegen
 {
     template<class... Ts>
@@ -40,6 +43,13 @@ namespace codegen
     Instruction& Instruction::modrm(AddressingMode addressingMode, ModRM::Register reg, ModRM::Register rm)
     {
         mModRM = ModRM(addressingMode, reg, rm);
+        return *this;
+    }
+
+
+    Instruction& Instruction::displacement(std::optional<int> disp)
+    {
+        mDisplacement = disp;
         return *this;
     }
 
@@ -96,6 +106,18 @@ namespace codegen
         if (mModRM)
         {
             mModRM->emit(mOutputFormat, mSection);
+        }
+
+        if (mDisplacement)
+        {
+            if (*mDisplacement <= INT8_MAX)
+            {
+                mOutputFormat->write(static_cast<unsigned char>(*mDisplacement), mSection);
+            }
+            else
+            {
+                mOutputFormat->write(static_cast<unsigned int>(*mDisplacement), mSection);
+            }
         }
 
         std::visit(overloaded {

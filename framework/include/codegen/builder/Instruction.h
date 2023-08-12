@@ -29,6 +29,8 @@ namespace codegen
         Instruction& modrm(ModRM modRM);
         Instruction& modrm(AddressingMode addressingMode, ModRM::Register reg, ModRM::Register rm);
 
+        Instruction& displacement(std::optional<int> disp);
+
         Instruction& immediate(unsigned char  imm8);
         Instruction& immediate(unsigned short imm16);
         Instruction& immediate(unsigned int   imm32);
@@ -44,6 +46,7 @@ namespace codegen
         std::optional<Prefix> mPrefix;
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
+        std::optional<int> mDisplacement;
         std::variant<std::monostate, unsigned char, unsigned short, unsigned int, unsigned long> mImmediate;
         std::optional<std::string_view> mString;
 

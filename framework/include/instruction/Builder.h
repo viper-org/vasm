@@ -12,10 +12,12 @@
 #include "instruction/operand/Immediate.h"
 #include "instruction/operand/Label.h"
 #include "instruction/operand/Register.h"
+#include "instruction/operand/Memory.h"
 #include "instruction/operand/String.h"
 
 #include "lexer/Token.h"
 
+#include <cassert>
 #include <vector>
 
 namespace instruction
@@ -87,6 +89,9 @@ namespace instruction
 
                 case lexing::TokenType::String:
                     return parseString();
+
+                case lexing::TokenType::LBracket:
+                    return parseMemory();
             }
         }
 
@@ -119,6 +124,34 @@ namespace instruction
             consume();
 
             return std::make_unique<Register>(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
+        }
+
+        MemoryPtr parseMemory()
+        {
+            consume(); // LBracket
+
+            RegisterPtr reg = parseRegister();
+
+            std::optional<int> displacement;
+            if (current().getTokenType() == lexing::TokenType::Plus)
+            {
+                consume();
+
+                assert(current().getTokenType() == lexing::TokenType::Immediate); // TODO: Proper expectToken
+                displacement = std::stoi(consume().getText(), 0, 0);
+            }
+            else if (current().getTokenType() == lexing::TokenType::Minus)
+            {
+                consume();
+
+                assert(current().getTokenType() == lexing::TokenType::Immediate); // TODO: Proper expectToken
+                displacement = -std::stoi(consume().getText(), 0, 0);
+            }
+
+            assert(current().getTokenType() == lexing::TokenType::RBracket); // TODO: Proper expectToken
+            consume();
+
+            return std::make_unique<Memory>(std::move(reg), displacement);
         }
 
         StringPtr parseString()

@@ -221,7 +221,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "al" },
                     })
-                    .setExpectedCode({ codegen::MOV_REG_REG8, 0xC0 })
+                    .setExpectedCode({ codegen::MOV_RM_REG8, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -232,7 +232,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "ax" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::MOV_RM_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -243,7 +243,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "eax" },
                     })
-                    .setExpectedCode({ codegen::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::MOV_RM_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -254,7 +254,7 @@ namespace ParserTests
                         { lexing::TokenType::Comma, "" },
                         { lexing::TokenType::Register, "rax" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::MOV_REG_REG, 0xC0 })
+                    .setExpectedCode({ codegen::REX::W, codegen::MOV_RM_REG, 0xC0 })
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),

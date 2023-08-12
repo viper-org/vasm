@@ -10,7 +10,8 @@ namespace codegen
     enum class AddressingMode : unsigned char
     {
         RegisterIndirect = 0b00,
-        // TODO: Add other addressing modes
+        OneByteDisp = 0b01,
+        FourByteDisp = 0b10,
         RegisterDirect = 0b11,
     };
 

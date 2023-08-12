@@ -80,8 +80,10 @@ namespace codegen
         MOV_REG_IMM8 = 0xB0,
         MOV_REG_IMM  = 0xB8,
 
-        MOV_REG_REG8 = 0x88,
-        MOV_REG_REG  = 0x89,
+        MOV_RM_REG8 = 0x88,
+        MOV_RM_REG  = 0x89,
+        MOV_REG_RM8 = 0x8A,
+        MOV_REG_RM  = 0x8B,
 
 
         NOP = 0x90,
