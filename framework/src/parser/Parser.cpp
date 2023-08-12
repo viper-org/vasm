@@ -94,6 +94,8 @@ namespace parsing
 
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse(mTokenStream); } },
 
+            { "nop",      [this]() -> InstructionPtr { return Builder<NopInstruction>()    .parse(mTokenStream); } },
+
 
             { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
             { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },
