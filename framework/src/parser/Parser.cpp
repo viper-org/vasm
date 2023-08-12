@@ -35,6 +35,9 @@ namespace parsing
     {
         mInstructionParsers = {
             { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
+
+            { "leave",    [this]() -> InstructionPtr { return Builder<LeaveInstruction>()  .parse(mTokenStream); } },
+            
             { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
 
             { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()    .parse(mTokenStream); } },

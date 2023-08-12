@@ -52,7 +52,10 @@ namespace lexing
         "jz",
 
         "call",
+
         "ret",
+
+        "leave",
 
         "mov",
         "lea",

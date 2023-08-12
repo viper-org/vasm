@@ -74,7 +74,12 @@ namespace codegen
 
 
         CALL_REL32 = 0xE8,
+
+
         RET = 0xC3,
+
+
+        LEAVE = 0xC9,
 
 
         MOV_REG_IMM8 = 0xB0,
