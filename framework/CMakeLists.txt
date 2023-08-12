@@ -42,6 +42,7 @@ file(GLOB vasm_framework_project_sources
     src/instruction/singleOperandInstruction/PopInstruction.cpp
 
     src/instruction/twoOperandInstruction/MovInstruction.cpp
+    src/instruction/twoOperandInstruction/LeaInstruction.cpp
     src/instruction/twoOperandInstruction/XchgInstruction.cpp
 
 

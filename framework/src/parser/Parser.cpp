@@ -17,6 +17,7 @@
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
+#include "instruction/twoOperandInstruction/LeaInstruction.h"
 #include "instruction/twoOperandInstruction/XchgInstruction.h"
 #include "instruction/twoOperandInstruction/LogicalInstruction.h"
 #include "instruction/twoOperandInstruction/OutInInstruction.h"
@@ -71,6 +72,7 @@ namespace parsing
             { "jz",       [this]() -> InstructionPtr { return Builder<JzInstruction>()     .parse(mTokenStream); } },
 
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
+            { "lea",      [this]() -> InstructionPtr { return Builder<LeaInstruction>()    .parse(mTokenStream); } },
 
             { "xchg",     [this]() -> InstructionPtr { return Builder<XchgInstruction>()   .parse(mTokenStream); } },
 
