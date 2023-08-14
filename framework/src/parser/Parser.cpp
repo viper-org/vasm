@@ -17,6 +17,7 @@
 #include "instruction/singleOperandInstruction/PushInstruction.h"
 #include "instruction/singleOperandInstruction/PopInstruction.h"
 #include "instruction/singleOperandInstruction/IncDecInstruction.h"
+#include "instruction/singleOperandInstruction/IntInstruction.h"
 #include "instruction/singleOperandInstruction/DeclInstruction.h"
 
 #include "instruction/twoOperandInstruction/MovInstruction.h"
@@ -114,6 +115,7 @@ namespace parsing
             { "out",      [this]() -> InstructionPtr { return Builder<OutInstruction>()    .parse(mTokenStream); } },
 
             { "syscall",  [this]() -> InstructionPtr { return Builder<SyscallInstruction>().parse(mTokenStream); } },
+            { "int",      [this]() -> InstructionPtr { return Builder<IntInstruction>()    .parse(mTokenStream); } },
 
             { "nop",      [this]() -> InstructionPtr { return Builder<NopInstruction>()    .parse(mTokenStream); } },
 

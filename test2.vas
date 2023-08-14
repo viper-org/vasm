@@ -1,8 +1,11 @@
-extern puts
+extern printf
 
-message: db "hello\0"
+message: db "number: \0"
 
 main:
+    push rbp
+    mov rbp, rsp
     mov rdi, message
-    call puts@plt
+    call printf@plt
+    pop rbp
     ret
