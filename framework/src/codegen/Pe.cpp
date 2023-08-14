@@ -214,10 +214,15 @@ namespace codegen {
         mSymbolTable.push_back(symbol);
         mSymbolIndices[name] = mSymbolTable.size() - 1;
     }
-    
-    [[nodiscard]] unsigned long PEFormat::getSymbol(const std::string& name) const
+
+    void PEFormat::addExternSymbol(const std::string& name)
     {
-        return mSymbolTable[mSymbolIndices.at(name)].mValue;
+        // TODO: Implement
+    }
+    
+    [[nodiscard]] std::pair<unsigned long, bool> PEFormat::getSymbol(const std::string& name) const
+    {
+        return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const

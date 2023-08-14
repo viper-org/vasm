@@ -7,8 +7,6 @@
 
 #include "codegen/Opcodes.h"
 
-#include "codegen/builder/OpcodeBuilder.h"
-
 namespace instruction
 {
     class Immediate : public Operand
@@ -21,7 +19,6 @@ namespace instruction
         unsigned int   imm32() const;
         unsigned long  imm64() const;
 
-        virtual unsigned long long getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
         codegen::OperandSize getSize() const;
 
     private:

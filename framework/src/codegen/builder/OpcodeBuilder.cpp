@@ -25,7 +25,12 @@ namespace codegen
         mOutputFormat->relocSymbol(name, section, offset);
     }
 
-    unsigned long long OpcodeBuilder::getLabel(std::string name)
+    void OpcodeBuilder::addExtern(const std::string& name)
+    {
+        mOutputFormat->addExternSymbol(name);
+    }
+
+    std::pair<unsigned long long, bool> OpcodeBuilder::getLabel(std::string name)
     {
         return mOutputFormat->getSymbol(name);
     }

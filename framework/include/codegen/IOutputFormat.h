@@ -29,8 +29,9 @@ namespace codegen
         virtual size_t getSectionStart(Section section) = 0;
 
         virtual void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) = 0;
+        virtual void addExternSymbol(const std::string& name) = 0;
         [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
-        [[nodiscard]] virtual unsigned long getSymbol(const std::string& name) const = 0;
+        [[nodiscard]] virtual std::pair<unsigned long, bool> getSymbol(const std::string& name) const = 0;
         virtual void relocSymbol(const std::string& name, Section section, int offset = 0) = 0;
 
         virtual void print(std::ostream& stream) = 0;

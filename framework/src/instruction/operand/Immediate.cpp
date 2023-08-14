@@ -30,11 +30,6 @@ namespace instruction
         return mValue;
     }
 
-    unsigned long long Immediate::getValue(codegen::OpcodeBuilder&, codegen::Section) const
-    {
-        return mValue;
-    }
-
     codegen::OperandSize Immediate::getSize() const
     {
         if (mValue <= UINT8_MAX)

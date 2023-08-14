@@ -22,19 +22,28 @@ namespace instruction
         {
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getOperand().get()))
             {
-                if ((label->getValue(builder, section) - builder.getPosition(section)) > UINT8_MAX)
+                auto value = label->getValue(builder, section);
+                if ((value.first - builder.getPosition(section)) > UINT8_MAX)
                 {
                     builder.createInstruction(section)
                         .opcode(static_cast<codegen::WordOpcodes>(Opcode + 0x10))
-                        .immediate(static_cast<unsigned int>(label->getValue(builder, section) - builder.getPosition(section) - 6))
+                        .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 6))
                         .emit();
+                    if (value.second)
+                    {
+                        label->reloc(builder, section, -6);
+                    }
                 }
                 else
                 {
                     builder.createInstruction(section)
                         .opcode(Opcode)
-                        .immediate(static_cast<unsigned char>(label->getValue(builder, section) - builder.getPosition(section) - 2))
+                        .immediate(static_cast<unsigned char>(value.first - builder.getPosition(section) - 2))
                         .emit();
+                    if (value.second)
+                    {
+                        label->reloc(builder, section, -2);
+                    }
                 }
             }
         }

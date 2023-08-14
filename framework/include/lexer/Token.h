@@ -17,6 +17,8 @@ namespace lexing
         Comma, Colon,
 
         Identifier,
+
+        Extern,
         
         Immediate, String,
 

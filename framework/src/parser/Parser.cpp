@@ -9,6 +9,8 @@
 
 #include "instruction/Builder.h"
 
+#include "instruction/Directive.h"
+
 #include "instruction/singleOperandInstruction/CallInstruction.h"
 #include "instruction/singleOperandInstruction/JmpInstruction.h"
 #include "instruction/singleOperandInstruction/JccInstruction.h"
@@ -171,6 +173,12 @@ namespace parsing
             case lexing::TokenType::Identifier:
             {
                 return Builder<Label>().parse(mTokenStream);
+            }
+
+            case lexing::TokenType::Extern:
+            {
+                consume();
+                return std::make_unique<ExternDirective>(consume().getText());
             }
 
             case lexing::TokenType::Instruction:

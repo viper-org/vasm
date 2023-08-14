@@ -5,7 +5,7 @@
 
 #include <concepts>
 #include <vector>
-#include <unordered_map>
+#include <set>
 #include <vector>
 
 namespace lexing
@@ -29,7 +29,8 @@ namespace codegen
         size_t getSectionStart(Section section) override;
 
         void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) override;
-        [[nodiscard]] unsigned long getSymbol(const std::string& name) const override;
+        void addExternSymbol(const std::string& name) override;
+        [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
         void relocSymbol(const std::string& name, Section section, int offset) override;
 
@@ -62,6 +63,35 @@ namespace codegen
             int& length(); // should only be used for symtab
         };
 
+        struct ELFSymbol
+        {
+            std::string name;
+            
+            unsigned int strtabIndex;
+            unsigned char link;
+            unsigned char type;
+            unsigned short sectionIndex;
+            unsigned long value;
+            unsigned long size;
+
+            bool external;
+            int index;
+
+            bool operator==(const ELFSymbol& other)
+            {
+                return name == other.name;
+            }
+        };
+
+        struct ELFSymbolComparator
+        {
+            bool operator()(const ELFSymbol& a, const ELFSymbol& b) const
+            {
+                return a.index <= b.index;
+            }
+        };
+        using Symbols = std::set<ELFSymbol, ELFSymbolComparator>;
+
         ELFSection* getSection(std::string_view name);
         ELFSection* getSection(Section section);
 
@@ -69,11 +99,15 @@ namespace codegen
 
         ELFSection* getOrCreateSection(Section section);
 
+        void incrementGlobalSymbolIndex();
+
         std::vector<ELFSection> mSections;
 
-        std::unordered_map<std::string, unsigned long> mSymbols;
+        std::set<ELFSymbol, ELFSymbolComparator> mLocalSymbols;
+        std::set<ELFSymbol, ELFSymbolComparator> mGlobalSymbols;
 
         std::string_view mFileName;
+
     };
 }
 

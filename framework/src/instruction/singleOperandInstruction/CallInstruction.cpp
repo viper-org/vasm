@@ -12,10 +12,15 @@ namespace instruction
     {
         if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getOperand().get()))
         {
+            auto value = label->getValue(builder, section);
             builder.createInstruction(section)
                    .opcode(codegen::CALL_REL32)
-                   .immediate(static_cast<unsigned int>(label->getValue(builder, section) - builder.getPosition(section) - 5))
+                   .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 5))
                    .emit();
+            if (value.second)
+            {
+                label->reloc(builder, section, -4);
+            }
         }
         // TODO: Add call r/m
     }

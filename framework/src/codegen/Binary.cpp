@@ -53,9 +53,14 @@ namespace codegen
         mSymbols[name] = value;
     }
 
-    unsigned long BinaryFormat::getSymbol(const std::string& name) const
+    void BinaryFormat::addExternSymbol(const std::string&)
     {
-        return mSymbols.at(name);
+        // TODO: Error
+    }
+
+    std::pair<unsigned long, bool> BinaryFormat::getSymbol(const std::string& name) const
+    {
+        return std::make_pair(mSymbols.at(name), false);
     }
     
     bool BinaryFormat::hasSymbol(const std::string& name) const {

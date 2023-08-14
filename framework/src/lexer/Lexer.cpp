@@ -3,6 +3,8 @@
 
 #include <codegen/Opcodes.h>
 
+#include <unordered_map>
+
 namespace lexing
 {
     Lexer::Lexer(std::string_view text)
@@ -99,6 +101,10 @@ namespace lexing
         "times",
     };
 
+    const std::unordered_map<std::string_view, lexing::TokenType> directives = {
+        {"extern", lexing::TokenType::Extern}
+    };
+
     std::vector<Token> Lexer::lex()
     {
         std::vector<Token> tokens;
@@ -167,6 +173,11 @@ namespace lexing
                 {
                     return Token {start_loc, TokenType::Register, std::move(text)};
                 }
+            }
+
+            if (auto it = directives.find(text); it != directives.end())
+            {
+                return Token {start_loc, it->second};
             }
 
             return Token {start_loc, TokenType::Identifier, std::move(text)};

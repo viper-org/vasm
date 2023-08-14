@@ -64,7 +64,12 @@ namespace codegen
             mSymbols.push_back({name, value, section, isGlobal});
         }
 
-        unsigned long FakeOutputFormat::getSymbol(const std::string& name) const
+        void FakeOutputFormat::addExternSymbol(const std::string&)
+        {
+            // TODO: Implement
+        }
+
+        std::pair<unsigned long, bool> FakeOutputFormat::getSymbol(const std::string& name) const
         {
             auto it = std::find_if(mSymbols.begin(), mSymbols.end(), [&name](auto& symbol) {
                 return symbol.name == name;
@@ -72,10 +77,10 @@ namespace codegen
 
             if (it == mSymbols.end())
             {
-                return 0;
+                return std::make_pair(0, false);
             }
 
-            return it->value;
+            return std::make_pair(it->value, false);
         }
 
         bool FakeOutputFormat::hasSymbol(const std::string& name) const

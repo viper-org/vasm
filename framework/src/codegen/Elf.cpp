@@ -1,5 +1,7 @@
 #include "codegen/Elf.h"
 
+#include <algorithm>
+
 namespace codegen
 {
     // TODO: Make this into an enum or similar
@@ -57,21 +59,11 @@ namespace codegen
         mSections[3].write(fileName.data(), fileName.length() + 1); // File name string
 
         // NULL symbol
-        mSections[2].write((unsigned int)0);
-        mSections[2].write((unsigned char)0);
-        mSections[2].write(SYM_DEFAULT);
-        mSections[2].write((unsigned short)0);
-        mSections[2].write(SYM_VALUE_0);
-        mSections[2].write(SYM_SIZE_0);
+        mLocalSymbols.emplace("", 0, 0, SYM_DEFAULT, 0, 0, 0, false, mLocalSymbols.size());
         mSections[2].mInfo++;
 
         // File symbol
-        mSections[2].write((unsigned int)1);
-        mSections[2].write(SYM_FILE);
-        mSections[2].write(SYM_DEFAULT);
-        mSections[2].write(SYM_ABS);
-        mSections[2].write(SYM_VALUE_0);
-        mSections[2].write(SYM_SIZE_0);
+        mLocalSymbols.emplace("\n", 1, SYM_FILE, SYM_DEFAULT, SYM_ABS, 0, 0, false, mLocalSymbols.size());
         mSections[2].mInfo++;
     }
 
@@ -142,34 +134,63 @@ namespace codegen
 
         ELFSection* symtab = getSection(".symtab");
 
-        symtab->write(strtabIndex);
-        symtab->write(isGlobal ? SYM_GLOBAL : SYM_LOCAL);
-        symtab->write(SYM_DEFAULT);
-        for (unsigned short sectionIndex = 0; sectionIndex < static_cast<unsigned short>(mSections.size()); sectionIndex++)
+        unsigned short sectionIndex;
+        for (sectionIndex = 0; sectionIndex < static_cast<unsigned short>(mSections.size()); sectionIndex++)
         {
             if (mSections[sectionIndex].mSection == section)
             {
-                symtab->write(sectionIndex);
                 break;
             }
         }
-        symtab->write(value);
-        symtab->write(SYM_SIZE_0);
+
+        Symbols& symbols = isGlobal ? mGlobalSymbols : mLocalSymbols;
+
+        auto&& a = symbols.emplace(name, strtabIndex, isGlobal ? SYM_GLOBAL : SYM_LOCAL, SYM_DEFAULT, sectionIndex, value, 0, false, isGlobal ? symbols.size() + mLocalSymbols.size() : symbols.size());
+
         if (!isGlobal)
         {
             symtab->length()++;
         }
-
-        mSymbols[name] = value;
     }
 
-    unsigned long ELFFormat::getSymbol(const std::string& name) const
+    void ELFFormat::addExternSymbol(const std::string& name)
     {
-        return mSymbols.at(name);
+        ELFSection* strtab = getSection(".strtab");
+        unsigned int strtabIndex = strtab->size();
+        strtab->write(name);
+
+        mGlobalSymbols.emplace(name, strtabIndex, SYM_GLOBAL, SYM_DEFAULT, 0, 0, 0, true, mGlobalSymbols.size() + mLocalSymbols.size());
+    }
+
+    std::pair<unsigned long, bool> ELFFormat::getSymbol(const std::string& name) const
+    {
+        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
+            return symbol.name == name;
+        });
+        if (it == mLocalSymbols.end())
+        {
+            it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
+                return symbol.name == name;
+            });
+        }
+        
+        return std::make_pair(it->value, it->external);
     }
     
-    bool ELFFormat::hasSymbol(const std::string& name) const {
-        return mSymbols.contains(name);
+    bool ELFFormat::hasSymbol(const std::string& name) const
+    {
+        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
+            return symbol.name == name;
+        });
+        if (it == mLocalSymbols.end())
+        {
+            it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
+                return symbol.name == name;
+            });
+            return it != mGlobalSymbols.end();
+        }
+
+        return true;
     }
 
     void ELFFormat::relocSymbol(const std::string& name, Section section, int offset)
@@ -200,11 +221,23 @@ namespace codegen
             rela = &mSections.back();
         }
 
-        unsigned long symbol = mSymbols.at(name);
+        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
+            return symbol.name == name;
+        });
+        if (it == mLocalSymbols.end())
+        {
+            it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
+                return symbol.name == name;
+            });
+        }
+
+        const ELFSymbol& symbol = *it;
         
         rela->write(getPosition(section) + offset);
-        rela->write(0x200000001UL);
-        rela->write(symbol);
+        unsigned long info = symbol.external ? 0x2 : 0x1;
+        info |= static_cast<unsigned long>(symbol.index) << 32;
+        rela->write(info);
+        rela->write(symbol.external ? static_cast<unsigned long>(offset) : 0UL);
     }
 
 
@@ -309,12 +342,33 @@ namespace codegen
         WriteELF(stream, (short)mSections.size());
         WriteELF(stream, (short)1);
 
+        ELFSection* symtab = getSection(".symtab");
+        for (const auto& symbol : mLocalSymbols)
+        {
+            symtab->write(symbol.strtabIndex);
+            symtab->write(symbol.link);
+            symtab->write(symbol.type);
+            symtab->write(symbol.sectionIndex);
+            symtab->write(symbol.value);
+            symtab->write(symbol.size);
+        }
+        for (const auto& symbol : mGlobalSymbols)
+        {
+            symtab->write(symbol.strtabIndex);
+            symtab->write(symbol.link);
+            symtab->write(symbol.type);
+            symtab->write(symbol.sectionIndex);
+            symtab->write(symbol.value);
+            symtab->write(symbol.size);
+        }
+
         ELFSection* shstrtab = getSection(".shstrtab");
         for (ELFSection& section : mSections)
         {
             section.mNameIdx = static_cast<int>(shstrtab->size());
             shstrtab->write(section.mName);
         }
+
 
         unsigned long currentOffset = ELF_SHSIZE * mSections.size() + ELF_EHSIZE;
         for (ELFSection& section : mSections)
@@ -387,13 +441,9 @@ namespace codegen
         ELFSection* strtab = getSection(".strtab");
         ELFSection* symtab = getSection(".symtab");
 
-        symtab->write(static_cast<unsigned int>(strtab->mBuffer.size()));
-        symtab->write(SYM_SECTION);
-        symtab->write(SYM_DEFAULT);
-        symtab->write(static_cast<unsigned short>(mSections.size() - 1));
-        symtab->write(0UL);
-        symtab->write(0UL);
+        mLocalSymbols.emplace(newSection->mName, strtab->mBuffer.size(), SYM_SECTION, SYM_DEFAULT, mSections.size() - 1, 0, 0, false, mLocalSymbols.size() - 1);
         symtab->mInfo++;
+        incrementGlobalSymbolIndex();
 
         strtab->write(newSection->mName.data(), newSection->mName.length() + 1);
 
@@ -409,5 +459,16 @@ namespace codegen
         }
 
         return ret;
+    }
+
+    void ELFFormat::incrementGlobalSymbolIndex()
+    {
+        Symbols newGlobalSymbols;
+        for (auto& symbol : mGlobalSymbols)
+        {
+            newGlobalSymbols.emplace(symbol.name, symbol.strtabIndex, symbol.link, symbol.type, symbol.sectionIndex, symbol.value, symbol.size, symbol.external, symbol.index + 1);
+        }
+
+        mGlobalSymbols.swap(newGlobalSymbols);
     }
 }

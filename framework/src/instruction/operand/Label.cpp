@@ -19,11 +19,11 @@ namespace instruction
         }
     }
 
-    unsigned long long LabelOperand::getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    std::pair<unsigned long long, bool> LabelOperand::getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const
     {
         if (mName == "$")
         {
-            return builder.getPosition(section);
+            return std::make_pair(builder.getPosition(section), false);
         }
         return builder.getLabel(mName);
     }
