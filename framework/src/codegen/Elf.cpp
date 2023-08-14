@@ -193,7 +193,7 @@ namespace codegen
         return true;
     }
 
-    void ELFFormat::relocSymbol(const std::string& name, Section section, int offset)
+    void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset)
     {
         ELFSection* sect = getOrCreateSection(section);
         ELFSection* rela = getSection(".rela" + sect->mName);
@@ -235,6 +235,14 @@ namespace codegen
         
         rela->write(getPosition(section) + offset);
         unsigned long info = symbol.external ? 0x2 : 0x1;
+        if (location == "plt")
+        {
+            info = 0x4;
+        }
+        else if (location == "got")
+        {
+            info = 0x9;
+        }
         info |= static_cast<unsigned long>(symbol.index) << 32;
         rela->write(info);
         rela->write(symbol.external ? static_cast<unsigned long>(offset) : 0UL);

@@ -15,6 +15,7 @@ namespace lexing
         Plus, Minus, Star, Slash,
         LParen, RParen, LBracket, RBracket,
         Comma, Colon,
+        Ampersand,
 
         Identifier,
 

@@ -4,5 +4,5 @@ message: db "hello\0"
 
 main:
     mov rdi, message
-    call puts
+    call puts@plt
     ret

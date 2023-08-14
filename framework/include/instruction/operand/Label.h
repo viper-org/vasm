@@ -12,7 +12,7 @@ namespace instruction
     class LabelOperand : public Immediate
     {
     public:
-        LabelOperand(std::string name);
+        LabelOperand(std::string name, std::string location = "");
 
         std::pair<unsigned long long, bool> getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
 
@@ -20,6 +20,7 @@ namespace instruction
 
     private:
         std::string mName;
+        std::string mLocation;
     };
     using LabelOperandPtr = std::unique_ptr<LabelOperand>;
 }

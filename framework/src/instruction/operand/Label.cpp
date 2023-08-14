@@ -5,9 +5,10 @@
 
 namespace instruction
 {
-    LabelOperand::LabelOperand(std::string name)
+    LabelOperand::LabelOperand(std::string name, std::string location)
         : Immediate(0)
         , mName(name)
+        , mLocation(location)
     {
     }
 
@@ -15,7 +16,7 @@ namespace instruction
     {
         if (mName != "$")
         {
-            builder.relocLabel(mName, section, offset);
+            builder.relocLabel(mName, mLocation, section, offset);
         }
     }
 

@@ -92,7 +92,7 @@ namespace codegen
             return (it != mSymbols.end());
         }
 
-        void FakeOutputFormat::relocSymbol(const std::string& name, Section section, int)
+        void FakeOutputFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int)
         {
             mRelocations.push_back({ name, section });
         }

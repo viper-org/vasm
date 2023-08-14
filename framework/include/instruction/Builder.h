@@ -99,7 +99,13 @@ namespace instruction
         {
             if (current().getTokenType() == lexing::TokenType::Identifier)
             {
-                return std::make_unique<LabelOperand>(consume().getText());
+                std::string text = consume().getText();
+                if (current().getTokenType() == lexing::TokenType::Ampersand)
+                {
+                    consume();
+                    return std::make_unique<LabelOperand>(text, consume().getText());
+                }
+                return std::make_unique<LabelOperand>(text);
             }
             else if (current().getTokenType() == lexing::TokenType::Dollar)
             {

@@ -67,8 +67,9 @@ namespace codegen
         return mSymbols.contains(name);
     }
 
-    void BinaryFormat::relocSymbol(const std::string&, Section, int)
+    void BinaryFormat::relocSymbol(const std::string&, const std::string&, Section, int)
     {
+        // TODO: Error
     }
 
     void BinaryFormat::print(std::ostream& stream)

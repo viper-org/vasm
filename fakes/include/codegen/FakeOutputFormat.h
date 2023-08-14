@@ -44,7 +44,7 @@ namespace codegen
             void addExternSymbol(const std::string& name) override;
             [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
             [[nodiscard]] bool hasSymbol(const std::string& name) const override;
-            void relocSymbol(const std::string& name, Section section, int offset) override;
+            void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
 
             void print(std::ostream& stream) override;
 

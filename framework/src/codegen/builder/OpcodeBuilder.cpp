@@ -20,9 +20,9 @@ namespace codegen
         mOutputFormat->addSymbol(name, mOutputFormat->getPosition(section), section, true);
     }
 
-    void OpcodeBuilder::relocLabel(std::string name, codegen::Section section, int offset)
+    void OpcodeBuilder::relocLabel(std::string name, std::string location, codegen::Section section, int offset)
     {
-        mOutputFormat->relocSymbol(name, section, offset);
+        mOutputFormat->relocSymbol(name, location, section, offset);
     }
 
     void OpcodeBuilder::addExtern(const std::string& name)

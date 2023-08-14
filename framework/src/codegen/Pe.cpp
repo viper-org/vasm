@@ -230,8 +230,9 @@ namespace codegen {
         return mSymbolIndices.contains(name);
     }
     
-    void PEFormat::relocSymbol(const std::string& name, Section section, int offset)
+    void PEFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset)
     {
+        // TODO: Add location specification
         PESection* sect = getOrCreateSection(section);
         
         uint16_t symbolIndex = mSymbolIndices[name];

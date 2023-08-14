@@ -147,7 +147,7 @@ namespace lexing
 
     std::optional<Token> Lexer::nextToken()
     {
-        SourceLocation start_loc {line, column};
+        SourceLocation startSourceLocation {line, column};
         
         if (std::isalpha(current()) || current() == '_') // Identifier
         {
@@ -163,7 +163,7 @@ namespace lexing
             {
                 if (text == instruction)
                 {
-                    return Token {start_loc, TokenType::Instruction, std::move(text)};
+                    return Token {startSourceLocation, TokenType::Instruction, std::move(text)};
                 }
             }
 
@@ -171,16 +171,16 @@ namespace lexing
             {
                 if (text == reg)
                 {
-                    return Token {start_loc, TokenType::Register, std::move(text)};
+                    return Token {startSourceLocation, TokenType::Register, std::move(text)};
                 }
             }
 
             if (auto it = directives.find(text); it != directives.end())
             {
-                return Token {start_loc, it->second};
+                return Token {startSourceLocation, it->second};
             }
 
-            return Token {start_loc, TokenType::Identifier, std::move(text)};
+            return Token {startSourceLocation, TokenType::Identifier, std::move(text)};
         }
         
         if (std::isspace(current())) // Newline, tab, space etc
@@ -232,7 +232,7 @@ namespace lexing
                     text += current();
                 }
             }
-            return Token {start_loc, TokenType::Immediate, std::move(text)};
+            return Token {startSourceLocation, TokenType::Immediate, std::move(text)};
         }
 
         switch(current())
@@ -242,33 +242,36 @@ namespace lexing
                 if (peek(1) == '$')
                 {
                     consume();
-                    return Token {start_loc, TokenType::DollarDollar};
+                    return Token {startSourceLocation, TokenType::DollarDollar};
                 }
-                return Token {start_loc, TokenType::Dollar};
+                return Token {startSourceLocation, TokenType::Dollar};
             }
 
             case '+':
-                return Token {start_loc, TokenType::Plus};
+                return Token {startSourceLocation, TokenType::Plus};
             case '-':
-                return Token {start_loc, TokenType::Minus};
+                return Token {startSourceLocation, TokenType::Minus};
             case '*':
-                return Token {start_loc, TokenType::Star};
+                return Token {startSourceLocation, TokenType::Star};
             case '/':
-                return Token {start_loc, TokenType::Slash};
+                return Token {startSourceLocation, TokenType::Slash};
             
             case '(':
-                return Token {start_loc, TokenType::LParen};
+                return Token {startSourceLocation, TokenType::LParen};
             case ')':
-                return Token {start_loc, TokenType::RParen};
+                return Token {startSourceLocation, TokenType::RParen};
             case '[':
-                return Token {start_loc, TokenType::LBracket};
+                return Token {startSourceLocation, TokenType::LBracket};
             case ']':
-                return Token {start_loc, TokenType::RBracket};
+                return Token {startSourceLocation, TokenType::RBracket};
 
             case ',':
-                return Token {start_loc, TokenType::Comma};
+                return Token {startSourceLocation, TokenType::Comma};
             case ':':
-                return Token {start_loc, TokenType::Colon};
+                return Token {startSourceLocation, TokenType::Colon};
+
+            case '@':
+                return Token {startSourceLocation, TokenType::Ampersand};
 
             case '"':
             {
@@ -296,7 +299,7 @@ namespace lexing
                                     value += '\0';
                                     break;
                                 default:
-                                    return Token {start_loc, TokenType::Error};
+                                    return Token {startSourceLocation, TokenType::Error};
                             }
                             break;
                         }
@@ -305,11 +308,11 @@ namespace lexing
                     }
                     consume();
                 }
-                return Token {start_loc, TokenType::String, std::move(value)};
+                return Token {startSourceLocation, TokenType::String, std::move(value)};
             }
             
             default:
-                return Token {start_loc, TokenType::Error}; // Unknown character
+                return Token {startSourceLocation, TokenType::Error}; // Unknown character
         }
     }
 }
