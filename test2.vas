@@ -1,11 +1,13 @@
 extern printf
 
-message: db "number: \0"
+message: db "number: %d\0"
 
 main:
     push rbp
     mov rbp, rsp
+    sub rsp, 16
+    mov long [rbp-4], 6
     mov rdi, message
     call printf@plt
-    pop rbp
+    leave
     ret

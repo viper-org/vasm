@@ -87,43 +87,96 @@ namespace instruction
                            .displacement(displacement)
                            .emit();
                     break;
+                default:
+                    break;
             }
         }
         else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
         {
             int size = 0;
-            switch (regLhs->getSize())
+            if (memLhs)
             {
-                case codegen::OperandSize::Byte:
-                    builder.createInstruction(section)
-                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM8 + regLhs->getID()))
-                           .immediate(rhs->imm8())
-                           .emit();
-                    size = 1;
-                    break;
-                case codegen::OperandSize::Word:
-                    builder.createInstruction(section)
-                           .prefix(codegen::SIZE_PREFIX)
-                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
-                           .immediate(rhs->imm16())
-                           .emit();
-                    size = 2;
-                    break;
-                case codegen::OperandSize::Long:
-                    builder.createInstruction(section)
-                           .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
-                           .immediate(rhs->imm32())
-                           .emit();
-                    size = 4;
-                    break;
-                case codegen::OperandSize::Quad:
-                    builder.createInstruction(section)
-                            .prefix(codegen::REX::W)
-                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
-                            .immediate(rhs->imm64())
+                switch (instruction.getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        builder.createInstruction(section)
+                               .opcode(codegen::MOV_RM_IMM8)
+                               .modrm(addressingMode, 0, regLhs->getID())
+                               .displacement(displacement)
+                               .immediate(rhs->imm8())
+                               .emit();
+                        size = 1;
+                        break;
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                               .prefix(codegen::SIZE_PREFIX)
+                               .opcode(codegen::MOV_RM_IMM)
+                               .modrm(addressingMode, 0, regLhs->getID())
+                               .displacement(displacement)
+                               .immediate(rhs->imm16())
+                               .emit();
+                        size = 2;
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                               .opcode(codegen::MOV_RM_IMM)
+                               .modrm(addressingMode, 0, regLhs->getID())
+                               .displacement(displacement)
+                               .immediate(rhs->imm32())
+                               .emit();
+                        size = 4;
+                        break;
+                    case codegen::OperandSize::Quad:
+                        builder.createInstruction(section)
+                               .prefix(codegen::REX::W)
+                               .opcode(codegen::MOV_RM_IMM)
+                               .modrm(addressingMode, 0, regLhs->getID())
+                               .displacement(displacement)
+                               .immediate(rhs->imm32())
+                               .emit();
+                        size = 4;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                switch (regLhs->getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        builder.createInstruction(section)
+                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM8 + regLhs->getID()))
+                            .immediate(rhs->imm8())
                             .emit();
-                    size = 8;
-                    break;
+                        size = 1;
+                        break;
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
+                            .immediate(rhs->imm16())
+                            .emit();
+                        size = 2;
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                            .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
+                            .immediate(rhs->imm32())
+                            .emit();
+                        size = 4;
+                        break;
+                    case codegen::OperandSize::Quad:
+                        builder.createInstruction(section)
+                                .prefix(codegen::REX::W)
+                                .opcode(static_cast<codegen::ByteOpcodes>(codegen::MOV_REG_IMM + regLhs->getID()))
+                                .immediate(rhs->imm64())
+                                .emit();
+                        size = 8;
+                        break;
+                    default:
+                        break;
+                }
             }
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getRight().get()))
             {

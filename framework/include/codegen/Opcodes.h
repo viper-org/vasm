@@ -20,6 +20,8 @@ namespace codegen
         Word,
         Long,
         Quad,
+
+        None,
     };
 
     enum ByteOpcodes : unsigned char
@@ -100,6 +102,8 @@ namespace codegen
 
         MOV_REG_IMM8 = 0xB0,
         MOV_REG_IMM  = 0xB8,
+        MOV_RM_IMM8  = 0xC6,
+        MOV_RM_IMM   = 0xC7,
 
         MOV_RM_REG8 = 0x88,
         MOV_RM_REG  = 0x89,

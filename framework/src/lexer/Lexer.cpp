@@ -118,6 +118,7 @@ namespace lexing
             }
             consume();
         }
+        tokens.emplace_back(SourceLocation(line, column), lexing::TokenType::End);
 
         return tokens;
     }
@@ -178,6 +179,11 @@ namespace lexing
             if (auto it = directives.find(text); it != directives.end())
             {
                 return Token {startSourceLocation, it->second};
+            }
+
+            if (text == "byte" || text == "word" || text == "long" || text == "quad") // TODO: Not this
+            {
+                return Token {startSourceLocation, TokenType::Size, text};
             }
 
             return Token {startSourceLocation, TokenType::Identifier, std::move(text)};

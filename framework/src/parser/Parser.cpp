@@ -131,7 +131,7 @@ namespace parsing
     {
         std::vector<ValuePtr> ret;
 
-        while (mPosition < mTokens.size())
+        while (current().getTokenType() != lexing::TokenType::End)
         {
             ret.push_back(parseStatement());
         }

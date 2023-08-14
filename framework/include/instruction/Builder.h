@@ -1,5 +1,6 @@
 // Copyright 2023 solar-mist
 
+#include "codegen/Opcodes.h"
 #ifndef VASM_INSTRUCTION_BUILDER_H
 #define VASM_INSTRUCTION_BUILDER_H 1
 
@@ -47,11 +48,21 @@ namespace instruction
             }
             else if constexpr (std::derived_from<T, TwoOperandInstruction>)
             {
+                codegen::OperandSize size = codegen::OperandSize::None;
+                if (current().getTokenType() == lexing::TokenType::Size)
+                {
+                    std::string text = consume().getText();
+                    if (text == "byte") size = codegen::OperandSize::Byte;
+                    if (text == "word") size = codegen::OperandSize::Word;
+                    if (text == "long") size = codegen::OperandSize::Long;
+                    if (text == "quad") size = codegen::OperandSize::Quad;
+                }
+
                 OperandPtr left = parseOperand();
                 // TODO: expectToken(lexing::TokenType::Comma);
                 consume();
                 OperandPtr right = parseOperand();
-                return std::make_unique<T>(std::move(left), std::move(right));
+                return std::make_unique<T>(std::move(left), std::move(right), size);
             }
             else if constexpr (std::is_same_v<Label, T>)
             {

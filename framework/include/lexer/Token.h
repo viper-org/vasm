@@ -17,6 +17,8 @@ namespace lexing
         Comma, Colon,
         Ampersand,
 
+        Size,
+
         Identifier,
 
         Extern,
@@ -26,6 +28,8 @@ namespace lexing
         Register,
 
         Instruction,
+
+        End,
     };
     
     struct SourceLocation {

@@ -30,6 +30,8 @@ namespace instruction
                        .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
                        .emit();
                 break;
+            default:
+                break;
             }
         }
         else if (Immediate* imm = dynamic_cast<Immediate*>(instruction.getOperand().get()))
