@@ -14,6 +14,8 @@ namespace instruction
 
         std::string_view getText() const;
 
+        std::unique_ptr<Operand> clone() override;
+
     private:
         std::string mText;
     };

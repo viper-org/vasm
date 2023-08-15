@@ -18,6 +18,8 @@ namespace instruction
 
         void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, int offset = 0);
 
+        std::unique_ptr<Operand> clone() override;
+
     private:
         std::string mName;
         std::string mLocation;

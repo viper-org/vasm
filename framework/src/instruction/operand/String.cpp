@@ -14,4 +14,9 @@ namespace instruction
     {
         return mText;
     }
+
+    std::unique_ptr<Operand> String::clone()
+    {
+        return std::make_unique<String>(mText);
+    }
 }

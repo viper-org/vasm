@@ -2,6 +2,7 @@
 #define VASM_CODEGEN_OPCODES_H 1
 
 #include <array>
+#include <string>
 #include <string_view>
 
 namespace codegen

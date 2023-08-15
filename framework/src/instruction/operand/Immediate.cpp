@@ -49,4 +49,9 @@ namespace instruction
             return codegen::OperandSize::Quad;
         }
     }
+
+    std::unique_ptr<Operand> Immediate::clone()
+    {
+        return std::make_unique<Immediate>(mValue);
+    }
 }

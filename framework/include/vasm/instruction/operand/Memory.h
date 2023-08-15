@@ -21,8 +21,9 @@ namespace instruction
 
         Register* getReg() const;
         std::optional<int> getDisplacement() const;
-
         codegen::AddressingMode getAddressingMode() const;
+
+        std::unique_ptr<Operand> clone() override;
 
     private:
         RegisterPtr mReg;

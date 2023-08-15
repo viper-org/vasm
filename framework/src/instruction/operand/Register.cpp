@@ -36,4 +36,9 @@ namespace instruction
 
         return std::make_unique<Register>(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
     }
+
+    std::unique_ptr<Operand> Register::clone()
+    {
+        return std::make_unique<Register>(mID, mSize);
+    }
 }

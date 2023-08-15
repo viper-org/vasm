@@ -34,4 +34,9 @@ namespace instruction
         }
         return codegen::AddressingMode::FourByteDisp;
     }
+
+    std::unique_ptr<Operand> Memory::clone()
+    {
+        return std::make_unique<Memory>(RegisterPtr(static_cast<Register*>(mReg->clone().get())), mDisplacement);
+    }
 }

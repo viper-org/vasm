@@ -11,6 +11,8 @@ namespace instruction
     {
     public:
         virtual ~Operand() { }
+
+        virtual std::unique_ptr<Operand> clone() = 0;
     };
 
     using OperandPtr = std::unique_ptr<Operand>;

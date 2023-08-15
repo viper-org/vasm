@@ -21,6 +21,8 @@ namespace instruction
 
         codegen::OperandSize getSize() const;
 
+        std::unique_ptr<Operand> clone() override;
+
     private:
         unsigned long long mValue;
     };

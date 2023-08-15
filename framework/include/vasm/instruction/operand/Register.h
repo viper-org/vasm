@@ -20,6 +20,8 @@ namespace instruction
         unsigned char getID() const;
         codegen::OperandSize getSize() const;
 
+        std::unique_ptr<Operand> clone() override;
+
         static RegisterPtr Get(std::string_view name);
 
     private:

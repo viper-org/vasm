@@ -28,4 +28,9 @@ namespace instruction
         }
         return builder.getLabel(mName);
     }
+
+    std::unique_ptr<Operand> LabelOperand::clone()
+    {
+        return std::make_unique<LabelOperand>(mName, mLocation);
+    }
 }
