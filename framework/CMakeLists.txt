@@ -3,8 +3,6 @@ cmake_minimum_required (VERSION 3.26)
 project (vasm_framework_project)
 
 include_directories(include)
-add_compile_options(-fsanitize=address,undefined)
-add_link_options(-fsanitize=address,undefined)
 
 set(CMAKE_BUILD_TYPE Debug)
 
