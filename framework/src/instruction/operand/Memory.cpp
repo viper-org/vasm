@@ -37,6 +37,6 @@ namespace instruction
 
     std::unique_ptr<Operand> Memory::clone()
     {
-        return std::make_unique<Memory>(RegisterPtr(static_cast<Register*>(mReg->clone().get())), mDisplacement);
+        return std::make_unique<Memory>(RegisterPtr(static_cast<Register*>(mReg->clone().release())), mDisplacement);
     }
 }
