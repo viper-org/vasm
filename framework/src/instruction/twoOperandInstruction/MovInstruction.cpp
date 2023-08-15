@@ -55,7 +55,7 @@ namespace instruction
 
         if (regRhs || memRhs) // mov reg, reg OR mov reg, rm OR mov rm, reg
         {
-            switch (regRhs->getSize())
+            switch (regLhs->getSize())
             {
                 case codegen::OperandSize::Byte:
                     builder.createInstruction(section)
