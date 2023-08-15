@@ -1,7 +1,7 @@
-#include "lexer/Lexer.h"
-#include "lexer/Token.h"
+#include "vasm/lexer/Lexer.h"
+#include "vasm/lexer/Token.h"
 
-#include <codegen/Opcodes.h>
+#include "vasm/codegen/Opcodes.h"
 
 #include <unordered_map>
 

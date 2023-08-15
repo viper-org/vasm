@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/Label.h"
+#include "vasm/instruction/Label.h"
 
 namespace instruction
 {

@@ -1,9 +1,9 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/singleOperandInstruction/IntInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/IntInstruction.h"
 
-#include "instruction/operand/Immediate.h"
+#include "vasm/instruction/operand/Immediate.h"
 
 #include <cassert>
 

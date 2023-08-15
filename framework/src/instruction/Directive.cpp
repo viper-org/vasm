@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/Directive.h"
+#include "vasm/instruction/Directive.h"
 
 namespace instruction
 {

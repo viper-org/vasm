@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/operand/String.h"
+#include "vasm/instruction/operand/String.h"
 
 namespace instruction
 {

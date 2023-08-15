@@ -1,11 +1,11 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/twoOperandInstruction/TestInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/TestInstruction.h"
 
-#include "instruction/operand/Register.h"
-#include "instruction/operand/Memory.h"
-#include "instruction/operand/Immediate.h"
+#include "vasm/instruction/operand/Register.h"
+#include "vasm/instruction/operand/Memory.h"
+#include "vasm/instruction/operand/Immediate.h"
 
 namespace instruction
 {

@@ -1,7 +1,7 @@
 #include "Test.h"
 
-#include "lexer/Lexer.h"
-#include "lexer/Token.h"
+#include "vasm/lexer/Lexer.h"
+#include "vasm/lexer/Token.h"
 
 namespace LexerTests
 {

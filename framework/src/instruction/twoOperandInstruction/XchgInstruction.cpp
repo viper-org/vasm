@@ -1,9 +1,9 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/twoOperandInstruction/XchgInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/XchgInstruction.h"
 
-#include "instruction/operand/Register.h"
+#include "vasm/instruction/operand/Register.h"
 
 namespace instruction
 {

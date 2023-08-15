@@ -1,11 +1,11 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/singleOperandInstruction/PushInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/PushInstruction.h"
 
-#include "codegen/Opcodes.h"
-#include "instruction/operand/Register.h"
-#include "instruction/operand/Immediate.h"
+#include "vasm/codegen/Opcodes.h"
+#include "vasm/instruction/operand/Register.h"
+#include "vasm/instruction/operand/Immediate.h"
 
 namespace instruction
 {

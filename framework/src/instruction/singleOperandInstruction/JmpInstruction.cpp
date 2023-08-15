@@ -1,10 +1,10 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/singleOperandInstruction/JmpInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/JmpInstruction.h"
 
-#include "codegen/Opcodes.h"
-#include "instruction/operand/Label.h"
+#include "vasm/codegen/Opcodes.h"
+#include "vasm/instruction/operand/Label.h"
 
 namespace instruction
 {

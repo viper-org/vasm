@@ -1,15 +1,15 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/twoOperandInstruction/MovInstruction.h"
-#include "codegen/Opcodes.h"
-#include "codegen/builder/ModRM.h"
-#include "instruction/TwoOperandInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/MovInstruction.h"
+#include "vasm/codegen/Opcodes.h"
+#include "vasm/codegen/builder/ModRM.h"
+#include "vasm/instruction/TwoOperandInstruction.h"
 
-#include "instruction/operand/Immediate.h"
-#include "instruction/operand/Label.h"
-#include "instruction/operand/Memory.h"
-#include "instruction/operand/Register.h"
+#include "vasm/instruction/operand/Immediate.h"
+#include "vasm/instruction/operand/Label.h"
+#include "vasm/instruction/operand/Memory.h"
+#include "vasm/instruction/operand/Register.h"
 
 namespace instruction
 {

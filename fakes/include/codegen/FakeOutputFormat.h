@@ -1,7 +1,7 @@
 #ifndef VASM_FAKES_CODEGEN_FAKE_OUTPUT_FORMAT_H
 #define VASM_FAKES_CODEGEN_FAKE_OUTPUT_FORMAT_H 1
 
-#include "codegen/IOutputFormat.h"
+#include "vasm/codegen/IOutputFormat.h"
 
 #include <format>
 #include <vector>

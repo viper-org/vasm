@@ -1,6 +1,6 @@
-#include "error/ErrorReporter.h"
+#include "vasm/error/ErrorReporter.h"
 
-#include "lexer/Token.h"
+#include "vasm/lexer/Token.h"
 
 #include <format>
 #include <iostream>

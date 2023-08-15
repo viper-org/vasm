@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/operand/Immediate.h"
+#include "vasm/instruction/operand/Immediate.h"
 
 namespace instruction
 {

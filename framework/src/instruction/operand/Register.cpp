@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "instruction/operand/Register.h"
+#include "vasm/instruction/operand/Register.h"
 
 namespace instruction
 {

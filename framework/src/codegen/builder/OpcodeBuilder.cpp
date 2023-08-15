@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "codegen/builder/OpcodeBuilder.h"
+#include "vasm/codegen/builder/OpcodeBuilder.h"
 
 namespace codegen
 {

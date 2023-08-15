@@ -1,13 +1,13 @@
 #include "Test.h"
 
-#include "error/ErrorReporter.h"
+#include "vasm/error/ErrorReporter.h"
 
-#include "parser/Parser.h"
+#include "vasm/parser/Parser.h"
 
-#include "lexer/Token.h"
+#include "vasm/lexer/Token.h"
 
 #include "codegen/FakeOutputFormat.h"
-#include "codegen/Opcodes.h"
+#include "vasm/codegen/Opcodes.h"
 
 namespace ParserTests
 {

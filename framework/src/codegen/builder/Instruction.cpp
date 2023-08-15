@@ -1,7 +1,7 @@
 // Copyright 2023 solar-mist
 
 
-#include "codegen/builder/Instruction.h"
+#include "vasm/codegen/builder/Instruction.h"
 
 #include <cstdint>
 #include <iostream>

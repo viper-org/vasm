@@ -1,32 +1,32 @@
 // Copyright 2023 solar-mist
 
 
-#include "parser/Parser.h"
+#include "vasm/parser/Parser.h"
 
-#include "lexer/Token.h"
+#include "vasm/lexer/Token.h"
 
-#include "error/IErrorReporter.h"
+#include "vasm/error/IErrorReporter.h"
 
-#include "instruction/Builder.h"
+#include "vasm/instruction/Builder.h"
 
-#include "instruction/Directive.h"
+#include "vasm/instruction/Directive.h"
 
-#include "instruction/singleOperandInstruction/CallInstruction.h"
-#include "instruction/singleOperandInstruction/JmpInstruction.h"
-#include "instruction/singleOperandInstruction/JccInstruction.h"
-#include "instruction/singleOperandInstruction/PushInstruction.h"
-#include "instruction/singleOperandInstruction/PopInstruction.h"
-#include "instruction/singleOperandInstruction/IncDecInstruction.h"
-#include "instruction/singleOperandInstruction/IntInstruction.h"
-#include "instruction/singleOperandInstruction/DeclInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/CallInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/JmpInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/JccInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/PushInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/PopInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/IncDecInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/IntInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/DeclInstruction.h"
 
-#include "instruction/twoOperandInstruction/MovInstruction.h"
-#include "instruction/twoOperandInstruction/LeaInstruction.h"
-#include "instruction/twoOperandInstruction/ShiftRotateInstruction.h"
-#include "instruction/twoOperandInstruction/XchgInstruction.h"
-#include "instruction/twoOperandInstruction/LogicalInstruction.h"
-#include "instruction/twoOperandInstruction/OutInInstruction.h"
-#include "instruction/twoOperandInstruction/TestInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/MovInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/LeaInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/ShiftRotateInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/XchgInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/LogicalInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/OutInInstruction.h"
+#include "vasm/instruction/twoOperandInstruction/TestInstruction.h"
 
 namespace parsing
 {

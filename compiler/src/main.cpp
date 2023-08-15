@@ -1,13 +1,13 @@
-#include "lexer/Lexer.h"
-#include "lexer/Token.h"
+#include "vasm/lexer/Lexer.h"
+#include "vasm/lexer/Token.h"
 
-#include "parser/Parser.h"
+#include "vasm/parser/Parser.h"
 
-#include "codegen/Elf.h"
-#include "codegen/Pe.h"
-#include "codegen/Binary.h"
+#include "vasm/codegen/Elf.h"
+#include "vasm/codegen/Pe.h"
+#include "vasm/codegen/Binary.h"
 
-#include "error/ErrorReporter.h"
+#include "vasm/error/ErrorReporter.h"
 
 #include <iostream>
 #include <sstream>
