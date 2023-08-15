@@ -9,6 +9,9 @@
 
 namespace instruction
 {
+    class Register;
+    using RegisterPtr = std::unique_ptr<Register>;
+
     class Register : public Operand
     {
     public:
@@ -17,11 +20,12 @@ namespace instruction
         unsigned char getID() const;
         codegen::OperandSize getSize() const;
 
+        static RegisterPtr Get(std::string_view name);
+
     private:
         unsigned char mID;
         codegen::OperandSize mSize;
     };
-    using RegisterPtr = std::unique_ptr<Register>;
 }
 
 #endif
