@@ -1,24 +1,27 @@
 cmake_minimum_required (VERSION 3.26)
 
-project (vasm_tests_project)
-
-include_directories(${vasm_fakes_project_include_dirs})
-include_directories(include)
-
 set(CMAKE_BUILD_TYPE Debug)
 
-file(GLOB vasm_tests_project_sources
-    src/main.cpp
-    src/Test.cpp
+set(SOURCES
+    "src/main.cpp"
+    "src/Test.cpp"
 
-    src/lexer/LexerTests.cpp
+    "src/lexer/LexerTests.cpp"
 
-    src/parser/ParserTests.cpp
+    "src/parser/ParserTests.cpp"
 )
 
-add_executable(vasm_tests_project ${vasm_tests_project_sources})
-set_target_properties(vasm_tests_project PROPERTIES OUTPUT_NAME "vasm_tests")
+set(HEADERS
+    "include/Assert.h"
+    "include/Test.h"
+)
 
-target_compile_features(vasm_tests_project PUBLIC cxx_std_20)
-target_link_libraries(vasm_tests_project vasm_framework_project)
-target_link_libraries(vasm_tests_project vasm_fakes_project)
+add_executable(vasm-tests-vasm-tests ${SOURCES} ${HEADERS})
+add_executable(vasm::tests ALIAS vasm-tests-vasm-tests)
+target_include_directories(vasm-framework-vasm-framework
+    PUBLIC
+        include
+)
+target_compile_features(vasm-tests-vasm-tests PUBLIC cxx_std_20)
+target_link_libraries(vasm-tests-vasm-tests vasm::framework)
+target_link_libraries(vasm-tests-vasm-tests vasm::fakes)

@@ -1,58 +1,104 @@
 cmake_minimum_required (VERSION 3.26)
 
-project (vasm_framework_project)
-
-include_directories(include)
-
-set(CMAKE_BUILD_TYPE Debug)
-
-file(GLOB vasm_framework_project_sources
-    src/main.cpp
+set(SOURCES
+    "src/lexer/Lexer.cpp"
+    "src/lexer/Token.cpp"
 
 
-    src/lexer/Lexer.cpp
-    src/lexer/Token.cpp
+    "src/parser/Parser.cpp"
 
 
-    src/parser/Parser.cpp
+    "src/codegen/Binary.cpp"
+    "src/codegen/Elf.cpp"
+	"src/codegen/Pe.cpp"
 
-
-    src/codegen/Binary.cpp
-    src/codegen/Elf.cpp
-	src/codegen/Pe.cpp
-
-    src/codegen/builder/OpcodeBuilder.cpp
-    src/codegen/builder/Instruction.cpp
-    src/codegen/builder/ModRM.cpp
+    "src/codegen/builder/OpcodeBuilder.cpp"
+    "src/codegen/builder/Instruction.cpp"
+    "src/codegen/builder/ModRM.cpp"
 
     
-    src/instruction/operand/Immediate.cpp
-    src/instruction/operand/Label.cpp
-    src/instruction/operand/Register.cpp
-    src/instruction/operand/Memory.cpp
-    src/instruction/operand/String.cpp
+    "src/instruction/operand/Immediate.cpp"
+    "src/instruction/operand/Label.cpp"
+    "src/instruction/operand/Register.cpp"
+    "src/instruction/operand/Memory.cpp"
+    "src/instruction/operand/String.cpp"
     
-    src/instruction/Label.cpp
-    src/instruction/Directive.cpp
+    "src/instruction/Label.cpp"
+    "src/instruction/Directive.cpp"
 
-    src/instruction/singleOperandInstruction/CallInstruction.cpp
-    src/instruction/singleOperandInstruction/JmpInstruction.cpp
-    src/instruction/singleOperandInstruction/PushInstruction.cpp
-    src/instruction/singleOperandInstruction/PopInstruction.cpp
-    src/instruction/singleOperandInstruction/IntInstruction.cpp
+    "src/instruction/singleOperandInstruction/CallInstruction.cpp"
+    "src/instruction/singleOperandInstruction/JmpInstruction.cpp"
+    "src/instruction/singleOperandInstruction/PushInstruction.cpp"
+    "src/instruction/singleOperandInstruction/PopInstruction.cpp"
+    "src/instruction/singleOperandInstruction/IntInstruction.cpp"
 
-    src/instruction/twoOperandInstruction/MovInstruction.cpp
-    src/instruction/twoOperandInstruction/LeaInstruction.cpp
-    src/instruction/twoOperandInstruction/XchgInstruction.cpp
-    src/instruction/twoOperandInstruction/TestInstruction.cpp
+    "src/instruction/twoOperandInstruction/MovInstruction.cpp"
+    "src/instruction/twoOperandInstruction/LeaInstruction.cpp"
+    "src/instruction/twoOperandInstruction/XchgInstruction.cpp"
+    "src/instruction/twoOperandInstruction/TestInstruction.cpp"
 
 
-    src/error/ErrorReporter.cpp
+    "src/error/ErrorReporter.cpp"
 )
 
-add_library(vasm_framework_project SHARED ${vasm_framework_project_sources})
-set_target_properties(vasm_framework_project PROPERTIES OUTPUT_NAME "vasm_framework")
+set(HEADERS
+    "include/vasm/lexer/Lexer.h"
+    "include/vasm/lexer/Token.h"
 
-target_compile_features(vasm_framework_project PUBLIC cxx_std_20)
 
-set(${PROJECT_NAME}_include_dirs ${PROJECT_SOURCE_DIR}/include CACHE INTERNAL "${PROJECT_NAME} Include Directories" FORCE)
+    "include/vasm/parser/Parser.h"
+
+
+    "include/vasm/codegen/IOutputFormat.h"
+    "include/vasm/codegen/Opcodes.h"
+    "include/vasm/codegen/Binary.h"
+    "include/vasm/codegen/Elf.h"
+	"include/vasm/codegen/Pe.h"
+
+    "include/vasm/codegen/builder/OpcodeBuilder.h"
+    "include/vasm/codegen/builder/Instruction.h"
+    "include/vasm/codegen/builder/ModRM.h"
+
+    
+    "include/vasm/instruction/Value.h"
+    "include/vasm/instruction/Instruction.h"
+    "include/vasm/instruction/Label.h"
+    "include/vasm/instruction/Directive.h"
+
+    "include/vasm/instruction/Operand.h"
+    "include/vasm/instruction/operand/Immediate.h"
+    "include/vasm/instruction/operand/Label.h"
+    "include/vasm/instruction/operand/Register.h"
+    "include/vasm/instruction/operand/Memory.h"
+    "include/vasm/instruction/operand/String.h"
+
+    "include/vasm/instruction/NoOperandInstruction.h"
+    
+    "include/vasm/instruction/singleOperandInstruction/CallInstruction.h"
+    "include/vasm/instruction/singleOperandInstruction/JmpInstruction.h"
+    "include/vasm/instruction/singleOperandInstruction/PushInstruction.h"
+    "include/vasm/instruction/singleOperandInstruction/PopInstruction.h"
+    "include/vasm/instruction/singleOperandInstruction/IntInstruction.h"
+
+    "include/vasm/instruction/twoOperandInstruction/MovInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/LogicalInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/LeaInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/OutInInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/ShiftRotateInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/XchgInstruction.h"
+    "include/vasm/instruction/twoOperandInstruction/TestInstruction.h"
+
+
+    "include/vasm/error/ErrorReporter.h"
+    "include/vasm/error/IErrorReporter.h"
+)
+
+source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
+
+add_library(vasm-framework-vasm-framework ${SOURCES} ${HEADERS})
+add_library(vasm::framework ALIAS vasm-framework-vasm-framework)
+target_include_directories(vasm-framework-vasm-framework
+    PUBLIC
+        include
+)
+target_compile_features(vasm-framework-vasm-framework PUBLIC cxx_std_20)

@@ -5,10 +5,11 @@ CMakeFiles/
 *.o
 *.exe
 *.so
+*.a
 Makefile
 
 vasm
-vasm_tests
+vasm-tests-vasm-tests
 CMakeCache.txt
 compile_commands.json
 
