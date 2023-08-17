@@ -102,13 +102,3 @@ target_include_directories(vasm-framework-vasm-framework
         include
 )
 target_compile_features(vasm-framework-vasm-framework PUBLIC cxx_std_20)
-
-include(GNUInstallDirs)
-
-target_include_directories (
-  vasm-framework-vasm-framework
-    PUBLIC
-      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-install(FILES ${HEADERS} TYPE INCLUDE)
