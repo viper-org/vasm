@@ -16,7 +16,7 @@ namespace instruction
 
         std::pair<unsigned long long, bool> getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
 
-        void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, int offset = 0);
+        void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset = 0);
 
         std::unique_ptr<Operand> clone() override;
 

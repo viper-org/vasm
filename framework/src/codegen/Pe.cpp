@@ -244,6 +244,11 @@ namespace codegen {
         };
         sect->mRelocations.push_back(reloc);
     }
+
+    void PEFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+    {
+        // TODO: Implement
+    }
     
     template<typename T>
     static inline void PEWrite(std::ostream& stream, T data)

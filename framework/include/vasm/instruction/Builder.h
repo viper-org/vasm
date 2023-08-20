@@ -1,5 +1,6 @@
 // Copyright 2023 solar-mist
 
+#include <iostream>
 #ifndef VASM_INSTRUCTION_BUILDER_H
 #define VASM_INSTRUCTION_BUILDER_H 1
 
@@ -102,6 +103,9 @@ namespace instruction
 
                 case lexing::TokenType::LBracket:
                     return parseMemory();
+                    
+                default:
+                    return nullptr;
             }
         }
 

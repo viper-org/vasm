@@ -1,6 +1,8 @@
 #ifndef VASM_CODEGEN_OUTPUT_FORMAT_H
 #define VASM_CODEGEN_OUTPUT_FORMAT_H 1
 
+#include "vasm/codegen/Opcodes.h"
+
 #include <string>
 #include <ostream>
 
@@ -33,6 +35,7 @@ namespace codegen
         [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
         [[nodiscard]] virtual std::pair<unsigned long, bool> getSymbol(const std::string& name) const = 0;
         virtual void relocSymbol(const std::string& name, const std::string& location, Section section, int offset = 0) = 0;
+        virtual void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) = 0;
 
         virtual void print(std::ostream& stream) = 0;
     };

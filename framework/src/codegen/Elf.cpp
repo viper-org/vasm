@@ -172,6 +172,11 @@ namespace codegen
             it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
                 return symbol.name == name;
             });
+
+            if (it == mGlobalSymbols.end())
+            {
+                return std::make_pair(-1, false); // Forward label
+            }
         }
         
         return std::make_pair(it->value, it->external);
@@ -246,6 +251,41 @@ namespace codegen
         info |= static_cast<unsigned long>(symbol.index) << 32;
         rela->write(info);
         rela->write(symbol.external ? static_cast<unsigned long>(offset) : 0UL);
+    }
+
+    void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+    {
+        ELFSection* sect = getSection(section);
+
+        unsigned long long symbol = getSymbol(name).first - origin;
+        switch (size)
+        {
+            case OperandSize::Byte:
+                sect->mBuffer[location] = symbol;
+                break;
+            case OperandSize::Word:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                break;
+            case OperandSize::Long:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                sect->mBuffer[location + 2] = symbol >> 16;
+                sect->mBuffer[location + 3] = symbol >> 24;
+                break;
+            case OperandSize::Quad:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                sect->mBuffer[location + 2] = symbol >> 16;
+                sect->mBuffer[location + 3] = symbol >> 24;
+                sect->mBuffer[location + 4] = symbol >> 32;
+                sect->mBuffer[location + 5] = symbol >> 40;
+                sect->mBuffer[location + 6] = symbol >> 48;
+                sect->mBuffer[location + 7] = symbol >> 56;
+                break;
+            case OperandSize::None:
+                break;
+        }
     }
 
 

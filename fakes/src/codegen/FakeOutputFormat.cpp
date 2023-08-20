@@ -97,6 +97,10 @@ namespace codegen
             mRelocations.push_back({ name, section });
         }
 
+        void FakeOutputFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+        {
+        }
+
         void FakeOutputFormat::print(std::ostream&)
         {
         }

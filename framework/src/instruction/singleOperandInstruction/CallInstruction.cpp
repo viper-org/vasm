@@ -17,9 +17,9 @@ namespace instruction
                    .opcode(codegen::CALL_REL32)
                    .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 5))
                    .emit();
-            if (value.second)
+            if (value.second || value.first == -1)
             {
-                label->reloc(builder, section, -4);
+                label->reloc(builder, section, codegen::OperandSize::Long, -4);
             }
         }
         // TODO: Add call r/m

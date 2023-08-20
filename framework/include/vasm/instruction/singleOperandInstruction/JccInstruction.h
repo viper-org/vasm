@@ -31,7 +31,7 @@ namespace instruction
                         .emit();
                     if (value.second)
                     {
-                        label->reloc(builder, section, -6);
+                        label->reloc(builder, section, codegen::OperandSize::Long, -6);
                     }
                 }
                 else
@@ -42,7 +42,7 @@ namespace instruction
                         .emit();
                     if (value.second)
                     {
-                        label->reloc(builder, section, -2);
+                        label->reloc(builder, section, codegen::OperandSize::Byte, -2);
                     }
                 }
             }

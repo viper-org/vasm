@@ -185,7 +185,7 @@ namespace instruction
             }
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getRight().get()))
             {
-                label->reloc(builder, section, -size);
+                label->reloc(builder, section, regLhs->getSize(), -size);
             }
         }
     }

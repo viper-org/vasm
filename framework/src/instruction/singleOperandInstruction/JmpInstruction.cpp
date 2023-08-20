@@ -19,7 +19,7 @@ namespace instruction
                    .emit();
             if (value.second)
             {
-                label->reloc(builder, section, -2);
+                label->reloc(builder, section, codegen::OperandSize::Byte, -2);
             }
         }
         // TODO: Add call r/m

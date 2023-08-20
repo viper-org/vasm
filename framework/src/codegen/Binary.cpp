@@ -60,7 +60,11 @@ namespace codegen
 
     std::pair<unsigned long, bool> BinaryFormat::getSymbol(const std::string& name) const
     {
-        return std::make_pair(mSymbols.at(name), false);
+        if (mSymbols.find(name) != mSymbols.end())
+        {
+            return std::make_pair(mSymbols.at(name), false);
+        }
+        return std::make_pair(-1, false); // Forward symbol
     }
     
     bool BinaryFormat::hasSymbol(const std::string& name) const {
@@ -70,6 +74,11 @@ namespace codegen
     void BinaryFormat::relocSymbol(const std::string&, const std::string&, Section, int)
     {
         // TODO: Error
+    }
+
+    void BinaryFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+    {
+        // TODO: Implement
     }
 
     void BinaryFormat::print(std::ostream& stream)

@@ -12,11 +12,18 @@ namespace instruction
     {
     }
 
-    void LabelOperand::reloc(codegen::OpcodeBuilder& builder, codegen::Section section, int offset)
+    void LabelOperand::reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset)
     {
         if (mName != "$")
         {
-            builder.relocLabel(mName, mLocation, section, offset);
+            if (builder.getLabel(mName).first == -1) // Forward label
+            {
+                builder.forwardLabel(mName, section, size, offset);
+            }
+            else
+            {
+                builder.relocLabel(mName, mLocation, section, offset);
+            }
         }
     }
 

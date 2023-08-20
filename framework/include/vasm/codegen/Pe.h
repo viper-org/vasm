@@ -34,6 +34,7 @@ namespace codegen
         [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
         void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
+        void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
 
         void print(std::ostream& stream) override;
     private:
