@@ -40,7 +40,7 @@ namespace instruction
                         .opcode(Opcode)
                         .immediate(static_cast<unsigned char>(value.first - builder.getPosition(section) - 2))
                         .emit();
-                    if (value.second)
+                    if (value.second || value.first == -1)
                     {
                         label->reloc(builder, section, codegen::OperandSize::Byte, -2);
                     }
