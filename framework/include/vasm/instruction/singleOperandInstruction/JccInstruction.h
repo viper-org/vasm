@@ -42,7 +42,7 @@ namespace instruction
                         .emit();
                     if (value.second || value.first == -1)
                     {
-                        label->reloc(builder, section, codegen::OperandSize::Byte, -2);
+                        label->reloc(builder, section, codegen::OperandSize::Byte, -1);
                     }
                 }
             }
