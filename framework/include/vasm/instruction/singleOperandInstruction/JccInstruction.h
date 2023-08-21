@@ -31,7 +31,7 @@ namespace instruction
                         .emit();
                     if (value.second || value.first == -1)
                     {
-                        label->reloc(builder, section, codegen::OperandSize::Long, -6);
+                        label->reloc(builder, section, codegen::OperandSize::Long, -4);
                     }
                 }
                 else
