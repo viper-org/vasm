@@ -29,7 +29,7 @@ namespace instruction
                         .opcode(static_cast<codegen::WordOpcodes>(Opcode + 0x10))
                         .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 6))
                         .emit();
-                    if (value.second)
+                    if (value.second || value.first == -1)
                     {
                         label->reloc(builder, section, codegen::OperandSize::Long, -6);
                     }
