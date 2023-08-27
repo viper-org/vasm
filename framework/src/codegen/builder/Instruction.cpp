@@ -72,7 +72,7 @@ namespace codegen
         return *this;
     }
 
-    Instruction& Instruction::immediate(unsigned long imm64)
+    Instruction& Instruction::immediate(unsigned long long imm64)
     {
         mImmediate = imm64;
         return *this;

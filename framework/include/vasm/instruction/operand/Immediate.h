@@ -14,10 +14,10 @@ namespace instruction
     public:
         Immediate(unsigned long long value);
 
-        unsigned char  imm8() const;
-        unsigned short imm16() const;
-        unsigned int   imm32() const;
-        unsigned long  imm64() const;
+        unsigned char       imm8() const;
+        unsigned short      imm16() const;
+        unsigned int        imm32() const;
+        unsigned long long  imm64() const;
 
         codegen::OperandSize getSize() const;
 

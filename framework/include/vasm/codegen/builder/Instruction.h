@@ -31,10 +31,10 @@ namespace codegen
 
         Instruction& displacement(std::optional<int> disp);
 
-        Instruction& immediate(unsigned char  imm8);
-        Instruction& immediate(unsigned short imm16);
-        Instruction& immediate(unsigned int   imm32);
-        Instruction& immediate(unsigned long  imm64);
+        Instruction& immediate(unsigned char       imm8);
+        Instruction& immediate(unsigned short      imm16);
+        Instruction& immediate(unsigned int        imm32);
+        Instruction& immediate(unsigned long long  imm64);
 
         Instruction& string(std::string_view str);
 

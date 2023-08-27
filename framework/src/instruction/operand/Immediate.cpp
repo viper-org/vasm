@@ -25,7 +25,7 @@ namespace instruction
         return mValue;
     }
 
-    unsigned long Immediate::imm64() const
+    unsigned long long Immediate::imm64() const
     {
         return mValue;
     }
