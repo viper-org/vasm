@@ -101,6 +101,9 @@ namespace codegen
         LEAVE = 0xC9,
 
 
+        MOVSXD = 0x63,
+
+
         MOV_REG_IMM8 = 0xB0,
         MOV_REG_IMM  = 0xB8,
         MOV_RM_IMM8  = 0xC6,
@@ -145,6 +148,9 @@ namespace codegen
 
         MOVZX8 = 0xB6,
         MOVZX16 = 0xB7,
+
+        MOVSX8 = 0xBE,
+        MOVSX16 = 0xBF,
     };
 
     using namespace std::literals;

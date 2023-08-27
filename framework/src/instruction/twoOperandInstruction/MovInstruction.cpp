@@ -276,4 +276,116 @@ namespace instruction
             }
         }
     }
+
+    void MovSXInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovSXInstruction& instruction)
+    {
+        codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        std::optional<int> displacement;
+
+        Register* lhs = static_cast<Register*>(instruction.getLeft().get());
+
+        Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
+        Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
+        if (memRhs)
+        {
+            regRhs = memRhs->getReg();
+            addressingMode = memRhs->getAddressingMode();
+            displacement = memRhs->getDisplacement();
+        }
+
+        assert(regRhs->getSize() != codegen::OperandSize::Quad);
+
+        if (regRhs->getSize() == codegen::OperandSize::Byte)
+        {
+            assert(lhs->getSize() != codegen::OperandSize::Byte);
+            switch(lhs->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // Unreachable
+                case codegen::OperandSize::Word:
+                    builder.createInstruction(section)
+                           .prefix(codegen::SIZE_PREFIX)
+                           .opcode(codegen::MOVSX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                           .opcode(codegen::MOVSX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .prefix(codegen::REX::W)
+                           .opcode(codegen::MOVSX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (regRhs->getSize() == codegen::OperandSize::Word)
+        {
+            assert(lhs->getSize() != codegen::OperandSize::Byte);
+            assert(lhs->getSize() != codegen::OperandSize::Word);
+            switch(lhs->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // Unreachable
+                case codegen::OperandSize::Word:
+                    break; // Unreachable
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                           .opcode(codegen::MOVSX16)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .prefix(codegen::REX::W)
+                           .opcode(codegen::MOVSX16)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            assert(lhs->getSize() != codegen::OperandSize::Byte);
+            assert(lhs->getSize() != codegen::OperandSize::Word);
+            switch(lhs->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // Unreachable
+                case codegen::OperandSize::Word:
+                    break; // Unreachable
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                           .opcode(codegen::MOVSXD)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .prefix(codegen::REX::W)
+                           .opcode(codegen::MOVSXD)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }

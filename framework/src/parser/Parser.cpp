@@ -82,6 +82,7 @@ namespace parsing
 
             { "mov",      [this]() -> InstructionPtr { return Builder<MovInstruction>()    .parse(mTokenStream); } },
             { "movzx",    [this]() -> InstructionPtr { return Builder<MovZXInstruction>()  .parse(mTokenStream); } },
+            { "movsx",    [this]() -> InstructionPtr { return Builder<MovSXInstruction>()  .parse(mTokenStream); } },
             { "lea",      [this]() -> InstructionPtr { return Builder<LeaInstruction>()    .parse(mTokenStream); } },
 
             { "rol",      [this]() -> InstructionPtr { return Builder<RolInstruction>()    .parse(mTokenStream); } },

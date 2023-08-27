@@ -61,6 +61,7 @@ namespace lexing
 
         "mov",
         "movzx",
+        "movsx",
         "lea",
 
         "rol",

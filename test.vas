@@ -14,7 +14,7 @@ false:
 
 _start:
     mov rax, 1
-    movzxd rdi, eax
+    movsx rdi, eax
     mov rsi, message
     mov rdx, 13
     syscall
