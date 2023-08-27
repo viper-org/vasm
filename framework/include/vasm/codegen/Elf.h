@@ -72,8 +72,8 @@ namespace codegen
             std::uint8_t link;
             std::uint8_t type;
             std::uint16_t sectionIndex;
-             std::uint64_t value;
-             std::uint64_t size;
+            std::uint64_t value;
+            std::uint64_t size;
 
             bool external;
             int index;
@@ -88,7 +88,7 @@ namespace codegen
         {
             bool operator()(const ELFSymbol& a, const ELFSymbol& b) const
             {
-                return a.index <= b.index;
+                return a.index < b.index;
             }
         };
         using Symbols = std::set<ELFSymbol, ELFSymbolComparator>;
