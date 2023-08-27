@@ -47,7 +47,7 @@ namespace codegen
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
         std::optional<int> mDisplacement;
-        std::variant<std::monostate, unsigned char, unsigned short, unsigned int, unsigned long> mImmediate;
+        std::variant<std::monostate, unsigned char, unsigned short, unsigned int, unsigned long long> mImmediate;
         std::optional<std::string_view> mString;
 
         codegen::IOutputFormat* mOutputFormat;
