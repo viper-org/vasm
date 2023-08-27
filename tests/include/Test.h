@@ -1,7 +1,7 @@
 #ifndef VASM_TESTS_TESTS_H
 #define VASM_TESTS_TESTS_H 1
 
-#include "Assert.h"
+#include "VasmAssert.h"
 
 #include <vector>
 #include <functional>

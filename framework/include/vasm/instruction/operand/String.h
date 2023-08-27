@@ -5,6 +5,8 @@
 
 #include "vasm/instruction/Operand.h"
 
+#include <string>
+
 namespace instruction
 {
     class String : public Operand

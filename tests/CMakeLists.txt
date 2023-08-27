@@ -12,7 +12,7 @@ set(SOURCES
 )
 
 set(HEADERS
-    "include/Assert.h"
+    "include/VasmAssert.h"
     "include/Test.h"
 )
 
