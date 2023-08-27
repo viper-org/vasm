@@ -10,12 +10,12 @@
 
 namespace instruction
 {
-    template <unsigned char ModRM>
+    template <std::uint8_t ModRM>
     struct LogicalInstructionImpl;
     template <auto... Ts>
     using LogicalInstruction = TwoOperandInstructionTemplate<LogicalInstructionImpl<Ts...>>;
 
-    template <unsigned char ModRM>
+    template <std::uint8_t ModRM>
     struct LogicalInstructionImpl
     {
         static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<ModRM>& instruction)

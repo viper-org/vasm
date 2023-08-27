@@ -3,6 +3,7 @@
 
 #include "vasm/codegen/Opcodes.h"
 
+#include <cstdint>
 #include <string>
 #include <ostream>
 
@@ -22,18 +23,18 @@ namespace codegen
     public:
         virtual ~IOutputFormat() = default;
 
-        virtual void write(unsigned char      data, Section section) = 0;
-        virtual void write(unsigned short     data, Section section) = 0;
-        virtual void write(unsigned int       data, Section section) = 0;
-        virtual void write(unsigned long long data, Section section) = 0;
+        virtual void write(std::uint8_t      data, Section section) = 0;
+        virtual void write(std::uint16_t     data, Section section) = 0;
+        virtual void write(std::uint32_t       data, Section section) = 0;
+        virtual void write(std::uint64_t data, Section section) = 0;
 
         virtual size_t getPosition(Section section) = 0;
         virtual size_t getSectionStart(Section section) = 0;
 
-        virtual void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) = 0;
+        virtual void addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal) = 0;
         virtual void addExternSymbol(const std::string& name) = 0;
         [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
-        [[nodiscard]] virtual std::pair<unsigned long, bool> getSymbol(const std::string& name) const = 0;
+        [[nodiscard]] virtual std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const = 0;
         virtual void relocSymbol(const std::string& name, const std::string& location, Section section, int offset = 0) = 0;
         virtual void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) = 0;
 

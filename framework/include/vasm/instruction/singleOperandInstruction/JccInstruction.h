@@ -27,7 +27,7 @@ namespace instruction
                 {
                     builder.createInstruction(section)
                         .opcode(static_cast<codegen::WordOpcodes>(Opcode + 0x10))
-                        .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 6))
+                        .immediate(static_cast<std::uint32_t>(value.first - builder.getPosition(section) - 6))
                         .emit();
                     if (value.second || value.first == -1)
                     {
@@ -38,7 +38,7 @@ namespace instruction
                 {
                     builder.createInstruction(section)
                         .opcode(Opcode)
-                        .immediate(static_cast<unsigned char>(value.first - builder.getPosition(section) - 2))
+                        .immediate(static_cast<std::uint8_t>(value.first - builder.getPosition(section) - 2))
                         .emit();
                     if (value.second || value.first == -1)
                     {

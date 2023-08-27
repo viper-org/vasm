@@ -20,17 +20,17 @@ namespace codegen
     public:
         explicit ELFFormat(std::string_view fileName);
 
-        void write(unsigned char      data, Section section) override;
-        void write(unsigned short     data, Section section) override;
-        void write(unsigned int       data, Section section) override;
-        void write(unsigned long long data, Section section) override;
+        void write(std::uint8_t      data, Section section) override;
+        void write(std::uint16_t     data, Section section) override;
+        void write(std::uint32_t       data, Section section) override;
+        void write(std::uint64_t data, Section section) override;
 
         size_t getPosition(Section section) override;
         size_t getSectionStart(Section section) override;
 
-        void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) override;
+        void addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal) override;
         void addExternSymbol(const std::string& name) override;
-        [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
+        [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
         void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
         void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
@@ -40,7 +40,7 @@ namespace codegen
         class ELFSection
         {
         public:
-            ELFSection(std::string_view name, int type, long flags, int link, int info, long align, long entrySize, Section section);
+            ELFSection(std::string_view name, int type, std::int64_t flags, int link, int info, std::int64_t align, std::int64_t entrySize, Section section);
             explicit ELFSection(Section section);
 
             void write(std::unsigned_integral auto data);
@@ -52,11 +52,11 @@ namespace codegen
             std::string mName;
             int mNameIdx;
             int mType;
-            long mFlags;
+            std::int64_t mFlags;
             int mLink;
             int mInfo;
-            long mAlign;
-            long mEntrySize;
+            std::int64_t mAlign;
+            std::int64_t mEntrySize;
             Section mSection;
 
             [[nodiscard]] size_t size() const;
@@ -68,12 +68,12 @@ namespace codegen
         {
             std::string name;
             
-            unsigned int strtabIndex;
-            unsigned char link;
-            unsigned char type;
-            unsigned short sectionIndex;
-            unsigned long value;
-            unsigned long size;
+            std::uint32_t strtabIndex;
+            std::uint8_t link;
+            std::uint8_t type;
+            std::uint16_t sectionIndex;
+             std::uint64_t value;
+             std::uint64_t size;
 
             bool external;
             int index;

@@ -14,7 +14,7 @@ namespace instruction
     public:
         LabelOperand(std::string name, std::string location = "");
 
-        std::pair<unsigned long long, bool> getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
+        std::pair<std::uint64_t, bool> getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
 
         void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset = 0);
 

@@ -29,8 +29,8 @@ namespace codegen
 
     void ModRM::emit(codegen::IOutputFormat* outputFormat, codegen::Section section)
     {
-        unsigned char byte = 0;
-        byte |= (static_cast<unsigned char>(mAddressingMode) << 6);
+        std::uint8_t byte = 0;
+        byte |= (static_cast<std::uint8_t>(mAddressingMode) << 6);
         byte |= (mReg << 3);
         byte |= mRM;
 

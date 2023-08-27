@@ -5,13 +5,13 @@
 
 namespace instruction
 {
-    Register::Register(unsigned char id, codegen::OperandSize size)
+    Register::Register(std::uint8_t id, codegen::OperandSize size)
         : mID(id)
         , mSize(size)
     {
     }
 
-    unsigned char Register::getID() const
+    std::uint8_t Register::getID() const
     {
         return mID;
     }
@@ -25,8 +25,8 @@ namespace instruction
     {
         constexpr int REGISTERS_PER_ENCODING = 4;
 
-        unsigned long long index;
-        for (index = 0; index < static_cast<unsigned long long>(codegen::Registers.size()); index++)
+        std::uint64_t index;
+        for (index = 0; index < static_cast<std::uint64_t>(codegen::Registers.size()); index++)
         {
             if (codegen::Registers[index] == name)
             {

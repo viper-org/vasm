@@ -13,7 +13,7 @@ namespace codegen
         struct FakeSymbol
         {
             std::string name;
-            unsigned long value{ 0 };
+             std::uint64_t value{ 0 };
             Section section;
             bool isGlobal{ true };
 
@@ -32,31 +32,31 @@ namespace codegen
         public:
             FakeOutputFormat();
 
-            void write(unsigned char      data, Section section) override;
-            void write(unsigned short     data, Section section) override;
-            void write(unsigned int       data, Section section) override;
-            void write(unsigned long long data, Section section) override;
+            void write(std::uint8_t      data, Section section) override;
+            void write(std::uint16_t     data, Section section) override;
+            void write(std::uint32_t       data, Section section) override;
+            void write(std::uint64_t data, Section section) override;
 
             size_t getPosition(Section section) override;
             size_t getSectionStart(Section section) override;
 
-            void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) override;
+            void addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal) override;
             void addExternSymbol(const std::string& name) override;
-            [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
+            [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
             [[nodiscard]] bool hasSymbol(const std::string& name) const override;
             void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
             void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
 
             void print(std::ostream& stream) override;
 
-            const std::vector<unsigned char>&  getCode()        const;
-            const std::vector<unsigned char>&  getData()        const;
+            const std::vector<std::uint8_t>&  getCode()        const;
+            const std::vector<std::uint8_t>&  getData()        const;
             const std::vector<FakeSymbol>&     getSymbols()     const;
             const std::vector<FakeRelocation>& getRelocations() const;
         
         private:
-            std::vector<unsigned char> mCode;
-            std::vector<unsigned char> mData;
+            std::vector<std::uint8_t> mCode;
+            std::vector<std::uint8_t> mData;
             
             std::vector<FakeSymbol> mSymbols;
             std::vector<FakeRelocation> mRelocations;

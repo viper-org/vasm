@@ -15,7 +15,7 @@ namespace instruction
             auto value = label->getValue(builder, section);
             builder.createInstruction(section)
                    .opcode(codegen::JMP_REL8)
-                   .immediate(static_cast<unsigned char>(value.first - builder.getPosition(section) - 2))
+                   .immediate(static_cast<std::uint8_t>(value.first - builder.getPosition(section) - 2))
                    .emit();
             if (value.second || value.first == -1)
             {

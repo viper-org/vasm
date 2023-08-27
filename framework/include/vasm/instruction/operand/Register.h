@@ -15,9 +15,9 @@ namespace instruction
     class Register : public Operand
     {
     public:
-        Register(unsigned char id, codegen::OperandSize size);
+        Register(std::uint8_t id, codegen::OperandSize size);
 
-        unsigned char getID() const;
+        std::uint8_t getID() const;
         codegen::OperandSize getSize() const;
 
         std::unique_ptr<Operand> clone() override;
@@ -25,7 +25,7 @@ namespace instruction
         static RegisterPtr Get(std::string_view name);
 
     private:
-        unsigned char mID;
+        std::uint8_t mID;
         codegen::OperandSize mSize;
     };
 }

@@ -182,7 +182,7 @@ namespace lexing
                 return Token {startSourceLocation, it->second};
             }
 
-            if (text == "byte" || text == "word" || text == "long" || text == "quad") // TODO: Not this
+            if (text == "byte" || text == "word" || text == "int64_t" || text == "quad") // TODO: Not this
             {
                 return Token {startSourceLocation, TokenType::Size, text};
             }

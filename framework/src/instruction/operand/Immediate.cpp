@@ -5,27 +5,27 @@
 
 namespace instruction
 {
-    Immediate::Immediate(unsigned long long value)
+    Immediate::Immediate(std::uint64_t value)
         : mValue(value)
     {
     }
 
-    unsigned char Immediate::imm8() const
+    std::uint8_t Immediate::imm8() const
     {
         return mValue;
     }
 
-    unsigned short Immediate::imm16() const
+    std::uint16_t Immediate::imm16() const
     {
         return mValue;
     }
 
-    unsigned int Immediate::imm32() const
+    std::uint32_t Immediate::imm32() const
     {
         return mValue;
     }
 
-    unsigned long long Immediate::imm64() const
+    std::uint64_t Immediate::imm64() const
     {
         return mValue;
     }

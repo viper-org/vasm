@@ -12,20 +12,20 @@ namespace codegen
         {
         }
 
-        void FakeOutputFormat::write(unsigned char data, Section section)
+        void FakeOutputFormat::write(std::uint8_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
         }
 
-        void FakeOutputFormat::write(unsigned short data, Section section)
+        void FakeOutputFormat::write(std::uint16_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
             buffer.push_back(data >> 8);
         }
 
-        void FakeOutputFormat::write(unsigned int data, Section section)
+        void FakeOutputFormat::write(std::uint32_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
@@ -34,7 +34,7 @@ namespace codegen
             buffer.push_back(data >> 24);
         }
 
-        void FakeOutputFormat::write(unsigned long long data, Section section)
+        void FakeOutputFormat::write(std::uint64_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
@@ -59,7 +59,7 @@ namespace codegen
             return 0;
         }
 
-        void FakeOutputFormat::addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal)
+        void FakeOutputFormat::addSymbol(const std::string& name,  std::uint64_t value, Section section, bool isGlobal)
         {
             mSymbols.push_back({name, value, section, isGlobal});
         }
@@ -69,7 +69,7 @@ namespace codegen
             // TODO: Implement
         }
 
-        std::pair<unsigned long, bool> FakeOutputFormat::getSymbol(const std::string& name) const
+        std::pair< std::uint64_t, bool> FakeOutputFormat::getSymbol(const std::string& name) const
         {
             auto it = std::find_if(mSymbols.begin(), mSymbols.end(), [&name](auto& symbol) {
                 return symbol.name == name;
@@ -105,12 +105,12 @@ namespace codegen
         {
         }
 
-        const std::vector<unsigned char>& FakeOutputFormat::getCode() const
+        const std::vector<std::uint8_t>& FakeOutputFormat::getCode() const
         {
             return mCode;
         }
 
-        const std::vector<unsigned char>& FakeOutputFormat::getData() const
+        const std::vector<std::uint8_t>& FakeOutputFormat::getData() const
         {
             return mData;
         }

@@ -2,12 +2,13 @@
 #define VASM_CODEGEN_OPCODES_H 1
 
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
 namespace codegen
 {
-    enum REX : unsigned char
+    enum REX : std::uint8_t
     {
         B = 0b01000001,
         X = 0b01000010,
@@ -25,7 +26,7 @@ namespace codegen
         None,
     };
 
-    enum ByteOpcodes : unsigned char
+    enum ByteOpcodes : std::uint8_t
     {
         LOGICAL_REG8_IMM8 = 0x80,
         LOGICAL_REG_IMM = 0x81,
@@ -139,7 +140,7 @@ namespace codegen
         INT = 0xCD,
     };
 
-    enum WordOpcodes : unsigned char
+    enum WordOpcodes : std::uint8_t
     {
         SYSCALL = 0x05,
 
@@ -159,7 +160,7 @@ namespace codegen
         "bh"sv, "di"sv, "edi"sv, "rdi"sv,
     };
 
-    constexpr unsigned char SIZE_PREFIX = 0x66;
+    constexpr std::uint8_t SIZE_PREFIX = 0x66;
 }
 
 #endif

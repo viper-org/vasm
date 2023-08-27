@@ -20,14 +20,14 @@ namespace ParserTests
     struct TestCase
     {
         std::vector<Token> input;
-        std::vector<unsigned char> expectedCode;
-        std::vector<unsigned char> expectedData;
+        std::vector<std::uint8_t> expectedCode;
+        std::vector<std::uint8_t> expectedData;
         std::vector<FakeSymbol> expectedSymbols;
         std::vector<FakeRelocation> expectedRelocations;
 
         TestCase& setInput(              const std::vector<Token>& newInput)                { input               = newInput;       return *this; }
-        TestCase& setExpectedCode(       const std::vector<unsigned char>& newCode)         { expectedCode        = newCode;        return *this; }
-        TestCase& setExpectedData(       const std::vector<unsigned char>& newData)         { expectedData        = newData;        return *this; }
+        TestCase& setExpectedCode(       const std::vector<std::uint8_t>& newCode)         { expectedCode        = newCode;        return *this; }
+        TestCase& setExpectedData(       const std::vector<std::uint8_t>& newData)         { expectedData        = newData;        return *this; }
         TestCase& setExpectedSymbols(    const std::vector<FakeSymbol>& newSymbols)         { expectedSymbols     = newSymbols;     return *this; }
         TestCase& setExpectedRelocations(const std::vector<FakeRelocation>& newRelocations) { expectedRelocations = newRelocations; return *this; }
     };
@@ -161,7 +161,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "jmp" },
                         { lexing::TokenType::Dollar, "" },
                     })
-                    .setExpectedCode({ codegen::JMP_REL8, static_cast<unsigned char>(-2) }) // Instruction is 2 bytes
+                    .setExpectedCode({ codegen::JMP_REL8, static_cast<std::uint8_t>(-2) }) // Instruction is 2 bytes
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -180,7 +180,7 @@ namespace ParserTests
                         { lexing::TokenType::Instruction, "call" },
                         { lexing::TokenType::Dollar, "" },
                     })
-                    .setExpectedCode({ codegen::CALL_REL32, static_cast<unsigned char>(-5), 0xFF, 0xFF, 0xFF }) // Instruction is 5 bytes
+                    .setExpectedCode({ codegen::CALL_REL32, static_cast<std::uint8_t>(-5), 0xFF, 0xFF, 0xFF }) // Instruction is 5 bytes
                     .setExpectedData({})
                     .setExpectedSymbols({})
                     .setExpectedRelocations({}),
@@ -333,7 +333,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<std::uint8_t>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -350,7 +350,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::LEA, 0x05, static_cast<unsigned char>(-6), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::LEA, 0x05, static_cast<std::uint8_t>(-6), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -367,7 +367,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::REX::W, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::REX::W, codegen::LEA, 0x05, static_cast<std::uint8_t>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({}),
@@ -384,7 +384,7 @@ namespace ParserTests
                         { lexing::TokenType::Identifier, "a" },
                         { lexing::TokenType::RBracket, "" },
                     })
-                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<unsigned char>(-7), 0xFF, 0xFF, 0xFF })
+                    .setExpectedCode({ codegen::SIZE_PREFIX, codegen::LEA, 0x05, static_cast<std::uint8_t>(-7), 0xFF, 0xFF, 0xFF })
                     .setExpectedData({})
                     .setExpectedSymbols({ FakeSymbol{"a"} })
                     .setExpectedRelocations({})

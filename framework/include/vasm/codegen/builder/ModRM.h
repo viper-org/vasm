@@ -7,7 +7,7 @@
 
 namespace codegen
 {
-    enum class AddressingMode : unsigned char
+    enum class AddressingMode : std::uint8_t
     {
         RegisterIndirect = 0b00,
         OneByteDisp = 0b01,
@@ -20,7 +20,7 @@ namespace codegen
     class ModRM
     {
     friend class Instruction;
-    using Register = unsigned char;
+    using Register = std::uint8_t;
     public:
         ModRM(AddressingMode addressingMode, Register reg, Register RM);
 

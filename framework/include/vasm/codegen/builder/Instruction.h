@@ -18,7 +18,7 @@ namespace codegen
     class Instruction
     {
     friend class OpcodeBuilder;
-    using Prefix = unsigned char;
+    using Prefix = std::uint8_t;
     public:
 
         Instruction& prefix(Prefix newPrefix);
@@ -31,10 +31,10 @@ namespace codegen
 
         Instruction& displacement(std::optional<int> disp);
 
-        Instruction& immediate(unsigned char       imm8);
-        Instruction& immediate(unsigned short      imm16);
-        Instruction& immediate(unsigned int        imm32);
-        Instruction& immediate(unsigned long long  imm64);
+        Instruction& immediate(std::uint8_t       imm8);
+        Instruction& immediate(std::uint16_t      imm16);
+        Instruction& immediate(std::uint32_t        imm32);
+        Instruction& immediate(std::uint64_t  imm64);
 
         Instruction& string(std::string_view str);
 
@@ -47,7 +47,7 @@ namespace codegen
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
         std::optional<int> mDisplacement;
-        std::variant<std::monostate, unsigned char, unsigned short, unsigned int, unsigned long long> mImmediate;
+        std::variant<std::monostate, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> mImmediate;
         std::optional<std::string_view> mString;
 
         codegen::IOutputFormat* mOutputFormat;

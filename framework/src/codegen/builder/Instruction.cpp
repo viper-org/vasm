@@ -54,25 +54,25 @@ namespace codegen
     }
 
 
-    Instruction& Instruction::immediate(unsigned char imm8)
+    Instruction& Instruction::immediate(std::uint8_t imm8)
     {
         mImmediate = imm8;
         return *this;
     }
 
-    Instruction& Instruction::immediate(unsigned short imm16)
+    Instruction& Instruction::immediate(std::uint16_t imm16)
     {
         mImmediate = imm16;
         return *this;
     }
 
-    Instruction& Instruction::immediate(unsigned int imm32)
+    Instruction& Instruction::immediate(std::uint32_t imm32)
     {
         mImmediate = imm32;
         return *this;
     }
 
-    Instruction& Instruction::immediate(unsigned long long imm64)
+    Instruction& Instruction::immediate(std::uint64_t imm64)
     {
         mImmediate = imm64;
         return *this;
@@ -97,7 +97,7 @@ namespace codegen
         std::visit(overloaded {
             [this](auto arg) { mOutputFormat->write(arg, mSection); },
             [this](codegen::WordOpcodes arg) { 
-                mOutputFormat->write(static_cast<unsigned char>(0x0F), mSection);
+                mOutputFormat->write(static_cast<std::uint8_t>(0x0F), mSection);
                 mOutputFormat->write(arg, mSection);
             },
             [](std::monostate) {}
@@ -112,11 +112,11 @@ namespace codegen
         {
             if (*mDisplacement <= INT8_MAX)
             {
-                mOutputFormat->write(static_cast<unsigned char>(*mDisplacement), mSection);
+                mOutputFormat->write(static_cast<std::uint8_t>(*mDisplacement), mSection);
             }
             else
             {
-                mOutputFormat->write(static_cast<unsigned int>(*mDisplacement), mSection);
+                mOutputFormat->write(static_cast<std::uint32_t>(*mDisplacement), mSection);
             }
         }
 
@@ -127,7 +127,7 @@ namespace codegen
 
         if (mString)
         {
-            for (unsigned char ch : *mString)
+            for (std::uint8_t ch : *mString)
             {
                 mOutputFormat->write(ch, mSection);
             }

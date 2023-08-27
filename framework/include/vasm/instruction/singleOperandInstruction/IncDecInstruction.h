@@ -9,12 +9,12 @@
 
 namespace instruction
 {
-    template <unsigned char modrm>
+    template <std::uint8_t modrm>
     struct IncDecInstructionImpl;
     template<auto... Ts>
     using IncDecInstruction = SingleOperandInstructionTemplate<IncDecInstructionImpl<Ts...>>;
 
-    template <unsigned char modrm>
+    template <std::uint8_t modrm>
     struct IncDecInstructionImpl
     {
         static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, IncDecInstruction<modrm>& instruction)

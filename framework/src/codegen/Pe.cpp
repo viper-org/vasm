@@ -33,44 +33,44 @@ namespace codegen {
     {
     }
     
-    void PEFormat::write(unsigned char data, Section section)
+    void PEFormat::write(std::uint8_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const std::int8_t*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned short data, Section section)
+    void PEFormat::write(std::uint16_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const std::int8_t*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned int data, Section section)
+    void PEFormat::write(std::uint32_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const std::int8_t*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned long long data, Section section)
+    void PEFormat::write(std::uint64_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const std::int8_t*>(&data), sizeof(data));
     }
     
     size_t PEFormat::getPosition(Section section)
@@ -125,7 +125,7 @@ namespace codegen {
         }
     }
 
-    void PEFormat::PESection::write(const char* data, size_t size)
+    void PEFormat::PESection::write(const std::int8_t* data, size_t size)
     {
         for (; size; --size) {
             mBuffer.push_back(*data++);
@@ -177,7 +177,7 @@ namespace codegen {
         }
     }
     
-    void PEFormat::addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal)
+    void PEFormat::addSymbol(const std::string& name,  std::uint64_t value, Section section, bool isGlobal)
     {
         getOrCreateSection(section);
         
@@ -220,7 +220,7 @@ namespace codegen {
         // TODO: Implement
     }
     
-    [[nodiscard]] std::pair<unsigned long, bool> PEFormat::getSymbol(const std::string& name) const
+    [[nodiscard]] std::pair< std::uint64_t, bool> PEFormat::getSymbol(const std::string& name) const
     {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
@@ -284,7 +284,7 @@ namespace codegen {
         
         size_t usableStart = symbolTableOffset + symbolTableSize + mStringTable.size();
         
-        char null_char = 0;
+        std::int8_t null_char = 0;
         for (auto& sect : mSections)
         {
             if (sect.mName.size() <= 8)

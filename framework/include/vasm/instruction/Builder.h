@@ -54,7 +54,7 @@ namespace instruction
                     std::string text = consume().getText();
                     if (text == "byte") size = codegen::OperandSize::Byte;
                     if (text == "word") size = codegen::OperandSize::Word;
-                    if (text == "long") size = codegen::OperandSize::Long;
+                    if (text == "int64_t") size = codegen::OperandSize::Long;
                     if (text == "quad") size = codegen::OperandSize::Quad;
                 }
 
@@ -133,8 +133,8 @@ namespace instruction
         {
             constexpr int REGISTERS_PER_ENCODING = 4;
 
-            unsigned long long index;
-            for (index = 0; index < static_cast<unsigned long long>(codegen::Registers.size()); index++)
+            std::uint64_t index;
+            for (index = 0; index < static_cast<std::uint64_t>(codegen::Registers.size()); index++)
             {
                 if (codegen::Registers[index] == current().getText())
                 {

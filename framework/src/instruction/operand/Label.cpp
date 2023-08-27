@@ -27,7 +27,7 @@ namespace instruction
         }
     }
 
-    std::pair<unsigned long long, bool> LabelOperand::getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const
+    std::pair<std::uint64_t, bool> LabelOperand::getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const
     {
         if (mName == "$")
         {

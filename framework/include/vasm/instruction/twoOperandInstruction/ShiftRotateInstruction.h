@@ -13,12 +13,12 @@
 
 namespace instruction
 {
-    template <unsigned char ModRM>
+    template <std::uint8_t ModRM>
     struct ShiftRotateInstructionImpl;
     template <auto... Ts>
     using ShiftRotateInstruction = TwoOperandInstructionTemplate<ShiftRotateInstructionImpl<Ts...>>;
 
-    template <unsigned char ModRM>
+    template <std::uint8_t ModRM>
     struct ShiftRotateInstructionImpl
     {
         static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, ShiftRotateInstruction<ModRM>& instruction)
