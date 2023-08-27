@@ -339,9 +339,10 @@ namespace codegen
 
     void ELFFormat::ELFSection::write(std::string_view data)
     {
-        for (size_t i = 0; i < data.size() + 1; ++i) {
+        for (size_t i = 0; i < data.size(); ++i) {
             mBuffer.push_back(data[i]);
         }
+        mBuffer.push_back(0);
     }
 
     size_t ELFFormat::ELFSection::size() const
