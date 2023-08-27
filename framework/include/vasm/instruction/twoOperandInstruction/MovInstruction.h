@@ -14,6 +14,14 @@ namespace instruction
     {
         static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovInstruction& instruction);
     };
+
+    struct MovZXInstructionImpl;
+    using MovZXInstruction = TwoOperandInstructionTemplate<MovZXInstructionImpl>;
+
+    struct MovZXInstructionImpl
+    {
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovZXInstruction& instruction);
+    };
 }
 
 #endif

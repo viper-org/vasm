@@ -60,6 +60,7 @@ namespace lexing
         "leave",
 
         "mov",
+        "movzx",
         "lea",
 
         "rol",

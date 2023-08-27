@@ -11,6 +11,8 @@
 #include "vasm/instruction/operand/Memory.h"
 #include "vasm/instruction/operand/Register.h"
 
+#include <cassert>
+
 namespace instruction
 {
     void MovInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovInstruction& instruction)
@@ -186,6 +188,91 @@ namespace instruction
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getRight().get()))
             {
                 label->reloc(builder, section, regLhs->getSize(), -size);
+            }
+        }
+    }
+
+
+    void MovZXInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovZXInstruction& instruction)
+    {
+        codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        std::optional<int> displacement;
+
+        Register* lhs = static_cast<Register*>(instruction.getLeft().get());
+
+        Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
+        Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
+        if (memRhs)
+        {
+            regRhs = memRhs->getReg();
+            addressingMode = memRhs->getAddressingMode();
+            displacement = memRhs->getDisplacement();
+        }
+
+        assert(regRhs->getSize() != codegen::OperandSize::Long);
+        assert(regRhs->getSize() != codegen::OperandSize::Quad);
+
+        if (regRhs->getSize() == codegen::OperandSize::Byte)
+        {
+            assert(lhs->getSize() != codegen::OperandSize::Byte);
+            switch(lhs->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // Unreachable
+                case codegen::OperandSize::Word:
+                    builder.createInstruction(section)
+                           .prefix(codegen::SIZE_PREFIX)
+                           .opcode(codegen::MOVZX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                           .opcode(codegen::MOVZX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .prefix(codegen::REX::W)
+                           .opcode(codegen::MOVZX8)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else // Word
+        {
+            assert(lhs->getSize() != codegen::OperandSize::Byte);
+            assert(lhs->getSize() != codegen::OperandSize::Word);
+            switch(lhs->getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // Unreachable
+                case codegen::OperandSize::Word:
+                    break; // Unreachable
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                           .opcode(codegen::MOVZX16)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                           .prefix(codegen::REX::W)
+                           .opcode(codegen::MOVZX16)
+                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                           .displacement(displacement)
+                           .emit();
+                    break;
+                default:
+                    break;
             }
         }
     }

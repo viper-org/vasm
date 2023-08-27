@@ -142,6 +142,9 @@ namespace codegen
     enum WordOpcodes : unsigned char
     {
         SYSCALL = 0x05,
+
+        MOVZX8 = 0xB6,
+        MOVZX16 = 0xB7,
     };
 
     using namespace std::literals;
