@@ -9,9 +9,10 @@
 
 #include "vasm/error/ErrorReporter.h"
 
+#include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <memory>
 
 int main(int argc, char** argv)

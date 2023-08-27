@@ -9,6 +9,8 @@
 #include "codegen/FakeOutputFormat.h"
 #include "vasm/codegen/Opcodes.h"
 
+#include <algorithm>
+
 namespace ParserTests
 {
     using namespace codegen::fakes;
