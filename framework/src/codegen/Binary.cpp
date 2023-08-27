@@ -25,7 +25,7 @@ namespace codegen
         mBuffer.push_back(data >> 24);
     }
 
-    void BinaryFormat::write(unsigned long data, Section)
+    void BinaryFormat::write(unsigned long long data, Section)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);

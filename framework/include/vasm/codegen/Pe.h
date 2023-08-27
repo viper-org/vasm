@@ -21,10 +21,10 @@ namespace codegen
     public:
         explicit PEFormat(std::string_view fileName);
 
-        void write(unsigned char  data, Section section) override;
-        void write(unsigned short data, Section section) override;
-        void write(unsigned int   data, Section section) override;
-        void write(unsigned long  data, Section section) override;
+        void write(unsigned char      data, Section section) override;
+        void write(unsigned short     data, Section section) override;
+        void write(unsigned int       data, Section section) override;
+        void write(unsigned long long data, Section section) override;
 
         size_t getPosition(Section section) override;
         size_t getSectionStart(Section section) override;

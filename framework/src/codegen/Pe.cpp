@@ -63,7 +63,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned long data, Section section)
+    void PEFormat::write(unsigned long long data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)

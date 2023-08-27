@@ -98,7 +98,7 @@ namespace codegen
         elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned long data, Section section)
+    void ELFFormat::write(unsigned long long data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)

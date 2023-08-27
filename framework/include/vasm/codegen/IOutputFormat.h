@@ -22,10 +22,10 @@ namespace codegen
     public:
         virtual ~IOutputFormat() = default;
 
-        virtual void write(unsigned char  data, Section section) = 0;
-        virtual void write(unsigned short data, Section section) = 0;
-        virtual void write(unsigned int   data, Section section) = 0;
-        virtual void write(unsigned long  data, Section section) = 0;
+        virtual void write(unsigned char      data, Section section) = 0;
+        virtual void write(unsigned short     data, Section section) = 0;
+        virtual void write(unsigned int       data, Section section) = 0;
+        virtual void write(unsigned long long data, Section section) = 0;
 
         virtual size_t getPosition(Section section) = 0;
         virtual size_t getSectionStart(Section section) = 0;

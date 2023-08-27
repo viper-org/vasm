@@ -34,7 +34,7 @@ namespace codegen
             buffer.push_back(data >> 24);
         }
 
-        void FakeOutputFormat::write(unsigned long data, Section section)
+        void FakeOutputFormat::write(unsigned long long data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
