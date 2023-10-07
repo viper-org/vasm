@@ -1,5 +1,6 @@
 // Copyright 2023 solar-mist
 
+#include <memory>
 #ifndef VASM_INSTRUCTION_OPERAND_REGISTER_H
 #define VASM_INSTRUCTION_OPERAND_REGISTER_H 1
 
@@ -21,6 +22,7 @@ namespace instruction
         codegen::OperandSize getSize() const;
 
         std::unique_ptr<Operand> clone() override;
+        std::unique_ptr<Register> clone(codegen::OperandSize newSize);
 
         static RegisterPtr Get(std::string_view name);
 

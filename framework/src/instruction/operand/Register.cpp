@@ -41,4 +41,9 @@ namespace instruction
     {
         return std::make_unique<Register>(mID, mSize);
     }
+
+    std::unique_ptr<Register> Register::clone(codegen::OperandSize newSize)
+    {
+        return std::make_unique<Register>(mID, newSize);
+    }
 }
