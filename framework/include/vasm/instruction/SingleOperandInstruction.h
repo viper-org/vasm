@@ -11,19 +11,25 @@ namespace instruction
     class SingleOperandInstruction : public Instruction
     {
     public:
-        SingleOperandInstruction(OperandPtr operand) : mOperand(std::move(operand)) { }
+        SingleOperandInstruction(OperandPtr operand, int lineNumber)
+            : mOperand(std::move(operand))
+            , mLineNumber(lineNumber)
+        { }
 
         virtual ~SingleOperandInstruction() { }
 
+        int getLineNumber() const { return mLineNumber; }
+
     protected:
         OperandPtr mOperand;
+        int mLineNumber;
     };
 
     template <typename T>
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
-        SingleOperandInstructionTemplate(OperandPtr operand) : SingleOperandInstruction(std::move(operand)) { }
+        SingleOperandInstructionTemplate(OperandPtr operand, int lineNumber) : SingleOperandInstruction(std::move(operand), lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

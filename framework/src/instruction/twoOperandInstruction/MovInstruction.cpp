@@ -2,9 +2,10 @@
 
 
 #include "vasm/instruction/twoOperandInstruction/MovInstruction.h"
+#include "vasm/instruction/TwoOperandInstruction.h"
+
 #include "vasm/codegen/Opcodes.h"
 #include "vasm/codegen/builder/ModRM.h"
-#include "vasm/instruction/TwoOperandInstruction.h"
 
 #include "vasm/instruction/operand/Immediate.h"
 #include "vasm/instruction/operand/Label.h"

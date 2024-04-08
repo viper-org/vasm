@@ -38,13 +38,14 @@ namespace instruction
         std::unique_ptr<T> parse(TokenStream tokens)
         {
             mTokens = tokens;
+            int lineNumber = current().getSourceLocation().line;
             if constexpr (std::derived_from<T, NoOperandInstruction>)
             {
-                return std::make_unique<T>();
+                return std::make_unique<T>(lineNumber);
             }
             else if constexpr (std::derived_from<T, SingleOperandInstruction>)
             {
-                return std::make_unique<T>(parseOperand());
+                return std::make_unique<T>(parseOperand(), lineNumber);
             }
             else if constexpr (std::derived_from<T, TwoOperandInstruction>)
             {
@@ -62,7 +63,7 @@ namespace instruction
                 // TODO: expectToken(lexing::TokenType::Comma);
                 consume();
                 OperandPtr right = parseOperand();
-                return std::make_unique<T>(std::move(left), std::move(right), size);
+                return std::make_unique<T>(std::move(left), std::move(right), size, lineNumber);
             }
             else if constexpr (std::is_same_v<Label, T>)
             {

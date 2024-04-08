@@ -140,10 +140,15 @@ int main(int argc, char** argv)
     parsing::Parser parser(inPath, tokens, *errorReporter);
 
     auto values = parser.parse();
-    codegen::OpcodeBuilder builder(outputFormat.get());
+    codegen::OpcodeBuilder builder(outputFormat.get(), inPath);
     for (auto&& value : values)
     {
         value->emit(builder, codegen::Section::Text);
+    }
+
+    if (builder.hadErrors())
+    {
+        return 1;
     }
 
     builder.patchForwardLabels();

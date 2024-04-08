@@ -46,7 +46,7 @@ namespace ParserTests
             parsing::Parser parser("test", tokens, errorReporter);
             auto instructions = parser.parse();
 
-            codegen::OpcodeBuilder builder(&output);
+            codegen::OpcodeBuilder builder(&output, "test");
             for (auto&& instruction : instructions)
             {
                 instruction->emit(builder, codegen::Section::Text);

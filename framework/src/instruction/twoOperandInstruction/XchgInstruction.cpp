@@ -41,6 +41,8 @@ namespace instruction
                        .modrm(codegen::AddressingMode::RegisterDirect, lhs->getID(), rhs->getID())
                        .emit();
                 break;
+            default:
+                break; // Unreachable
         }
     }
 }

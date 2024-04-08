@@ -3,9 +3,12 @@
 
 #include "vasm/instruction/twoOperandInstruction/LeaInstruction.h"
 
-#include "vasm/codegen/Opcodes.h"
 #include "vasm/instruction/operand/Memory.h"
 #include "vasm/instruction/operand/Register.h"
+
+#include "vasm/codegen/Opcodes.h"
+
+#include "vasm/error/ErrorMessages.h"
 
 namespace instruction
 {
@@ -19,7 +22,8 @@ namespace instruction
         switch (lhs->getSize())
         {
             case codegen::OperandSize::Byte:
-                break; // TODO: Error
+                builder.reportError(instruction.getLineNumber(), error::INV_OPCODE_OPERAND);
+                break;
             case codegen::OperandSize::Word:
                 builder.createInstruction(section)
                        .prefix(codegen::SIZE_PREFIX)
@@ -43,6 +47,8 @@ namespace instruction
                        .displacement(rhs->getDisplacement())
                        .emit();
                 break;
+            default:
+                break; // Unreachable
         }
     }
 }

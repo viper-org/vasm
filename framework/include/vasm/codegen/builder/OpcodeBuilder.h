@@ -12,7 +12,7 @@ namespace codegen
     class OpcodeBuilder
     {
     public:
-        OpcodeBuilder(codegen::IOutputFormat* outputFormat);
+        OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename);
 
         void patchForwardLabels();
 
@@ -26,10 +26,15 @@ namespace codegen
 
         std::pair<unsigned long long, bool> getLabel(std::string name);
         unsigned long long getPosition(codegen::Section section);
+        bool hadErrors() const;
+
+        void reportError(int line, std::string_view message);
 
     private:
         codegen::IOutputFormat* mOutputFormat;
         std::vector<std::tuple<std::string, codegen::Section, codegen::OperandSize, int, int>> mForwardLabels;
+        std::string mFileName;
+        bool mHadError; // Stop generating code if an error has been reported
     };
 }
 

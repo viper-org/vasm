@@ -58,6 +58,8 @@ namespace instruction
                             .displacement(displacement)
                             .emit();
                     break;
+                default:
+                    break; // Unreachable
             }
         }
         else if (Immediate* imm = dynamic_cast<Immediate*>(instruction.getRight().get()))
@@ -98,6 +100,8 @@ namespace instruction
                             .displacement(displacement)
                             .emit();
                     break;
+                default:
+                    break; // Unreachable
             }
         }
     }

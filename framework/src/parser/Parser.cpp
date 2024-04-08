@@ -39,20 +39,20 @@ namespace parsing
         , mTokenStream({ &mTokens, &mPosition })
         , mPosition(0)
     {
-        mInstructionParsers = {
-            { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()    .parse(mTokenStream); } },
-
-            { "leave",    [this]() -> InstructionPtr { return Builder<LeaveInstruction>()  .parse(mTokenStream); } },
-            
-            { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()   .parse(mTokenStream); } },
-
-            { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()    .parse(mTokenStream); } },
-            { "ja",       [this]() -> InstructionPtr { return Builder<JaInstruction>()     .parse(mTokenStream); } },
-            { "jae",      [this]() -> InstructionPtr { return Builder<JaeInstruction>()    .parse(mTokenStream); } },
-            { "jb",       [this]() -> InstructionPtr { return Builder<JbInstruction>()     .parse(mTokenStream); } },
-            { "jbe",      [this]() -> InstructionPtr { return Builder<JbeInstruction>()    .parse(mTokenStream); } },
-            { "jcxz",     [this]() -> InstructionPtr { return Builder<JcxzInstruction>()   .parse(mTokenStream); } },
-            { "jecxz",    [this]() -> InstructionPtr { return Builder<JecxzInstruction>()  .parse(mTokenStream); } },
+        mInstructionParsers = { 
+            { "ret",      [this]() -> InstructionPtr { return Builder<RetInstruction>()     .parse(mTokenStream); } },
+ 
+            { "leave",    [this]() -> InstructionPtr { return Builder<LeaveInstruction>()   .parse(mTokenStream); } },
+             
+            { "call",     [this]() -> InstructionPtr { return Builder<CallInstruction>()    .parse(mTokenStream); } },
+ 
+            { "jmp",      [this]() -> InstructionPtr { return Builder<JmpInstruction>()     .parse(mTokenStream); } },
+            { "ja",       [this]() -> InstructionPtr { return Builder<JaInstruction>()      .parse(mTokenStream); } },
+            { "jae",      [this]() -> InstructionPtr { return Builder<JaeInstruction>()     .parse(mTokenStream); } },
+            { "jb",       [this]() -> InstructionPtr { return Builder<JbInstruction>()      .parse(mTokenStream); } },
+            { "jbe",      [this]() -> InstructionPtr { return Builder<JbeInstruction>()     .parse(mTokenStream); } },
+            { "jcxz",     [this]() -> InstructionPtr { return Builder<JcxzInstruction>()    .parse(mTokenStream); } },
+            { "jecxz",    [this]() -> InstructionPtr { return Builder<JecxzInstruction>()   .parse(mTokenStream); } },
             { "jrcxz",    [this]() -> InstructionPtr { return Builder<JrcxzInstruction>()  .parse(mTokenStream); } },
             { "je",       [this]() -> InstructionPtr { return Builder<JeInstruction>()     .parse(mTokenStream); } },
             { "jg",       [this]() -> InstructionPtr { return Builder<JgInstruction>()     .parse(mTokenStream); } },
@@ -105,7 +105,7 @@ namespace parsing
             { "xor",      [this]() -> InstructionPtr { return Builder<XorInstruction>()    .parse(mTokenStream); } },
             { "cmp",      [this]() -> InstructionPtr { return Builder<CmpInstruction>()    .parse(mTokenStream); } },
 
-            { "test",     [this]() -> InstructionPtr { return Builder<TestInstruction>()    .parse(mTokenStream); } },
+            { "test",     [this]() -> InstructionPtr { return Builder<TestInstruction>()   .parse(mTokenStream); } },
 
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },

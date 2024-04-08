@@ -13,21 +13,29 @@ namespace instruction
     class TwoOperandInstruction : public Instruction
     {
     public:
-        TwoOperandInstruction(OperandPtr left, OperandPtr right, codegen::OperandSize size) : mLeft(std::move(left)), mRight(std::move(right)), mSize(size) { }
+        TwoOperandInstruction(OperandPtr left, OperandPtr right, codegen::OperandSize size, int lineNumber)
+            : mLeft(std::move(left))
+            , mRight(std::move(right))
+            , mSize(size)
+            , mLineNumber(lineNumber)
+        { }
 
         virtual ~TwoOperandInstruction() { }
+
+        int getLineNumber() const { return mLineNumber; }
 
     protected:
         OperandPtr mLeft;
         OperandPtr mRight;
         codegen::OperandSize mSize;
+        int mLineNumber;
     };
 
     template <typename T>
     class TwoOperandInstructionTemplate : public TwoOperandInstruction
     {
     public:
-        TwoOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size) : TwoOperandInstruction(std::move(left), std::move(right), size) { }
+        TwoOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size, int lineNumber) : TwoOperandInstruction(std::move(left), std::move(right), size, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

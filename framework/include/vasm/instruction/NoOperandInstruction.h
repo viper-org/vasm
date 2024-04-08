@@ -12,14 +12,21 @@ namespace instruction
     class NoOperandInstruction : public Instruction
     {
     public:
+        NoOperandInstruction(int lineNumber) : mLineNumber(lineNumber) { }
+        
         virtual ~NoOperandInstruction() { }
+
+        int getLineNumber() const { return mLineNumber; }
+
+    private:
+        int mLineNumber;
     };
 
     template <OpcodeT auto Opcode>
     class NoOperandInstructionTemplate : public NoOperandInstruction
     {
     public:
-        NoOperandInstructionTemplate() { }
+        NoOperandInstructionTemplate(int lineNumber) : NoOperandInstruction(lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

@@ -3,10 +3,14 @@
 
 #include "vasm/codegen/builder/OpcodeBuilder.h"
 
+#include <format>
+#include <iostream>
+
 namespace codegen
 {
-    OpcodeBuilder::OpcodeBuilder(codegen::IOutputFormat* outputFormat)
+    OpcodeBuilder::OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename)
         : mOutputFormat(outputFormat)
+        , mFileName(filename)
     {
     }
 
@@ -51,5 +55,17 @@ namespace codegen
     unsigned long long OpcodeBuilder::getPosition(codegen::Section section)
     {
         return mOutputFormat->getPosition(section);
+    }
+
+    bool OpcodeBuilder::hadErrors() const
+    {
+        return mHadError;
+    }
+
+
+    void OpcodeBuilder::reportError(int line, std::string_view message)
+    {
+        std::cerr << std::format("{}:{}: error: {}\n", mFileName, line, message);
+        mHadError = true;
     }
 }
