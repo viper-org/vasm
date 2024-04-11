@@ -11,8 +11,8 @@ namespace instruction
     class SingleOperandInstruction : public Instruction
     {
     public:
-        SingleOperandInstruction(OperandPtr operand, int lineNumber)
-            : mOperand(std::move(operand))
+        SingleOperandInstruction(OperandPtr& operand, int lineNumber)
+            : mOperand(operand->clone())
             , mLineNumber(lineNumber)
         { }
 
@@ -29,7 +29,7 @@ namespace instruction
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
-        SingleOperandInstructionTemplate(OperandPtr operand, int lineNumber=-1) : SingleOperandInstruction(std::move(operand), lineNumber) { }
+        SingleOperandInstructionTemplate(OperandPtr&& operand, int lineNumber=-1) : SingleOperandInstruction(operand, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
