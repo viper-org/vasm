@@ -35,7 +35,7 @@ namespace instruction
     class TwoOperandInstructionTemplate : public TwoOperandInstruction
     {
     public:
-        TwoOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size, int lineNumber) : TwoOperandInstruction(std::move(left), std::move(right), size, lineNumber) { }
+        TwoOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size, int lineNumber=-1) : TwoOperandInstruction(std::move(left), std::move(right), size, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

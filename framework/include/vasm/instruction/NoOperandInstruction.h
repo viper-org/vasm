@@ -26,7 +26,7 @@ namespace instruction
     class NoOperandInstructionTemplate : public NoOperandInstruction
     {
     public:
-        NoOperandInstructionTemplate(int lineNumber) : NoOperandInstruction(lineNumber) { }
+        NoOperandInstructionTemplate(int lineNumber=-1) : NoOperandInstruction(lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

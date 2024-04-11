@@ -29,7 +29,7 @@ namespace instruction
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
-        SingleOperandInstructionTemplate(OperandPtr operand, int lineNumber) : SingleOperandInstruction(std::move(operand), lineNumber) { }
+        SingleOperandInstructionTemplate(OperandPtr operand, int lineNumber=-1) : SingleOperandInstruction(std::move(operand), lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
