@@ -68,7 +68,7 @@ namespace codegen
     }
 
 
-    void ELFFormat::write(unsigned char data, Section section)
+    void ELFFormat::write(std::uint8_t data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
@@ -78,7 +78,7 @@ namespace codegen
         elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned short data, Section section)
+    void ELFFormat::write(std::uint16_t data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
@@ -88,7 +88,7 @@ namespace codegen
         elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned int data, Section section)
+    void ELFFormat::write(std::uint32_t data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
@@ -98,7 +98,7 @@ namespace codegen
         elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
 
-    void ELFFormat::write(unsigned long long data, Section section)
+    void ELFFormat::write(std::uint64_t data, Section section)
     {
         ELFSection* elfSection = getSection(section);
         if (!elfSection)
@@ -124,18 +124,18 @@ namespace codegen
         return 0;
     }
 
-    void ELFFormat::addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal)
+    void ELFFormat::addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal)
     {
         ELFSection* strtab = getSection(".strtab");
-        unsigned int strtabIndex = strtab->size();
+        std::uint32_t strtabIndex = strtab->size();
         strtab->write(name);
 
         getOrCreateSection(section);
 
         ELFSection* symtab = getSection(".symtab");
 
-        unsigned short sectionIndex;
-        for (sectionIndex = 0; sectionIndex < static_cast<unsigned short>(mSections.size()); sectionIndex++)
+        std::uint16_t sectionIndex;
+        for (sectionIndex = 0; sectionIndex < static_cast<std::uint16_t>(mSections.size()); sectionIndex++)
         {
             if (mSections[sectionIndex].mSection == section)
             {
@@ -162,7 +162,7 @@ namespace codegen
         mGlobalSymbols.emplace(name, strtabIndex, SYM_GLOBAL, SYM_DEFAULT, 0, 0, 0, true, mGlobalSymbols.size() + mLocalSymbols.size());
     }
 
-    std::pair<unsigned long, bool> ELFFormat::getSymbol(const std::string& name) const
+    std::pair<std::uint64_t, bool> ELFFormat::getSymbol(const std::string& name) const
     {
         auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
             return symbol.name == name;
@@ -239,7 +239,7 @@ namespace codegen
         const ELFSymbol& symbol = *it;
         
         rela->write(getPosition(section) + offset);
-        unsigned long info = symbol.external ? 0x2 : 0x1;
+        std::uint64_t info = symbol.external ? 0x2 : 0x1;
         if (location == "plt")
         {
             info = 0x4;
@@ -248,16 +248,16 @@ namespace codegen
         {
             info = 0x9;
         }
-        info |= static_cast<unsigned long>(symbol.index) << 32;
+        info |= static_cast<std::uint64_t>(symbol.index) << 32;
         rela->write(info);
-        rela->write(symbol.external ? static_cast<unsigned long>(offset) : 0UL);
+        rela->write(symbol.external ? static_cast<std::uint64_t>(offset) : 0UL);
     }
 
     void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
     {
         ELFSection* sect = getSection(section);
 
-        unsigned long long symbol = getSymbol(name).first - origin;
+        std::uint64_t symbol = getSymbol(name).first - origin;
         switch (size)
         {
             case OperandSize::Byte:
@@ -418,7 +418,7 @@ namespace codegen
         }
 
 
-        unsigned long currentOffset = ELF_SHSIZE * mSections.size() + ELF_EHSIZE;
+        std::uint64_t currentOffset = ELF_SHSIZE * mSections.size() + ELF_EHSIZE;
         for (ELFSection& section : mSections)
         {
             currentOffset = (currentOffset + 15) & ~15; // Align to 16 bytes
@@ -437,11 +437,11 @@ namespace codegen
             currentOffset += section.size();
         }
         
-        unsigned long written = 0;
-        unsigned long alignedWritten = 0;
+        std::uint64_t written = 0;
+        std::uint64_t alignedWritten = 0;
         for (ELFSection& section : mSections)
         {
-            for (unsigned long i = 0; i < alignedWritten - written; i++)
+            for (std::uint64_t i = 0; i < alignedWritten - written; i++)
             {
                 stream.put(0);
             }

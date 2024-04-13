@@ -32,10 +32,10 @@ namespace codegen
         public:
             FakeOutputFormat();
 
-            void write(unsigned char      data, Section section) override;
-            void write(unsigned short     data, Section section) override;
-            void write(unsigned int       data, Section section) override;
-            void write(unsigned long long data, Section section) override;
+            void write(std::uint8_t  data, Section section) override;
+            void write(std::uint16_t data, Section section) override;
+            void write(std::uint32_t data, Section section) override;
+            void write(std::uint64_t data, Section section) override;
 
             size_t getPosition(Section section) override;
             size_t getSectionStart(Section section) override;

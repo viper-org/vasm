@@ -6,18 +6,18 @@ namespace codegen
         : mBuffer{}
     {}
 
-    void BinaryFormat::write(unsigned char data, Section)
+    void BinaryFormat::write(std::uint8_t data, Section)
     {
         mBuffer.push_back(data);
     }
 
-    void BinaryFormat::write(unsigned short data, Section)
+    void BinaryFormat::write(std::uint16_t data, Section)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
     }
 
-    void BinaryFormat::write(unsigned int data, Section)
+    void BinaryFormat::write(std::uint32_t data, Section)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
@@ -25,7 +25,7 @@ namespace codegen
         mBuffer.push_back(data >> 24);
     }
 
-    void BinaryFormat::write(unsigned long long data, Section)
+    void BinaryFormat::write(std::uint64_t data, Section)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
@@ -48,7 +48,7 @@ namespace codegen
         return 0;
     }
 
-    void BinaryFormat::addSymbol(const std::string& name, unsigned long value, Section const, bool)
+    void BinaryFormat::addSymbol(const std::string& name, std::uint64_t value, Section const, bool)
     {
         mSymbols[name] = value;
     }
@@ -58,7 +58,7 @@ namespace codegen
         // TODO: Error
     }
 
-    std::pair<unsigned long, bool> BinaryFormat::getSymbol(const std::string& name) const
+    std::pair<std::uint64_t, bool> BinaryFormat::getSymbol(const std::string& name) const
     {
         if (mSymbols.find(name) != mSymbols.end())
         {
@@ -67,7 +67,8 @@ namespace codegen
         return std::make_pair(-1, false); // Forward symbol
     }
     
-    bool BinaryFormat::hasSymbol(const std::string& name) const {
+    bool BinaryFormat::hasSymbol(const std::string& name) const
+    {
         return mSymbols.contains(name);
     }
 

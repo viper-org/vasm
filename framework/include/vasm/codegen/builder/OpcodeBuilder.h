@@ -5,6 +5,7 @@
 
 #include "vasm/codegen/builder/Instruction.h"
 
+#include <cstdint>
 #include <vector>
 
 namespace codegen
@@ -24,8 +25,8 @@ namespace codegen
 
         void addExtern(const std::string& name);
 
-        std::pair<unsigned long long, bool> getLabel(std::string name);
-        unsigned long long getPosition(codegen::Section section);
+        std::pair<std::uint64_t, bool> getLabel(std::string name);
+        std::uint64_t getPosition(codegen::Section section);
         bool hadErrors() const;
 
         void reportError(int line, std::string_view message);

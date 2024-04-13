@@ -11,6 +11,7 @@ namespace codegen
     OpcodeBuilder::OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename)
         : mOutputFormat(outputFormat)
         , mFileName(filename)
+        , mHadError(false)
     {
     }
 
@@ -47,12 +48,12 @@ namespace codegen
         mOutputFormat->addExternSymbol(name);
     }
 
-    std::pair<unsigned long long, bool> OpcodeBuilder::getLabel(std::string name)
+    std::pair<std::uint64_t, bool> OpcodeBuilder::getLabel(std::string name)
     {
         return mOutputFormat->getSymbol(name);
     }
 
-    unsigned long long OpcodeBuilder::getPosition(codegen::Section section)
+    std::uint64_t OpcodeBuilder::getPosition(codegen::Section section)
     {
         return mOutputFormat->getPosition(section);
     }

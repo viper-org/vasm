@@ -17,6 +17,8 @@ namespace codegen {
     constexpr uint32_t IMAGE_SCN_MEM_READ = 0x40000000;
     constexpr uint32_t IMAGE_SCN_MEM_WRITE = 0x80000000;
     
+    constexpr uint8_t IMAGE_SYM_UNDEFINED = 0;
+
     constexpr uint8_t IMAGE_SYM_CLASS_EXTERNAL = 2;
     constexpr uint8_t IMAGE_SYM_CLASS_STATIC = 3;
     constexpr uint8_t IMAGE_SYM_CLASS_LABEL = 6;
@@ -33,7 +35,7 @@ namespace codegen {
     {
     }
     
-    void PEFormat::write(unsigned char data, Section section)
+    void PEFormat::write(std::uint8_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -43,7 +45,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned short data, Section section)
+    void PEFormat::write(std::uint16_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -53,7 +55,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned int data, Section section)
+    void PEFormat::write(std::uint32_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -63,7 +65,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(unsigned long long data, Section section)
+    void PEFormat::write(std::uint64_t data, Section section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -177,7 +179,7 @@ namespace codegen {
         }
     }
     
-    void PEFormat::addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal)
+    void PEFormat::addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal)
     {
         getOrCreateSection(section);
         
@@ -217,10 +219,29 @@ namespace codegen {
 
     void PEFormat::addExternSymbol(const std::string& name)
     {
-        // TODO: Implement
+        PESymbol symbol = {
+            .mValue = 0,
+            .mSectionNumber = IMAGE_SYM_UNDEFINED,
+            .mType = 0,
+            .mStorageClass = IMAGE_SYM_CLASS_EXTERNAL,
+            .mNumberOfAuxSymbols = 0
+        };
+        if (name.size() < 8)
+        {
+            memcpy(symbol.mShortName.name, name.c_str(), name.size() + 1);
+        }
+        else
+        {
+            symbol.mShortName.offset.zeros = 0;
+            symbol.mShortName.offset.offset = mStringTable.size();
+            mStringTable += name + '\0';
+        }
+        
+        mSymbolTable.push_back(symbol);
+        mSymbolIndices[name] = mSymbolTable.size() - 1;
     }
     
-    [[nodiscard]] std::pair<unsigned long, bool> PEFormat::getSymbol(const std::string& name) const
+    [[nodiscard]] std::pair<std::uint64_t, bool> PEFormat::getSymbol(const std::string& name) const
     {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
@@ -247,7 +268,37 @@ namespace codegen {
 
     void PEFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
     {
-        // TODO: Implement
+        PESection* sect = getSection(section);
+
+        uint64_t symbol = getSymbol(name).first - origin;
+        switch (size)
+        {
+            case OperandSize::Byte:
+                sect->mBuffer[location] = symbol;
+                break;
+            case OperandSize::Word:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                break;
+            case OperandSize::Long:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                sect->mBuffer[location + 2] = symbol >> 16;
+                sect->mBuffer[location + 3] = symbol >> 24;
+                break;
+            case OperandSize::Quad:
+                sect->mBuffer[location] = symbol;
+                sect->mBuffer[location + 1] = symbol >> 8;
+                sect->mBuffer[location + 2] = symbol >> 16;
+                sect->mBuffer[location + 3] = symbol >> 24;
+                sect->mBuffer[location + 4] = symbol >> 32;
+                sect->mBuffer[location + 5] = symbol >> 40;
+                sect->mBuffer[location + 6] = symbol >> 48;
+                sect->mBuffer[location + 7] = symbol >> 56;
+                break;
+            case OperandSize::None:
+                break;
+        }
     }
     
     template<typename T>

@@ -12,20 +12,20 @@ namespace codegen
         {
         }
 
-        void FakeOutputFormat::write(unsigned char data, Section section)
+        void FakeOutputFormat::write(std::uint8_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
         }
 
-        void FakeOutputFormat::write(unsigned short data, Section section)
+        void FakeOutputFormat::write(std::uint16_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
             buffer.push_back(data >> 8);
         }
 
-        void FakeOutputFormat::write(unsigned int data, Section section)
+        void FakeOutputFormat::write(std::uint32_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);
@@ -34,7 +34,7 @@ namespace codegen
             buffer.push_back(data >> 24);
         }
 
-        void FakeOutputFormat::write(unsigned long long data, Section section)
+        void FakeOutputFormat::write(std::uint64_t data, Section section)
         {
             auto& buffer = (section == Section::Text) ? mCode : mData;
             buffer.push_back(data);

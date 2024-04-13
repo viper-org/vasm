@@ -7,24 +7,26 @@
 
 #include "vasm/codegen/Opcodes.h"
 
+#include <cstdint>
+
 namespace instruction
 {
     class Immediate : public Operand
     {
     public:
-        Immediate(unsigned long long value);
+        Immediate(std::uint64_t value);
 
-        unsigned char       imm8() const;
-        unsigned short      imm16() const;
-        unsigned int        imm32() const;
-        unsigned long long  imm64() const;
+        std::uint8_t  imm8() const;
+        std::uint16_t imm16() const;
+        std::uint32_t imm32() const;
+        std::uint64_t imm64() const;
 
         codegen::OperandSize getSize() const;
 
         std::unique_ptr<Operand> clone() override;
 
     private:
-        unsigned long long mValue;
+        std::uint64_t mValue;
     };
     using ImmediatePtr = std::unique_ptr<Immediate>;
 }

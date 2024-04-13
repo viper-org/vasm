@@ -155,6 +155,4 @@ int main(int argc, char** argv)
 
     std::ofstream outFile(*outputFile, std::ios::out | std::ios::binary);
     outputFormat->print(outFile);
-
-    return 0;
 }
