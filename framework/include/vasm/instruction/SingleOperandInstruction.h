@@ -32,7 +32,7 @@ namespace instruction
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
-        SingleOperandInstructionTemplate(OperandPtr operand, codegen::OperandSize size, int lineNumber=-1) : SingleOperandInstruction(std::move(operand), size, lineNumber) { }
+        SingleOperandInstructionTemplate(OperandPtr operand, codegen::OperandSize size = codegen::OperandSize::None, int lineNumber=-1) : SingleOperandInstruction(std::move(operand), size, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
