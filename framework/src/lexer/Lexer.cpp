@@ -85,6 +85,12 @@ namespace lexing
         "cmp",
 
         "test",
+        "not",
+        "neg",
+        "mul",
+        "imul",
+        "div",
+        "idiv",
 
         "push",
         "pop",

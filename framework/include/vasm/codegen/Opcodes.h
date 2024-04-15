@@ -31,6 +31,9 @@ namespace codegen
         LOGICAL_REG_IMM = 0x81,
         LOGICAL_REG_IMM8 = 0x83,
 
+        GRP4_RM8 = 0xF6,
+        GRP4_RM  = 0xF7,
+
 
         TEST_RM_IMM8 = 0xF6,
         TEST_RM_IMM  = 0xF7,

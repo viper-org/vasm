@@ -2,6 +2,8 @@ message: db "Hello world!\n"
 
 return:
     mov rax, 60
+    mov rdi, 4
+    neg rdi
     syscall
 
 true:

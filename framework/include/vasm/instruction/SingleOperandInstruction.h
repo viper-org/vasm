@@ -11,17 +11,20 @@ namespace instruction
     class SingleOperandInstruction : public Instruction
     {
     public:
-        SingleOperandInstruction(OperandPtr& operand, int lineNumber)
-            : mOperand(operand->clone())
+        SingleOperandInstruction(OperandPtr operand, codegen::OperandSize size, int lineNumber)
+            : mOperand(std::move(operand))
+            , mSize(size)
             , mLineNumber(lineNumber)
         { }
 
         virtual ~SingleOperandInstruction() { }
 
         int getLineNumber() const { return mLineNumber; }
+        codegen::OperandSize getSize() const { return mSize; }
 
     protected:
         OperandPtr mOperand;
+        codegen::OperandSize mSize;
         int mLineNumber;
     };
 
@@ -29,7 +32,7 @@ namespace instruction
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
-        SingleOperandInstructionTemplate(OperandPtr&& operand, int lineNumber=-1) : SingleOperandInstruction(operand, lineNumber) { }
+        SingleOperandInstructionTemplate(OperandPtr operand, codegen::OperandSize size, int lineNumber=-1) : SingleOperandInstruction(std::move(operand), size, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {

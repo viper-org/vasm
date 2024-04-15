@@ -19,6 +19,7 @@
 #include "vasm/instruction/singleOperandInstruction/IncDecInstruction.h"
 #include "vasm/instruction/singleOperandInstruction/IntInstruction.h"
 #include "vasm/instruction/singleOperandInstruction/DeclInstruction.h"
+#include "vasm/instruction/singleOperandInstruction/Grp4Instruction.h"
 
 #include "vasm/instruction/twoOperandInstruction/MovInstruction.h"
 #include "vasm/instruction/twoOperandInstruction/LeaInstruction.h"
@@ -106,6 +107,12 @@ namespace parsing
             { "cmp",      [this]() -> InstructionPtr { return Builder<CmpInstruction>()    .parse(mTokenStream); } },
 
             { "test",     [this]() -> InstructionPtr { return Builder<TestInstruction>()   .parse(mTokenStream); } },
+            { "not",      [this]() -> InstructionPtr { return Builder<NotInstruction>()   .parse(mTokenStream); } },
+            { "neg",      [this]() -> InstructionPtr { return Builder<NegInstruction>()   .parse(mTokenStream); } },
+            { "mul",      [this]() -> InstructionPtr { return Builder<MulInstruction>()   .parse(mTokenStream); } },
+            { "imul",     [this]() -> InstructionPtr { return Builder<IMulInstruction>()   .parse(mTokenStream); } },
+            { "div",      [this]() -> InstructionPtr { return Builder<DivInstruction>()   .parse(mTokenStream); } },
+            { "idiv",     [this]() -> InstructionPtr { return Builder<IDivInstruction>()   .parse(mTokenStream); } },
 
             { "push",     [this]() -> InstructionPtr { return Builder<PushInstruction>()   .parse(mTokenStream); } },
             { "pop",      [this]() -> InstructionPtr { return Builder<PopInstruction>()    .parse(mTokenStream); } },

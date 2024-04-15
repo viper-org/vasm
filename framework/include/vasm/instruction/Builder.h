@@ -45,7 +45,17 @@ namespace instruction
             }
             else if constexpr (std::derived_from<T, SingleOperandInstruction>)
             {
-                return std::make_unique<T>(parseOperand(), lineNumber);
+                codegen::OperandSize size = codegen::OperandSize::None;
+                if (current().getTokenType() == lexing::TokenType::Size)
+                {
+                    std::string text = consume().getText();
+                    if (text == "byte") size = codegen::OperandSize::Byte;
+                    if (text == "word") size = codegen::OperandSize::Word;
+                    if (text == "long") size = codegen::OperandSize::Long;
+                    if (text == "quad") size = codegen::OperandSize::Quad;
+                }
+
+                return std::make_unique<T>(parseOperand(), size, lineNumber);
             }
             else if constexpr (std::derived_from<T, TwoOperandInstruction>)
             {

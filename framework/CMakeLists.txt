@@ -79,6 +79,7 @@ set(HEADERS
     "include/vasm/instruction/singleOperandInstruction/PushInstruction.h"
     "include/vasm/instruction/singleOperandInstruction/PopInstruction.h"
     "include/vasm/instruction/singleOperandInstruction/IntInstruction.h"
+    "include/vasm/instruction/singleOperandInstruction/Grp4Instruction.h"
 
     "include/vasm/instruction/twoOperandInstruction/MovInstruction.h"
     "include/vasm/instruction/twoOperandInstruction/LogicalInstruction.h"
