@@ -1,6 +1,6 @@
 // Copyright 2023 solar-mist
 
-#include <iostream>
+
 #ifndef VASM_INSTRUCTION_BUILDER_H
 #define VASM_INSTRUCTION_BUILDER_H 1
 
@@ -14,6 +14,7 @@
 #include "vasm/instruction/operand/Label.h"
 #include "vasm/instruction/operand/Register.h"
 #include "vasm/instruction/operand/Memory.h"
+#include "vasm/instruction/operand/Relative.h"
 #include "vasm/instruction/operand/String.h"
 
 #include "vasm/lexer/Token.h"
@@ -91,6 +92,11 @@ namespace instruction
             return mTokens.tokens->at(*mTokens.position);
         }
 
+        lexing::Token& peek(int offset)
+        {
+            return mTokens.tokens->at(*mTokens.position + offset);
+        }
+
         lexing::Token& consume()
         {
             return mTokens.tokens->at((*mTokens.position)++);
@@ -113,6 +119,8 @@ namespace instruction
                     return parseString();
 
                 case lexing::TokenType::LBracket:
+                    if (peek(1).getTokenType() == lexing::TokenType::Rel)
+                        return parseRelMemory();
                     return parseMemory();
                     
                 default:
@@ -183,6 +191,20 @@ namespace instruction
             consume();
 
             return std::make_unique<Memory>(std::move(reg), displacement);
+        }
+
+        RelativePtr parseRelMemory()
+        {
+            consume(); // LBracket
+            consume(); // Rel
+
+            OperandPtr operand = parseImmediate();
+            LabelOperand* label = static_cast<LabelOperand*>(operand.release());
+
+            assert(current().getTokenType() == lexing::TokenType::RBracket);
+            consume();
+
+            return std::make_unique<Relative>(LabelOperandPtr(label));
         }
 
         StringPtr parseString()

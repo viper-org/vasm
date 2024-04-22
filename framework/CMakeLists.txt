@@ -21,6 +21,7 @@ set(SOURCES
     "src/instruction/operand/Label.cpp"
     "src/instruction/operand/Register.cpp"
     "src/instruction/operand/Memory.cpp"
+    "src/instruction/operand/Relative.cpp"
     "src/instruction/operand/String.cpp"
     
     "src/instruction/Label.cpp"
@@ -70,6 +71,7 @@ set(HEADERS
     "include/vasm/instruction/operand/Label.h"
     "include/vasm/instruction/operand/Register.h"
     "include/vasm/instruction/operand/Memory.h"
+    "include/vasm/instruction/operand/Relative.h"
     "include/vasm/instruction/operand/String.h"
 
     "include/vasm/instruction/NoOperandInstruction.h"

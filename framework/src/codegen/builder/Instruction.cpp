@@ -47,9 +47,10 @@ namespace codegen
     }
 
 
-    Instruction& Instruction::displacement(std::optional<int> disp)
+    Instruction& Instruction::displacement(std::optional<int> disp, bool sizeOverride)
     {
         mDisplacement = disp;
+        mDisplacementSizeOverride = sizeOverride;
         return *this;
     }
 
@@ -109,7 +110,7 @@ namespace codegen
 
         if (mDisplacement)
         {
-            if (*mDisplacement <= INT8_MAX)
+            if (*mDisplacement <= INT8_MAX && !mDisplacementSizeOverride)
             {
                 mOutputFormat->write(static_cast<unsigned char>(*mDisplacement), mSection);
             }

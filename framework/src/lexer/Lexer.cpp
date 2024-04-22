@@ -110,7 +110,8 @@ namespace lexing
     };
 
     const std::unordered_map<std::string_view, lexing::TokenType> directives = {
-        {"extern", lexing::TokenType::Extern}
+        {"extern", lexing::TokenType::Extern},
+        {"rel", lexing::TokenType::Rel},
     };
 
     std::vector<Token> Lexer::lex()

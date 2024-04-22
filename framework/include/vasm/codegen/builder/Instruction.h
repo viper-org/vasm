@@ -30,7 +30,7 @@ namespace codegen
         Instruction& modrm(ModRM modRM);
         Instruction& modrm(AddressingMode addressingMode, ModRM::Register reg, ModRM::Register rm);
 
-        Instruction& displacement(std::optional<int> disp);
+        Instruction& displacement(std::optional<int> disp, bool sizeOverride = false);
 
         Instruction& immediate(std::uint8_t  imm8);
         Instruction& immediate(std::uint16_t imm16);
@@ -48,6 +48,7 @@ namespace codegen
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
         std::optional<int> mDisplacement;
+        bool mDisplacementSizeOverride;
         std::variant<std::monostate, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> mImmediate;
         std::optional<std::string_view> mString;
 
