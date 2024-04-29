@@ -51,7 +51,6 @@ namespace codegen
         if (sib.mScale != 0xff)
         {
             mSIB = sib;
-            mModRM->mReg = 0;
             mModRM->mRM = 0b100;
         }
         return *this;
@@ -62,7 +61,6 @@ namespace codegen
         if (scale)
         {
             mSIB = SIB(scale?*scale:0, index, base);
-            mModRM->mReg = 0;
             mModRM->mRM = 0b100;
         }
         return *this;
