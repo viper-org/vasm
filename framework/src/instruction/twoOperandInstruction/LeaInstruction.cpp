@@ -26,7 +26,7 @@ namespace instruction
             int instructionSize = 7;
             if (lhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
 
-            int displacement = -builder.getPosition(section) - (relRhs->getLabel()->getValue(builder, section).first + instructionSize);
+            int displacement = relRhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
 
             switch(lhs->getSize())
             {
