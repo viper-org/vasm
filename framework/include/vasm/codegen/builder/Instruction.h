@@ -29,6 +29,8 @@ namespace codegen
 
         Instruction& modrm(ModRM modRM);
         Instruction& modrm(AddressingMode addressingMode, ModRM::Register reg, ModRM::Register rm);
+        Instruction& sib(SIB sib);
+        Instruction& sib(std::optional<unsigned char> scale, SIB::Register index, SIB::Register base);
 
         Instruction& displacement(std::optional<int> disp, bool sizeOverride = false);
 
@@ -47,6 +49,7 @@ namespace codegen
         std::optional<Prefix> mPrefix;
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
+        std::optional<SIB> mSIB;
         std::optional<int> mDisplacement;
         bool mDisplacementSizeOverride;
         std::variant<std::monostate, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> mImmediate;

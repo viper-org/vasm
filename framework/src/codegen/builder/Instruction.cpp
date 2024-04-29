@@ -46,6 +46,28 @@ namespace codegen
         return *this;
     }
 
+    Instruction& Instruction::sib(SIB sib)
+    {
+        if (sib.mScale != 0xff)
+        {
+            mSIB = sib;
+            mModRM->mReg = 0;
+            mModRM->mRM = 0b100;
+        }
+        return *this;
+    }
+
+    Instruction& Instruction::sib(std::optional<unsigned char> scale, SIB::Register index, SIB::Register base)
+    {
+        if (scale)
+        {
+            mSIB = SIB(scale?*scale:0, index, base);
+            mModRM->mReg = 0;
+            mModRM->mRM = 0b100;
+        }
+        return *this;
+    }
+
 
     Instruction& Instruction::displacement(std::optional<int> disp, bool sizeOverride)
     {
@@ -106,6 +128,10 @@ namespace codegen
         if (mModRM)
         {
             mModRM->emit(mOutputFormat, mSection);
+        }
+        if (mSIB)
+        {
+            mSIB->emit(mOutputFormat, mSection);
         }
 
         if (mDisplacement)

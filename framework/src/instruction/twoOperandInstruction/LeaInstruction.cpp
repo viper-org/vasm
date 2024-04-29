@@ -70,14 +70,16 @@ namespace instruction
                 builder.createInstruction(section)
                        .prefix(codegen::SIZE_PREFIX)
                        .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getReg()->getID())
+                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                       .sib(rhs->getSIB())
                        .displacement(rhs->getDisplacement())
                        .emit();
                 break;
             case codegen::OperandSize::Long:
                 builder.createInstruction(section)
                        .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getReg()->getID())
+                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                       .sib(rhs->getSIB())
                        .displacement(rhs->getDisplacement())
                        .emit();
                 break;
@@ -85,7 +87,8 @@ namespace instruction
                 builder.createInstruction(section)
                        .prefix(codegen::REX::W)
                        .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getReg()->getID())
+                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                       .sib(rhs->getSIB())
                        .displacement(rhs->getDisplacement())
                        .emit();
                 break;

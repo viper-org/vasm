@@ -17,17 +17,23 @@ namespace instruction
     class Memory : public Operand
     {
     public:
-        Memory(RegisterPtr reg, std::optional<int> displacement);
+        Memory(RegisterPtr base, std::optional<int> displacement, RegisterPtr index, std::optional<int> scale);
 
-        Register* getReg() const;
+        Register* getBase() const;
+        Register* getIndex() const;
         std::optional<int> getDisplacement() const;
+        std::optional<int> getScale() const;
         codegen::AddressingMode getAddressingMode() const;
+
+        codegen::SIB getSIB() const;
 
         std::unique_ptr<Operand> clone() override;
 
     private:
-        RegisterPtr mReg;
+        RegisterPtr mBase;
         std::optional<int> mDisplacement;
+        RegisterPtr mIndex;
+        std::optional<int> mScale;
     };
     using MemoryPtr = std::unique_ptr<Memory>;
 }

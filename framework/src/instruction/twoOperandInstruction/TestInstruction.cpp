@@ -12,6 +12,7 @@ namespace instruction
     void TestInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, TestInstruction& instruction)
     {
         codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        codegen::SIB sib;
         std::optional<int> displacement;
 
         Register* lhs = dynamic_cast<Register*>(instruction.getLeft().get());
@@ -19,9 +20,10 @@ namespace instruction
 
         if (mem)
         {
-            lhs = mem->getReg();
+            lhs = mem->getBase();
             addressingMode = mem->getAddressingMode();
             displacement = mem->getDisplacement();
+            sib = mem->getSIB();
         }
 
         if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
@@ -32,6 +34,7 @@ namespace instruction
                     builder.createInstruction(section)
                             .opcode(codegen::TEST_RM_REG8)
                             .modrm(addressingMode, rhs->getID(), lhs->getID())
+                            .sib(sib)
                             .displacement(displacement)
                             .emit();
                     break;
@@ -40,6 +43,7 @@ namespace instruction
                             .prefix(codegen::SIZE_PREFIX)
                             .opcode(codegen::TEST_RM_REG)
                             .modrm(addressingMode, rhs->getID(), lhs->getID())
+                            .sib(sib)
                             .displacement(displacement)
                             .emit();
                     break;
@@ -47,6 +51,7 @@ namespace instruction
                     builder.createInstruction(section)
                             .opcode(codegen::TEST_RM_REG)
                             .modrm(addressingMode, rhs->getID(), lhs->getID())
+                            .sib(sib)
                             .displacement(displacement)
                             .emit();
                     break;
@@ -55,6 +60,7 @@ namespace instruction
                             .prefix(codegen::REX::W)
                             .opcode(codegen::TEST_RM_REG)
                             .modrm(addressingMode, rhs->getID(), lhs->getID())
+                            .sib(sib)
                             .displacement(displacement)
                             .emit();
                     break;
@@ -70,6 +76,7 @@ namespace instruction
                     builder.createInstruction(section)
                             .opcode(codegen::TEST_RM_IMM8)
                             .modrm(addressingMode, codegen::ModRM::NullRegister, lhs->getID())
+                            .sib(sib)
                             .immediate(imm->imm8())
                             .displacement(displacement)
                             .emit();
@@ -79,6 +86,7 @@ namespace instruction
                             .prefix(codegen::SIZE_PREFIX)
                             .opcode(codegen::TEST_RM_IMM)
                             .modrm(addressingMode, codegen::ModRM::NullRegister, lhs->getID())
+                            .sib(sib)
                             .immediate(imm->imm16())
                             .displacement(displacement)
                             .emit();
@@ -87,6 +95,7 @@ namespace instruction
                     builder.createInstruction(section)
                             .opcode(codegen::TEST_RM_IMM)
                             .modrm(addressingMode, codegen::ModRM::NullRegister, lhs->getID())
+                            .sib(sib)
                             .immediate(imm->imm32())
                             .displacement(displacement)
                             .emit();
@@ -96,6 +105,7 @@ namespace instruction
                             .prefix(codegen::REX::W)
                             .opcode(codegen::TEST_RM_IMM)
                             .modrm(addressingMode, codegen::ModRM::NullRegister, lhs->getID())
+                            .sib(sib)
                             .immediate(imm->imm32())
                             .displacement(displacement)
                             .emit();

@@ -36,4 +36,28 @@ namespace codegen
 
         outputFormat->write(byte, section);
     }
+
+
+    SIB::SIB()
+        : mScale(0xff)
+        , mIndex(0xff)
+        , mBase(0xff)
+    {
+    }
+    SIB::SIB(unsigned char scale, Register index, Register base)
+        : mScale(scale)
+        , mIndex(index)
+        , mBase(base)
+    {
+    }
+
+    void SIB::emit(codegen::IOutputFormat* outputFormat, codegen::Section section)
+    {
+        unsigned char byte = 0;
+        byte |= (static_cast<unsigned char>(mScale) << 6);
+        byte |= (mIndex << 3);
+        byte |= mBase;
+
+        outputFormat->write(byte, section);
+    }
 }

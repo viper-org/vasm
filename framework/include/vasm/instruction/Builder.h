@@ -169,28 +169,48 @@ namespace instruction
         {
             consume(); // LBracket
 
-            RegisterPtr reg = parseRegister();
+            RegisterPtr base = parseRegister();
+            RegisterPtr index;
 
             std::optional<int> displacement;
-            if (current().getTokenType() == lexing::TokenType::Plus)
+            std::optional<int> scale;
+            while (displacement == std::nullopt)
             {
-                consume();
+                if (current().getTokenType() == lexing::TokenType::Plus)
+                {
+                    consume();
 
-                assert(current().getTokenType() == lexing::TokenType::Immediate); // TODO: Proper expectToken
-                displacement = std::stoi(consume().getText(), 0, 0);
-            }
-            else if (current().getTokenType() == lexing::TokenType::Minus)
-            {
-                consume();
+                    if (current().getTokenType() == lexing::TokenType::Immediate)
+                    {
+                        displacement = std::stoi(consume().getText(), 0, 0);
+                    }
+                    else
+                    {
+                        assert(current().getTokenType() == lexing::TokenType::Register);
+                        index = parseRegister();
+                        if (current().getTokenType() == lexing::TokenType::Star)
+                        {
+                            consume();
+                            assert(current().getTokenType() == lexing::TokenType::Immediate);
+                            scale = std::stoi(consume().getText(), 0, 0);
+                            assert(scale == 1 || scale == 2 || scale == 4 || scale == 8);
+                        }
+                    }
+                }
+                else if (current().getTokenType() == lexing::TokenType::Minus)
+                {
+                    consume();
 
-                assert(current().getTokenType() == lexing::TokenType::Immediate); // TODO: Proper expectToken
-                displacement = -std::stoi(consume().getText(), 0, 0);
+                    assert(current().getTokenType() == lexing::TokenType::Immediate); // TODO: Proper expectToken
+                    displacement = -std::stoi(consume().getText(), 0, 0);
+                }
+                else break;
             }
 
             assert(current().getTokenType() == lexing::TokenType::RBracket); // TODO: Proper expectToken
             consume();
 
-            return std::make_unique<Memory>(std::move(reg), displacement);
+            return std::make_unique<Memory>(std::move(base), displacement, std::move(index), scale);
         }
 
         RelativePtr parseRelMemory()

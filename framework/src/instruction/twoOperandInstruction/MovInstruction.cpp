@@ -19,6 +19,7 @@ namespace instruction
     void MovInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovInstruction& instruction)
     {
         codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        codegen::SIB sib;
         std::optional<int> displacement;
 
         Register* regLhs = dynamic_cast<Register*>(instruction.getLeft().get());
@@ -27,7 +28,8 @@ namespace instruction
         {
             addressingMode = memLhs->getAddressingMode();
             displacement = memLhs->getDisplacement();
-            regLhs = memLhs->getReg();
+            regLhs = memLhs->getBase();
+            sib = memLhs->getSIB();
         }
         
         Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
@@ -48,7 +50,8 @@ namespace instruction
         {
             addressingMode = memRhs->getAddressingMode();
             displacement = memRhs->getDisplacement();
-            regRhs = memRhs->getReg();
+            regRhs = memRhs->getBase();
+            sib = memRhs->getSIB();
 
             reg = regLhs;
             rm = regRhs;
@@ -67,33 +70,37 @@ namespace instruction
             {
                 case codegen::OperandSize::Byte:
                     builder.createInstruction(section)
-                           .opcode(opcode8)
-                           .modrm(addressingMode, reg->getID(), rm->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(opcode8)
+                        .modrm(addressingMode, reg->getID(), rm->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
-                           .prefix(codegen::SIZE_PREFIX)
-                           .opcode(opcode)
-                           .modrm(addressingMode, reg->getID(), rm->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::SIZE_PREFIX)
+                        .opcode(opcode)
+                        .modrm(addressingMode, reg->getID(), rm->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(opcode)
-                           .modrm(addressingMode, reg->getID(), rm->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(opcode)
+                        .modrm(addressingMode, reg->getID(), rm->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(opcode)
-                           .modrm(addressingMode, reg->getID(), rm->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(opcode)
+                        .modrm(addressingMode, reg->getID(), rm->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;
@@ -108,40 +115,43 @@ namespace instruction
                 {
                     case codegen::OperandSize::Byte:
                         builder.createInstruction(section)
-                               .opcode(codegen::MOV_RM_IMM8)
-                               .modrm(addressingMode, 0, regLhs->getID())
-                               .displacement(displacement)
-                               .immediate(rhs->imm8())
-                               .emit();
+                            .opcode(codegen::MOV_RM_IMM8)
+                            .modrm(addressingMode, 0, regLhs->getID())
+                            .displacement(displacement)
+                            .immediate(rhs->imm8())
+                            .emit();
                         size = 1;
                         break;
                     case codegen::OperandSize::Word:
                         builder.createInstruction(section)
-                               .prefix(codegen::SIZE_PREFIX)
-                               .opcode(codegen::MOV_RM_IMM)
-                               .modrm(addressingMode, 0, regLhs->getID())
-                               .displacement(displacement)
-                               .immediate(rhs->imm16())
-                               .emit();
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(codegen::MOV_RM_IMM)
+                            .modrm(addressingMode, 0, regLhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(rhs->imm16())
+                            .emit();
                         size = 2;
                         break;
                     case codegen::OperandSize::Long:
                         builder.createInstruction(section)
-                               .opcode(codegen::MOV_RM_IMM)
-                               .modrm(addressingMode, 0, regLhs->getID())
-                               .displacement(displacement)
-                               .immediate(rhs->imm32())
-                               .emit();
+                            .opcode(codegen::MOV_RM_IMM)
+                            .modrm(addressingMode, 0, regLhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(rhs->imm32())
+                            .emit();
                         size = 4;
                         break;
                     case codegen::OperandSize::Quad:
                         builder.createInstruction(section)
-                               .prefix(codegen::REX::W)
-                               .opcode(codegen::MOV_RM_IMM)
-                               .modrm(addressingMode, 0, regLhs->getID())
-                               .displacement(displacement)
-                               .immediate(rhs->imm32())
-                               .emit();
+                            .prefix(codegen::REX::W)
+                            .opcode(codegen::MOV_RM_IMM)
+                            .modrm(addressingMode, 0, regLhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(rhs->imm32())
+                            .emit();
                         size = 4;
                         break;
                     default:
@@ -197,6 +207,7 @@ namespace instruction
     void MovZXInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovZXInstruction& instruction)
     {
         codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        codegen::SIB sib;
         std::optional<int> displacement;
 
         Register* lhs = static_cast<Register*>(instruction.getLeft().get());
@@ -205,9 +216,10 @@ namespace instruction
         Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
         if (memRhs)
         {
-            regRhs = memRhs->getReg();
+            regRhs = memRhs->getBase();
             addressingMode = memRhs->getAddressingMode();
             displacement = memRhs->getDisplacement();
+            sib = memRhs->getSIB();
         }
 
         assert(regRhs->getSize() != codegen::OperandSize::Long);
@@ -222,26 +234,29 @@ namespace instruction
                     break; // Unreachable
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
-                           .prefix(codegen::SIZE_PREFIX)
-                           .opcode(codegen::MOVZX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::SIZE_PREFIX)
+                        .opcode(codegen::MOVZX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOVZX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(codegen::MOVZX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::MOVZX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(codegen::MOVZX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;
@@ -259,18 +274,20 @@ namespace instruction
                     break; // Unreachable
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOVZX16)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(codegen::MOVZX16)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::MOVZX16)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(codegen::MOVZX16)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;
@@ -281,6 +298,7 @@ namespace instruction
     void MovSXInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, MovSXInstruction& instruction)
     {
         codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+        codegen::SIB sib;
         std::optional<int> displacement;
 
         Register* lhs = static_cast<Register*>(instruction.getLeft().get());
@@ -289,9 +307,10 @@ namespace instruction
         Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
         if (memRhs)
         {
-            regRhs = memRhs->getReg();
+            regRhs = memRhs->getBase();
             addressingMode = memRhs->getAddressingMode();
             displacement = memRhs->getDisplacement();
+            sib = memRhs->getSIB();
         }
 
         assert(regRhs->getSize() != codegen::OperandSize::Quad);
@@ -305,26 +324,29 @@ namespace instruction
                     break; // Unreachable
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
-                           .prefix(codegen::SIZE_PREFIX)
-                           .opcode(codegen::MOVSX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::SIZE_PREFIX)
+                        .opcode(codegen::MOVSX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOVSX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(codegen::MOVSX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::MOVSX8)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(codegen::MOVSX8)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;
@@ -342,18 +364,20 @@ namespace instruction
                     break; // Unreachable
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOVSX16)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(codegen::MOVSX16)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::MOVSX16)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(codegen::MOVSX16)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;
@@ -371,18 +395,20 @@ namespace instruction
                     break; // Unreachable
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::MOVSXD)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .opcode(codegen::MOVSXD)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::MOVSXD)
-                           .modrm(addressingMode, lhs->getID(), regRhs->getID())
-                           .displacement(displacement)
-                           .emit();
+                        .prefix(codegen::REX::W)
+                        .opcode(codegen::MOVSXD)
+                        .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                        .sib(sib)
+                        .displacement(displacement)
+                        .emit();
                     break;
                 default:
                     break;

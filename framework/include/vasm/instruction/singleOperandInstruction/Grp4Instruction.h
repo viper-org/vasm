@@ -22,14 +22,16 @@ namespace instruction
         {
             Register* operand; 
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+            codegen::SIB sib;
             std::optional<int> displacement;
             codegen::OperandSize size;
 
             if (Memory* mem = dynamic_cast<Memory*>(instruction.getOperand().get()))
             {
-                operand = mem->getReg();
+                operand = mem->getBase();
                 addressingMode = mem->getAddressingMode();
                 displacement = mem->getDisplacement();
+                sib = mem->getSIB();
                 size = instruction.getSize();
             }
             else
@@ -44,6 +46,7 @@ namespace instruction
                     builder.createInstruction(section)
                         .opcode(codegen::GRP4_RM8)
                         .modrm(addressingMode, ModRM, operand->getID())
+                        .sib(sib)
                         .displacement(displacement)
                         .emit();
                     break;
@@ -52,6 +55,7 @@ namespace instruction
                         .prefix(codegen::SIZE_PREFIX)
                         .opcode(codegen::GRP4_RM)
                         .modrm(addressingMode, ModRM, operand->getID())
+                        .sib(sib)
                         .displacement(displacement)
                         .emit();
                     break;
@@ -67,6 +71,7 @@ namespace instruction
                         .prefix(codegen::REX::W)
                         .opcode(codegen::GRP4_RM)
                         .modrm(addressingMode, ModRM, operand->getID())
+                        .sib(sib)
                         .displacement(displacement)
                         .emit();
                     break;

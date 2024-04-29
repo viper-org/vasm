@@ -38,6 +38,22 @@ namespace codegen
         Register mReg;
         Register mRM;
     };
+
+    class SIB
+    {
+    friend class Instruction;
+    using Register = unsigned char;
+    public:
+        SIB();
+        SIB(unsigned char scale, Register index, Register base);
+
+    private:
+        void emit(codegen::IOutputFormat* outputFormat, codegen::Section section);
+
+        unsigned char mScale;
+        Register mIndex;
+        Register mBase;
+    };
 }
 
 #endif

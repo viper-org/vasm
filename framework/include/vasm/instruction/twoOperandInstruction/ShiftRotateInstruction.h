@@ -25,13 +25,15 @@ namespace instruction
         {
             Register* lhs;
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+            codegen::SIB sib;
             std::optional<int> displacement;
 
             if (Memory* mem = dynamic_cast<Memory*>(instruction.getLeft().get()))
             {
-                lhs = mem->getReg();
+                lhs = mem->getBase();
                 addressingMode = mem->getAddressingMode();
                 displacement = mem->getDisplacement();
+                sib = mem->getSIB();
             }
             else
             {
@@ -48,6 +50,7 @@ namespace instruction
                         builder.createInstruction(section)
                                .opcode(codegen::SHIFT_ROTATE_RM8_CL)
                                .modrm(addressingMode, ModRM, lhs->getID())
+                                .sib(sib)
                                .displacement(displacement)
                                .emit();
                         break;
@@ -56,6 +59,7 @@ namespace instruction
                                .prefix(codegen::SIZE_PREFIX)
                                .opcode(codegen::SHIFT_ROTATE_RM_CL)
                                .modrm(addressingMode, ModRM, lhs->getID())
+                                .sib(sib)
                                .displacement(displacement)
                                .emit();
                         break;
@@ -63,6 +67,7 @@ namespace instruction
                         builder.createInstruction(section)
                                .opcode(codegen::SHIFT_ROTATE_RM_CL)
                                .modrm(addressingMode, ModRM, lhs->getID())
+                                .sib(sib)
                                .displacement(displacement)
                                .emit();
                         break;
@@ -71,6 +76,7 @@ namespace instruction
                                .prefix(codegen::REX::W)
                                .opcode(codegen::SHIFT_ROTATE_RM_CL)
                                .modrm(addressingMode, ModRM, lhs->getID())
+                                .sib(sib)
                                .displacement(displacement)
                                .emit();
                         break;
