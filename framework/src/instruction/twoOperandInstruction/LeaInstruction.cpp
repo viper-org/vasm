@@ -40,12 +40,14 @@ namespace instruction
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
                         .emit();
+                    break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
                         .opcode(codegen::LEA)
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
                         .emit();
+                    break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
                         .prefix(codegen::REX::W)
@@ -53,6 +55,7 @@ namespace instruction
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
                         .emit();
+                    break;
                 default:
                     break; // Unreachable
             }
