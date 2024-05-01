@@ -241,7 +241,7 @@ namespace codegen
         return true;
     }
 
-    void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset)
+    void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend)
     {
         ELFSection* sect = getOrCreateSection(section);
         ELFSection* rela = getElfSection(".rela" + sect->mName);
@@ -297,7 +297,7 @@ namespace codegen
         }
         info |= static_cast<std::uint64_t>(symbol.index) << 32;
         rela->write(info);
-        rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(offset));
+        rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(offset + addend));
     }
 
     void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)

@@ -34,7 +34,7 @@ namespace codegen
         virtual Section getSymbolSection(std::string_view name) const override;
         virtual Section getSection(std::string_view name) override;
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
-        void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
+        void relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend) override;
         void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
 
         void print(std::ostream& stream) override;

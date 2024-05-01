@@ -12,7 +12,7 @@ namespace instruction
     {
     }
 
-    void LabelOperand::reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset)
+    void LabelOperand::reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset, int addend)
     {
         if (mName != "$")
         {
@@ -22,7 +22,7 @@ namespace instruction
             }
             else
             {
-                builder.relocLabel(mName, mLocation, section, offset);
+                builder.relocLabel(mName, mLocation, section, offset, addend);
             }
         }
     }

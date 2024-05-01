@@ -20,7 +20,7 @@ namespace codegen
         Instruction createInstruction(codegen::Section section);
 
         void addLabel(std::string name, codegen::Section section);
-        void relocLabel(std::string name, std::string location, codegen::Section section, int offset = 0);
+        void relocLabel(std::string name, std::string location, codegen::Section section, int offset = 0, int addend = 0);
         void forwardLabel(std::string name, codegen::Section section, codegen::OperandSize size, int offset = 0);
 
         void addExtern(const std::string& name);
