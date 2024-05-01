@@ -128,7 +128,7 @@ namespace instruction
                     case codegen::OperandSize::Byte:
                         builder.createInstruction(section)
                             .opcode(codegen::MOV_RM_IMM8)
-                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, 0, 0b101)
                             .displacement(displacement, true)
                             .immediate(rhs->imm8())
                             .emit();
@@ -137,7 +137,7 @@ namespace instruction
                         builder.createInstruction(section)
                             .prefix(codegen::SIZE_PREFIX)
                             .opcode(codegen::MOV_RM_IMM)
-                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, 0, 0b101)
                             .displacement(displacement, true)
                             .immediate(rhs->imm16())
                             .emit();
@@ -145,7 +145,7 @@ namespace instruction
                     case codegen::OperandSize::Long:
                         builder.createInstruction(section)
                             .opcode(codegen::MOV_RM_IMM)
-                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, 0, 0b101)
                             .displacement(displacement, true)
                             .immediate(rhs->imm32())
                             .emit();
