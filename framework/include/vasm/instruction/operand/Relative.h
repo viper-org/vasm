@@ -15,14 +15,16 @@ namespace instruction
     class Relative : public Operand
     {
     public:
-        Relative(LabelOperandPtr reg);
+        Relative(LabelOperandPtr reg, std::optional<int> displacement);
 
         LabelOperand* getLabel() const;
+        std::optional<int> getDisplacement() const;
 
         std::unique_ptr<Operand> clone() override;
 
     private:
         LabelOperandPtr mLabel;
+        std::optional<int> mDisplacement;
     };
     using RelativePtr = std::unique_ptr<Relative>;
 }

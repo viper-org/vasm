@@ -221,10 +221,23 @@ namespace instruction
             OperandPtr operand = parseImmediate();
             LabelOperand* label = static_cast<LabelOperand*>(operand.release());
 
+            std::optional<int> displacement;
+
+            if (current().getTokenType() == lexing::TokenType::Plus)
+            {
+                consume();
+                displacement = std::stoi(consume().getText(), 0, 0);
+            }
+            else if (current().getTokenType() == lexing::TokenType::Minus)
+            {
+                consume();
+                displacement = -std::stoi(consume().getText(), 0, 0);
+            }
+
             assert(current().getTokenType() == lexing::TokenType::RBracket);
             consume();
 
-            return std::make_unique<Relative>(LabelOperandPtr(label));
+            return std::make_unique<Relative>(LabelOperandPtr(label), displacement);
         }
 
         StringPtr parseString()

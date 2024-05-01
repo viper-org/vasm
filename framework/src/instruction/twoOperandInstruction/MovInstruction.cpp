@@ -70,7 +70,7 @@ namespace instruction
                 int instructionSize = 7;
                 if (regRhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
 
-                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
+                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize + relLhs->getDisplacement().value_or(0);
 
                 switch(regRhs->getSize())
                 {
@@ -123,7 +123,7 @@ namespace instruction
                     default: break;
                 }
 
-                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
+                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize + relLhs->getDisplacement().value_or(0);
 
                 switch(instruction.getSize())
                 {
@@ -171,7 +171,7 @@ namespace instruction
             int instructionSize = 7;
             if (regLhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
 
-            int displacement = relRhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
+            int displacement = relRhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize + relRhs->getDisplacement().value_or(0);
 
             switch(regLhs->getSize())
             {

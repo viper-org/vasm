@@ -6,8 +6,9 @@
 
 namespace instruction
 {
-    Relative::Relative(LabelOperandPtr label)
+    Relative::Relative(LabelOperandPtr label, std::optional<int> displacement)
         : mLabel(std::move(label))
+        , mDisplacement(displacement)
     {
     }
 
@@ -16,8 +17,13 @@ namespace instruction
         return mLabel.get();
     }
 
+    std::optional<int> Relative::getDisplacement() const
+    {
+        return mDisplacement;
+    }
+
     std::unique_ptr<Operand> Relative::clone()
     {
-        return std::make_unique<Relative>(LabelOperandPtr(static_cast<LabelOperand*>(mLabel->clone().release())));
+        return std::make_unique<Relative>(LabelOperandPtr(static_cast<LabelOperand*>(mLabel->clone().release())), mDisplacement);
     }
 }
