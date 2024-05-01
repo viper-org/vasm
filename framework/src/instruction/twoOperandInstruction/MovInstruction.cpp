@@ -110,7 +110,7 @@ namespace instruction
             }
             else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
             {
-                offset = -5;
+                offset = -4;
                 int instructionSize = 7;
                 switch(instruction.getSize())
                 {
@@ -134,6 +134,7 @@ namespace instruction
                             .displacement(displacement, true)
                             .immediate(rhs->imm8())
                             .emit();
+                        offset -= 1;
                         break;
                     case codegen::OperandSize::Word:
                         builder.createInstruction(section)
@@ -143,6 +144,7 @@ namespace instruction
                             .displacement(displacement, true)
                             .immediate(rhs->imm16())
                             .emit();
+                        offset -= 2;
                         break;
                     case codegen::OperandSize::Long:
                         builder.createInstruction(section)
@@ -151,6 +153,7 @@ namespace instruction
                             .displacement(displacement, true)
                             .immediate(rhs->imm32())
                             .emit();
+                        offset -= 4;
                         break;
                     case codegen::OperandSize::Quad:
                         break; // TODO: Error
