@@ -36,6 +36,11 @@ namespace instruction
         return builder.getLabel(mName);
     }
 
+    codegen::Section LabelOperand::getSection(codegen::OpcodeBuilder& builder) const
+    {
+        return builder.getLabelSection(mName);
+    }
+
     std::unique_ptr<Operand> LabelOperand::clone()
     {
         return std::make_unique<LabelOperand>(mName, mLocation);

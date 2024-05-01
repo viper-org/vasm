@@ -24,6 +24,7 @@ namespace lexing
         Identifier,
 
         Extern,
+        Section,
         
         Immediate, String,
 

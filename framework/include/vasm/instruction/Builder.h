@@ -79,7 +79,7 @@ namespace instruction
             else if constexpr (std::is_same_v<Label, T>)
             {
                 std::string name = consume().getText();
-                // TODO: expectToken(lexing::TokenType::Comma);
+                // TODO: expectToken(lexing::TokenType::Colon);
                 consume();
 
                 return std::make_unique<T>(name);

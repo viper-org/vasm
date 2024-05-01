@@ -11,6 +11,7 @@ namespace codegen
     OpcodeBuilder::OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename)
         : mOutputFormat(outputFormat)
         , mFileName(filename)
+        , mSection(codegen::Section::Text)
         , mHadError(false)
     {
     }
@@ -53,6 +54,11 @@ namespace codegen
         return mOutputFormat->getSymbol(name);
     }
 
+    Section OpcodeBuilder::getLabelSection(std::string_view name)
+    {
+        return mOutputFormat->getSymbolSection(name);
+    }
+
     std::uint64_t OpcodeBuilder::getPosition(codegen::Section section)
     {
         return mOutputFormat->getPosition(section);
@@ -61,6 +67,20 @@ namespace codegen
     bool OpcodeBuilder::hadErrors() const
     {
         return mHadError;
+    }
+
+    codegen::Section OpcodeBuilder::getSectionByName(std::string_view name)
+    {
+        return mOutputFormat->getSection(name);
+    }
+
+    codegen::Section OpcodeBuilder::getSection() const
+    {
+        return mSection;
+    }
+    void OpcodeBuilder::setSection(codegen::Section section)
+    {
+        mSection = section;
     }
 
 

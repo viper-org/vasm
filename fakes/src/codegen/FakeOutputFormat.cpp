@@ -83,6 +83,14 @@ namespace codegen
             return std::make_pair(it->value, false);
         }
 
+        Section FakeOutputFormat::getSymbolSection(std::string_view name) const
+        { // TODO: Implement
+        }
+
+        Section FakeOutputFormat::getSection(std::string_view name)
+        { // TODO: Implement
+        }
+
         bool FakeOutputFormat::hasSymbol(const std::string& name) const
         {
             auto it = std::find_if(mSymbols.begin(), mSymbols.end(), [&name](auto& symbol) {

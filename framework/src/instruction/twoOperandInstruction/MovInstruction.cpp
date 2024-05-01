@@ -25,6 +25,7 @@ namespace instruction
 
         Register* regLhs = dynamic_cast<Register*>(instruction.getLeft().get());
         Memory*   memLhs = dynamic_cast<Memory*>(instruction.getLeft().get());
+        Relative* relLhs = dynamic_cast<Relative*>(instruction.getLeft().get());
         if (memLhs)
         {
             addressingMode = memLhs->getAddressingMode();
@@ -61,7 +62,106 @@ namespace instruction
             opcode = codegen::MOV_REG_RM;
         }
         
-        if (relRhs)
+        if (relLhs)
+        {
+            if (regRhs)
+            {
+                int instructionSize = 7;
+                if (regRhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
+
+                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
+
+                switch(regRhs->getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        builder.createInstruction(section)
+                            .opcode(codegen::MOV_RM_REG8)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(codegen::MOV_RM_REG)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                            .opcode(codegen::MOV_RM_REG)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Quad:
+                        builder.createInstruction(section)
+                            .prefix(codegen::REX::W)
+                            .opcode(codegen::MOV_RM_REG)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .emit();
+                        break;
+                    default:
+                        break; // Unreachable
+                }
+            }
+            else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
+            {
+                int instructionSize = 7;
+                switch(instruction.getSize())
+                {
+                    case codegen::OperandSize::Word:
+                        instructionSize -= 2;
+                        break;
+                    case codegen::OperandSize::Long:
+                        instructionSize -= 3;
+                        break;
+                    default: break;
+                }
+
+                int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
+
+                switch(regRhs->getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        builder.createInstruction(section)
+                            .opcode(codegen::MOV_RM_IMM8)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .immediate(rhs->imm8())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(codegen::MOV_RM_IMM)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .immediate(rhs->imm16())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                            .opcode(codegen::MOV_RM_IMM)
+                            .modrm(codegen::AddressingMode::RegisterIndirect, regRhs->getID(), 0b101)
+                            .displacement(displacement, true)
+                            .immediate(rhs->imm32())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Quad:
+                        break; // TODO: Error
+                    default:
+                        break; // Unreachable
+                }
+            }
+
+            codegen::Section labelSection = relLhs->getLabel()->getSection(builder);
+            if (labelSection != section)
+                relLhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4);
+        }
+        else if (relRhs)
         {
             int instructionSize = 7;
             if (regLhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
@@ -103,7 +203,10 @@ namespace instruction
                 default:
                     break; // Unreachable
             }
-            return;
+
+            codegen::Section labelSection = relRhs->getLabel()->getSection(builder);
+            if (labelSection != section)
+                relRhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4);
         }
         else if (regRhs || memRhs) // mov reg, reg OR mov reg, rm OR mov rm, reg
         {

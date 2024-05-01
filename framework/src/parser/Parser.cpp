@@ -191,6 +191,11 @@ namespace parsing
                 consume();
                 return std::make_unique<ExternDirective>(consume().getText());
             }
+            case lexing::TokenType::Section:
+            {
+                consume();
+                return std::make_unique<SectionDirective>(consume().getText());
+            }
 
             case lexing::TokenType::Instruction:
             {

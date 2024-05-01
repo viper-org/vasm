@@ -14,4 +14,14 @@ namespace instruction
     {
         builder.addExtern(mName);
     }
+
+    SectionDirective::SectionDirective(const std::string& name)
+        : mName(name)
+    {
+    }
+
+    void SectionDirective::emit(codegen::OpcodeBuilder& builder, codegen::Section)
+    {
+        builder.setSection(builder.getSectionByName(mName));
+    }
 }

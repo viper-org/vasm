@@ -59,6 +59,11 @@ namespace instruction
                 default:
                     break; // Unreachable
             }
+
+
+            codegen::Section labelSection = relRhs->getLabel()->getSection(builder);
+            if (labelSection != section)
+                relRhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4);
             return;
         }
 

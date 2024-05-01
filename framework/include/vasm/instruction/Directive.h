@@ -19,6 +19,17 @@ namespace instruction
     private:
         std::string mName;
     };
+
+    class SectionDirective : public Value
+    {
+    public:
+        SectionDirective(const std::string& name);
+
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override;
+
+    private:
+        std::string mName;
+    };
 }
 
 #endif

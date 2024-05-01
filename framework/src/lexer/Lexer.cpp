@@ -111,6 +111,7 @@ namespace lexing
 
     const std::unordered_map<std::string_view, lexing::TokenType> directives = {
         {"extern", lexing::TokenType::Extern},
+        {"section", lexing::TokenType::Section},
         {"rel", lexing::TokenType::Rel},
     };
 
@@ -159,11 +160,11 @@ namespace lexing
     {
         SourceLocation startSourceLocation {line, column};
         
-        if (std::isalpha(current()) || current() == '_') // Identifier
+        if (std::isalpha(current()) || current() == '_' || current() == '.') // Identifier
         {
             std::string text = std::string(1, current());
 
-            while (std::isalnum(peek(1)) || peek(1) == '_')
+            while (std::isalnum(peek(1)) || peek(1) == '_' || peek(1) == '.')
             {
                 consume();
                 text += current();

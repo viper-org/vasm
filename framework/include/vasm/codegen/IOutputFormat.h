@@ -35,6 +35,8 @@ namespace codegen
         virtual void addExternSymbol(const std::string& name) = 0;
         [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
         [[nodiscard]] virtual std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const = 0;
+        virtual Section getSymbolSection(std::string_view name) const = 0;
+        virtual Section getSection(std::string_view name) = 0;
         virtual void relocSymbol(const std::string& name, const std::string& location, Section section, int offset = 0) = 0;
         virtual void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) = 0;
 

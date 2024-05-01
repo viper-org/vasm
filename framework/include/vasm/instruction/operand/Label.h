@@ -15,6 +15,7 @@ namespace instruction
         LabelOperand(std::string name, std::string location = "");
 
         std::pair<unsigned long long, bool> getValue(codegen::OpcodeBuilder& builder, codegen::Section section) const;
+        codegen::Section getSection(codegen::OpcodeBuilder& builder) const;
 
         void reloc(codegen::OpcodeBuilder& builder, codegen::Section section, codegen::OperandSize size, int offset = 0);
 

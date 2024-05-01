@@ -43,6 +43,8 @@ namespace codegen
             void addSymbol(const std::string& name, unsigned long value, Section section, bool isGlobal) override;
             void addExternSymbol(const std::string& name) override;
             [[nodiscard]] std::pair<unsigned long, bool> getSymbol(const std::string& name) const override;
+            virtual Section getSymbolSection(std::string_view name) const override;
+            virtual Section getSection(std::string_view name) override;
             [[nodiscard]] bool hasSymbol(const std::string& name) const override;
             void relocSymbol(const std::string& name, const std::string& location, Section section, int offset) override;
             void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;

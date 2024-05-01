@@ -70,7 +70,7 @@ namespace codegen
 
     void ELFFormat::write(std::uint8_t data, Section section)
     {
-        ELFSection* elfSection = getSection(section);
+        ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
@@ -80,7 +80,7 @@ namespace codegen
 
     void ELFFormat::write(std::uint16_t data, Section section)
     {
-        ELFSection* elfSection = getSection(section);
+        ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
@@ -90,7 +90,7 @@ namespace codegen
 
     void ELFFormat::write(std::uint32_t data, Section section)
     {
-        ELFSection* elfSection = getSection(section);
+        ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
@@ -100,7 +100,7 @@ namespace codegen
 
     void ELFFormat::write(std::uint64_t data, Section section)
     {
-        ELFSection* elfSection = getSection(section);
+        ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
@@ -111,7 +111,7 @@ namespace codegen
 
     size_t ELFFormat::getPosition(Section section)
     {
-        ELFSection* elfSection = getSection(section);
+        ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
@@ -126,13 +126,13 @@ namespace codegen
 
     void ELFFormat::addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal)
     {
-        ELFSection* strtab = getSection(".strtab");
+        ELFSection* strtab = getElfSection(".strtab");
         std::uint32_t strtabIndex = strtab->size();
         strtab->write(name);
 
         getOrCreateSection(section);
 
-        ELFSection* symtab = getSection(".symtab");
+        ELFSection* symtab = getElfSection(".symtab");
 
         std::uint16_t sectionIndex;
         for (sectionIndex = 0; sectionIndex < static_cast<std::uint16_t>(mSections.size()); sectionIndex++)
@@ -145,7 +145,7 @@ namespace codegen
 
         Symbols& symbols = isGlobal ? mGlobalSymbols : mLocalSymbols;
 
-        auto&& a = symbols.emplace(name, strtabIndex, isGlobal ? SYM_GLOBAL : SYM_LOCAL, SYM_DEFAULT, sectionIndex, value, 0, false, isGlobal ? symbols.size() + mLocalSymbols.size() : symbols.size());
+        symbols.emplace(name, strtabIndex, isGlobal ? SYM_GLOBAL : SYM_LOCAL, SYM_DEFAULT, sectionIndex, value, 0, false, isGlobal ? symbols.size() + mLocalSymbols.size() : symbols.size());
 
         if (!isGlobal)
         {
@@ -155,7 +155,7 @@ namespace codegen
 
     void ELFFormat::addExternSymbol(const std::string& name)
     {
-        ELFSection* strtab = getSection(".strtab");
+        ELFSection* strtab = getElfSection(".strtab");
         unsigned int strtabIndex = strtab->size();
         strtab->write(name);
 
@@ -181,6 +181,49 @@ namespace codegen
         
         return std::make_pair(it->value, it->external);
     }
+
+    Section ELFFormat::getSymbolSection(std::string_view name) const
+    {
+        auto globalSymbol = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const auto& symbol) {
+            return symbol.name == name;
+        });
+        if (globalSymbol != mGlobalSymbols.end())
+        {
+            return mSections[globalSymbol->sectionIndex].mSection;
+        }
+        auto localSymbol = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const auto& symbol) {
+            return symbol.name == name;
+        });
+        if (localSymbol != mLocalSymbols.end())
+        {
+            return mSections[localSymbol->sectionIndex].mSection;
+        }
+        return Section::Other;
+    }
+
+    Section ELFFormat::getSection(std::string_view name)
+    {
+        auto it = std::find_if(mSections.begin(), mSections.end(), [&name](const auto& section){
+            return section.mName == name;
+        });
+
+        if (it != mSections.end())
+        {
+            return it ->mSection;
+        }
+
+        if (name == ".text")
+        {
+            createSection(codegen::Section::Text);
+            return codegen::Section::Text;
+        }
+        else if (name == ".data")
+        {
+            createSection(codegen::Section::Data);
+            return codegen::Section::Data;
+        }
+        return Section::Other;
+    }
     
     bool ELFFormat::hasSymbol(const std::string& name) const
     {
@@ -201,7 +244,7 @@ namespace codegen
     void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset)
     {
         ELFSection* sect = getOrCreateSection(section);
-        ELFSection* rela = getSection(".rela" + sect->mName);
+        ELFSection* rela = getElfSection(".rela" + sect->mName);
         if (!rela)
         {
             size_t symtabIndex;
@@ -239,7 +282,11 @@ namespace codegen
         const ELFSymbol& symbol = *it;
         
         rela->write(getPosition(section) + offset);
-        std::uint64_t info = symbol.external ? 0x2 : 0x1;
+
+        bool inSameSection = true;
+        if (symbol.external || section != getSymbolSection(name)) inSameSection = false;
+        std::uint64_t info = inSameSection ? 0x1 : 0x2;
+
         if (location == "plt")
         {
             info = 0x4;
@@ -250,12 +297,12 @@ namespace codegen
         }
         info |= static_cast<std::uint64_t>(symbol.index) << 32;
         rela->write(info);
-        rela->write(symbol.external ? static_cast<std::uint64_t>(offset) : 0UL);
+        rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(offset));
     }
 
     void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
     {
-        ELFSection* sect = getSection(section);
+        ELFSection* sect = getElfSection(section);
 
         std::uint64_t symbol = getSymbol(name).first - origin;
         switch (size)
@@ -390,7 +437,7 @@ namespace codegen
         WriteELF(stream, (short)mSections.size());
         WriteELF(stream, (short)1);
 
-        ELFSection* symtab = getSection(".symtab");
+        ELFSection* symtab = getElfSection(".symtab");
         for (const auto& symbol : mLocalSymbols)
         {
             symtab->write(symbol.strtabIndex);
@@ -410,7 +457,7 @@ namespace codegen
             symtab->write(symbol.size);
         }
 
-        ELFSection* shstrtab = getSection(".shstrtab");
+        ELFSection* shstrtab = getElfSection(".shstrtab");
         for (ELFSection& section : mSections)
         {
             section.mNameIdx = static_cast<int>(shstrtab->size());
@@ -454,7 +501,7 @@ namespace codegen
         }
     }
 
-    ELFFormat::ELFSection* ELFFormat::getSection(std::string_view name)
+    ELFFormat::ELFSection* ELFFormat::getElfSection(std::string_view name)
     {
         for (ELFSection& section : mSections)
         {
@@ -467,7 +514,7 @@ namespace codegen
         return nullptr;
     }
 
-    ELFFormat::ELFSection* ELFFormat::getSection(Section section)
+    ELFFormat::ELFSection* ELFFormat::getElfSection(Section section)
     {
         for (ELFSection& elfSection : mSections)
         {
@@ -486,8 +533,8 @@ namespace codegen
 
         ELFSection* newSection = &mSections.back();
 
-        ELFSection* strtab = getSection(".strtab");
-        ELFSection* symtab = getSection(".symtab");
+        ELFSection* strtab = getElfSection(".strtab");
+        ELFSection* symtab = getElfSection(".symtab");
 
         mLocalSymbols.emplace(newSection->mName, strtab->mBuffer.size(), SYM_SECTION, SYM_DEFAULT, mSections.size() - 1, 0, 0, false, mLocalSymbols.size() - 1);
         symtab->mInfo++;
@@ -500,7 +547,7 @@ namespace codegen
 
     ELFFormat::ELFSection* ELFFormat::getOrCreateSection(Section section)
     {
-        ELFSection* ret = getSection(section);
+        ELFSection* ret = getElfSection(section);
         if (!ret)
         {
             ret = createSection(section);

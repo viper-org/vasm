@@ -143,7 +143,7 @@ int main(int argc, char** argv)
     codegen::OpcodeBuilder builder(outputFormat.get(), inPath);
     for (auto&& value : values)
     {
-        value->emit(builder, codegen::Section::Text);
+        value->emit(builder, builder.getSection());
     }
 
     if (builder.hadErrors())

@@ -14,7 +14,7 @@ namespace instruction
     public:
         Label(std::string name);
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section section);
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section);
 
     private:
         std::string mName;

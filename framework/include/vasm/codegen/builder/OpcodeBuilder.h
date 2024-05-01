@@ -26,8 +26,13 @@ namespace codegen
         void addExtern(const std::string& name);
 
         std::pair<std::uint64_t, bool> getLabel(std::string name);
+        Section getLabelSection(std::string_view name);
         std::uint64_t getPosition(codegen::Section section);
         bool hadErrors() const;
+
+        codegen::Section getSectionByName(std::string_view name);
+        codegen::Section getSection() const;
+        void setSection(codegen::Section);
 
         void reportError(int line, std::string_view message);
 
@@ -35,6 +40,7 @@ namespace codegen
         codegen::IOutputFormat* mOutputFormat;
         std::vector<std::tuple<std::string, codegen::Section, codegen::OperandSize, int, int>> mForwardLabels;
         std::string mFileName;
+        codegen::Section mSection;
         bool mHadError; // Stop generating code if an error has been reported
     };
 }

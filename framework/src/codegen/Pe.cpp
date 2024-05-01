@@ -245,6 +245,13 @@ namespace codegen {
     {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
+
+    Section PEFormat::getSymbolSection(std::string_view name) const
+    { // TODO: Implement
+    }
+    Section PEFormat::getSection(std::string_view name)
+    { // TODO: Implement
+    }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const
     {
