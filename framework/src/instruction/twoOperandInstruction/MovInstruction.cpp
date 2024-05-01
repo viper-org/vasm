@@ -164,7 +164,7 @@ namespace instruction
 
             codegen::Section labelSection = relLhs->getLabel()->getSection(builder);
             if (labelSection != section)
-                relLhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, offset);
+                relLhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, offset + relLhs->getDisplacement().value_or(0));
         }
         else if (relRhs)
         {
@@ -211,7 +211,7 @@ namespace instruction
 
             codegen::Section labelSection = relRhs->getLabel()->getSection(builder);
             if (labelSection != section)
-                relRhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4);
+                relRhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4 + relRhs->getDisplacement().value_or(0));
         }
         else if (regRhs || memRhs) // mov reg, reg OR mov reg, rm OR mov rm, reg
         {
