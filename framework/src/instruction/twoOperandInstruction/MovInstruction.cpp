@@ -64,6 +64,7 @@ namespace instruction
         
         if (relLhs)
         {
+            int offset = -4;
             if (regRhs)
             {
                 int instructionSize = 7;
@@ -109,6 +110,7 @@ namespace instruction
             }
             else if (Immediate* rhs = dynamic_cast<Immediate*>(instruction.getRight().get()))
             {
+                offset = -5;
                 int instructionSize = 7;
                 switch(instruction.getSize())
                 {
@@ -159,7 +161,7 @@ namespace instruction
 
             codegen::Section labelSection = relLhs->getLabel()->getSection(builder);
             if (labelSection != section)
-                relLhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4);
+                relLhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, offset);
         }
         else if (relRhs)
         {
