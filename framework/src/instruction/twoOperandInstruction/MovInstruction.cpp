@@ -123,7 +123,7 @@ namespace instruction
 
                 int displacement = relLhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize;
 
-                switch(regRhs->getSize())
+                switch(instruction.getSize())
                 {
                     case codegen::OperandSize::Byte:
                         builder.createInstruction(section)
