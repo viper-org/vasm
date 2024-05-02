@@ -12,12 +12,13 @@ namespace instruction
     class Label : public Value
     {
     public:
-        Label(std::string name);
+        Label(std::string name, bool isGlobal);
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section);
 
     private:
         std::string mName;
+        bool mIsGlobal;
     };
 
     using LabelPtr = std::unique_ptr<Label>;

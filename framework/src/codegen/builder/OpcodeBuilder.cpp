@@ -29,9 +29,9 @@ namespace codegen
         return Instruction(mOutputFormat, section);
     }
 
-    void OpcodeBuilder::addLabel(std::string name, codegen::Section section)
+    void OpcodeBuilder::addLabel(std::string name, codegen::Section section, bool isGlobal)
     {
-        mOutputFormat->addSymbol(name, mOutputFormat->getPosition(section), section, true);
+        mOutputFormat->addSymbol(name, mOutputFormat->getPosition(section), section, isGlobal);
     }
 
     void OpcodeBuilder::relocLabel(std::string name, std::string location, codegen::Section section, int offset, int addend)

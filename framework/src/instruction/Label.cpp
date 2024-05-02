@@ -5,13 +5,14 @@
 
 namespace instruction
 {
-    Label::Label(std::string name)
-        : mName(name)
+    Label::Label(std::string name, bool isGlobal)
+        : mName(std::move(name))
+        , mIsGlobal(isGlobal)
     {
     }
 
     void Label::emit(codegen::OpcodeBuilder& builder, codegen::Section section)
     {
-        builder.addLabel(mName, section);
+        builder.addLabel(mName, section, mIsGlobal);
     }
 }

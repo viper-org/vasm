@@ -110,7 +110,7 @@ namespace instruction
                 // TODO: expectToken(lexing::TokenType::Colon);
                 consume();
 
-                return std::make_unique<T>(name);
+                return std::make_unique<T>(name, true);
             }
         }
 
