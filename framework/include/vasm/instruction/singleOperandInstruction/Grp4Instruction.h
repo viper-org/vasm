@@ -84,7 +84,6 @@ namespace instruction
     using NotInstruction  = Grp4Instruction<2>;
     using NegInstruction  = Grp4Instruction<3>;
     using MulInstruction  = Grp4Instruction<4>;
-    using IMulInstruction = Grp4Instruction<5>;
     using DivInstruction  = Grp4Instruction<6>;
     using IDivInstruction = Grp4Instruction<7>;
 }

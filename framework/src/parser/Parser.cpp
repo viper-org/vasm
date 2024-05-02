@@ -29,6 +29,8 @@
 #include "vasm/instruction/twoOperandInstruction/OutInInstruction.h"
 #include "vasm/instruction/twoOperandInstruction/TestInstruction.h"
 
+#include "vasm/instruction/variableOperandInstruction/IMulInstruction.h"
+
 namespace parsing
 {
     using namespace instruction;

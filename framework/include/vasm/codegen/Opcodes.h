@@ -154,6 +154,8 @@ namespace codegen
 
         MOVSX8 = 0xBE,
         MOVSX16 = 0xBF,
+
+        IMUL_REG_RM = 0xAF,
     };
 
     using namespace std::literals;

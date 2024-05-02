@@ -38,6 +38,8 @@ set(SOURCES
     "src/instruction/twoOperandInstruction/XchgInstruction.cpp"
     "src/instruction/twoOperandInstruction/TestInstruction.cpp"
 
+    "src/instruction/variableOperandInstruction/IMulInstruction.cpp"
+
 
     "src/error/ErrorReporter.cpp"
 )
@@ -90,6 +92,8 @@ set(HEADERS
     "include/vasm/instruction/twoOperandInstruction/ShiftRotateInstruction.h"
     "include/vasm/instruction/twoOperandInstruction/XchgInstruction.h"
     "include/vasm/instruction/twoOperandInstruction/TestInstruction.h"
+
+    "include/vasm/instruction/variableOperandInstruction/IMulInstruction.h"
 
 
     "include/vasm/error/ErrorReporter.h"

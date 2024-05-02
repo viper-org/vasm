@@ -7,6 +7,7 @@
 #include "vasm/instruction/NoOperandInstruction.h"
 #include "vasm/instruction/SingleOperandInstruction.h"
 #include "vasm/instruction/TwoOperandInstruction.h"
+#include "vasm/instruction/VariableOperandInstruction.h"
 
 #include "vasm/instruction/Label.h"
 
@@ -75,6 +76,27 @@ namespace instruction
                 consume();
                 OperandPtr right = parseOperand();
                 return std::make_unique<T>(std::move(left), std::move(right), size, lineNumber);
+            }
+            else if constexpr(std::derived_from<T, VariableOperandInstruction>)
+            {
+                codegen::OperandSize size = codegen::OperandSize::None;
+                if (current().getTokenType() == lexing::TokenType::Size)
+                {
+                    std::string text = consume().getText();
+                    if (text == "byte") size = codegen::OperandSize::Byte;
+                    if (text == "word") size = codegen::OperandSize::Word;
+                    if (text == "long") size = codegen::OperandSize::Long;
+                    if (text == "quad") size = codegen::OperandSize::Quad;
+                }
+
+                OperandPtr left = parseOperand();
+                if (current().getTokenType() == lexing::TokenType::Comma)
+                {
+                    consume();
+                    OperandPtr right = parseOperand();
+                    return std::make_unique<T>(std::move(left), std::move(right), size, lineNumber);
+                }
+                return std::make_unique<T>(std::move(left), size, lineNumber);
             }
             else if constexpr (std::is_same_v<Label, T>)
             {
