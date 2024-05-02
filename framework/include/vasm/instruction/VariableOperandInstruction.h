@@ -13,9 +13,10 @@ namespace instruction
     class VariableOperandInstruction : public Instruction
     {
     public:
-        VariableOperandInstruction(OperandPtr left, OperandPtr right, codegen::OperandSize size, int lineNumber)
+        VariableOperandInstruction(OperandPtr left, OperandPtr right, OperandPtr third, codegen::OperandSize size, int lineNumber)
             : mLeft(std::move(left))
             , mRight(std::move(right))
+            , mThird(std::move(third))
             , mSize(size)
             , mLineNumber(lineNumber)
         { }
@@ -27,6 +28,7 @@ namespace instruction
     protected:
         OperandPtr mLeft;
         OperandPtr mRight;
+        OperandPtr mThird;
         codegen::OperandSize mSize;
         int mLineNumber;
     };
@@ -35,8 +37,12 @@ namespace instruction
     class VariableOperandInstructionTemplate : public VariableOperandInstruction
     {
     public:
-        VariableOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size=codegen::OperandSize::None, int lineNumber=-1) : VariableOperandInstruction(std::move(left), std::move(right), size, lineNumber) { }
-        VariableOperandInstructionTemplate(OperandPtr operand, codegen::OperandSize size = codegen::OperandSize::None, int lineNumber = -1) : VariableOperandInstruction(std::move(operand), nullptr, size, lineNumber) { }
+        VariableOperandInstructionTemplate(OperandPtr left, OperandPtr right, OperandPtr third, codegen::OperandSize size=codegen::OperandSize::None, int lineNumber=-1)
+            : VariableOperandInstruction(std::move(left), std::move(right), std::move(third), size, lineNumber) { }
+        VariableOperandInstructionTemplate(OperandPtr left, OperandPtr right, codegen::OperandSize size=codegen::OperandSize::None, int lineNumber=-1)
+            : VariableOperandInstruction(std::move(left), std::move(right), nullptr, size, lineNumber) { }
+        VariableOperandInstructionTemplate(OperandPtr operand, codegen::OperandSize size = codegen::OperandSize::None, int lineNumber = -1)
+            : VariableOperandInstruction(std::move(operand), nullptr, nullptr, size, lineNumber) { }
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
@@ -53,14 +59,29 @@ namespace instruction
             return mRight;
         }
 
+        OperandPtr& getThird()
+        {
+            return mThird;
+        }
+
         OperandPtr& getOperand()
         {
             return mLeft;
         }
 
+        bool isSingleOperand()
+        {
+            return mRight == nullptr;
+        }
+
         bool isTwoOperand()
         {
-            return mRight != nullptr;
+            return mRight != nullptr && mThird == nullptr;
+        }
+
+        bool isThreeOperand()
+        {
+            return mThird != nullptr;
         }
 
         codegen::OperandSize getSize() const

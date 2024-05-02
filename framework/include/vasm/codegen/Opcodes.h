@@ -33,6 +33,10 @@ namespace codegen
 
         GRP4_RM8 = 0xF6,
         GRP4_RM  = 0xF7,
+        
+
+        IMUL_REG_RM_IMM8 = 0x6B,
+        IMUL_REG_RM_IMM = 0x69,
 
 
         TEST_RM_IMM8 = 0xF6,

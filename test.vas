@@ -4,8 +4,7 @@ message: db "Hello world!\n"
 section .text
 return:
     mov rax, 60
-    mov rdi, 4
-    imul rdi, rax
+    imul rdi, rax, 2
     syscall
 
 true:

@@ -3,6 +3,8 @@
 
 #include "vasm/instruction/variableOperandInstruction/IMulInstruction.h"
 
+#include "vasm/codegen/Opcodes.h"
+#include "vasm/instruction/operand/Immediate.h"
 #include "vasm/instruction/operand/Register.h"
 #include "vasm/instruction/operand/Memory.h"
 
@@ -10,7 +12,7 @@ namespace instruction
 {
     void IMulInstructionImpl::emit(codegen::OpcodeBuilder& builder, codegen::Section section, IMulInstruction& instruction)
     {
-        if (!instruction.isTwoOperand())
+        if (instruction.isSingleOperand())
         {
             Register* operand;
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
@@ -71,7 +73,7 @@ namespace instruction
                     break; // TODO: Error
             }
         }
-        else
+        else if (instruction.isTwoOperand())
         {
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
             codegen::SIB sib;
@@ -123,6 +125,108 @@ namespace instruction
 
                 case codegen::OperandSize::None:
                     break; // Unreachable
+            }
+        }
+        else
+        {
+            codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+            codegen::SIB sib;
+            std::optional<int> displacement;
+            codegen::OperandSize size;
+
+            Register* lhs = static_cast<Register*>(instruction.getLeft().get());
+            Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
+            Memory* memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
+            Immediate* imm = dynamic_cast<Immediate*>(instruction.getThird().get());
+            if (memRhs)
+            {
+                addressingMode = memRhs->getAddressingMode();
+                displacement = memRhs->getDisplacement();
+                sib = memRhs->getSIB();
+                regRhs = memRhs->getBase();
+            }
+
+            if (imm->getSize() == codegen::OperandSize::Byte)
+            {
+                switch (lhs->getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        break; // TODO: Error
+
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(codegen::IMUL_REG_RM_IMM8)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm8())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                            .opcode(codegen::IMUL_REG_RM_IMM8)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm8())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Quad:
+                        builder.createInstruction(section)
+                            .prefix(codegen::REX::W)
+                            .opcode(codegen::IMUL_REG_RM_IMM8)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm8())
+                            .emit();
+                        break;
+
+                    case codegen::OperandSize::None:
+                        break;
+                }
+            }
+            else
+            {
+                switch (lhs->getSize())
+                {
+                    case codegen::OperandSize::Byte:
+                        break; // TODO: Error
+
+                    case codegen::OperandSize::Word:
+                        builder.createInstruction(section)
+                            .prefix(codegen::SIZE_PREFIX)
+                            .opcode(codegen::IMUL_REG_RM_IMM)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm16())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Long:
+                        builder.createInstruction(section)
+                            .opcode(codegen::IMUL_REG_RM_IMM)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm32())
+                            .emit();
+                        break;
+                    case codegen::OperandSize::Quad:
+                        builder.createInstruction(section)
+                            .prefix(codegen::REX::W)
+                            .opcode(codegen::IMUL_REG_RM_IMM)
+                            .modrm(addressingMode, lhs->getID(), regRhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .immediate(imm->imm32())
+                            .emit();
+                        break;
+
+                    case codegen::OperandSize::None:
+                        break;
+                }
             }
         }
     }

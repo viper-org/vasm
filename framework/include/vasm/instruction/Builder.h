@@ -94,6 +94,12 @@ namespace instruction
                 {
                     consume();
                     OperandPtr right = parseOperand();
+                    if (current().getTokenType() == lexing::TokenType::Comma)
+                    {
+                        consume();
+                        OperandPtr third = parseOperand();
+                        return std::make_unique<T>(std::move(left), std::move(right), std::move(third), size, lineNumber);
+                    }
                     return std::make_unique<T>(std::move(left), std::move(right), size, lineNumber);
                 }
                 return std::make_unique<T>(std::move(left), size, lineNumber);
