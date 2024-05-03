@@ -149,6 +149,7 @@ namespace codegen
 
         if (!isGlobal)
         {
+            incrementGlobalSymbolIndex();
             symtab->length()++;
         }
     }
