@@ -102,6 +102,8 @@ namespace codegen
             Section section;
             int offset;
             int addend;
+
+            std::size_t position;
         };
 
         ELFSection* getElfSection(std::string_view name);

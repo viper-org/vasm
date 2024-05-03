@@ -244,7 +244,7 @@ namespace codegen
 
     void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend)
     {
-        mRelocations.push_back({name, location, section, offset, addend});
+        mRelocations.push_back({name, location, section, offset, addend, getPosition(section)});
     }
 
     void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
@@ -558,7 +558,7 @@ namespace codegen
 
             const ELFSymbol& symbol = *it;
             
-            rela->write(getPosition(reloc.section) + reloc.offset);
+            rela->write(reloc.position + reloc.offset);
 
             bool inSameSection = true;
             if (symbol.external || reloc.section != getSymbolSection(reloc.name)) inSameSection = false;
