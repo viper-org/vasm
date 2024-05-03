@@ -95,6 +95,15 @@ namespace codegen
         };
         using Symbols = std::set<ELFSymbol, ELFSymbolComparator>;
 
+        struct ELFRelocation
+        {
+            std::string name;
+            std::string location;
+            Section section;
+            int offset;
+            int addend;
+        };
+
         ELFSection* getElfSection(std::string_view name);
         ELFSection* getElfSection(Section section);
 
@@ -104,10 +113,14 @@ namespace codegen
 
         void incrementGlobalSymbolIndex();
 
+        void doRelocations();
+
         std::vector<ELFSection> mSections;
 
         std::set<ELFSymbol, ELFSymbolComparator> mLocalSymbols;
         std::set<ELFSymbol, ELFSymbolComparator> mGlobalSymbols;
+
+        std::vector<ELFRelocation> mRelocations;
 
         std::string_view mFileName;
 

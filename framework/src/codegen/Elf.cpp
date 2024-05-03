@@ -244,61 +244,7 @@ namespace codegen
 
     void ELFFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend)
     {
-        ELFSection* sect = getOrCreateSection(section);
-        ELFSection* rela = getElfSection(".rela" + sect->mName);
-        if (!rela)
-        {
-            size_t symtabIndex;
-            size_t sectionIndex = 0;
-            for (symtabIndex = 0; symtabIndex < mSections.size(); symtabIndex++)
-            {
-                if (mSections[symtabIndex].mName == ".symtab")
-                {
-                    break;
-                }
-            }
-            for (sectionIndex = 0; sectionIndex < mSections.size(); sectionIndex++)
-            {
-                if (mSections[sectionIndex].mName == sect->mName)
-                {
-                    break;
-                }
-            }
-
-            mSections.emplace_back(".rela" + sect->mName, TYPE_RELA, 0, symtabIndex, sectionIndex, 8, 24, Section::Other);
-
-            rela = &mSections.back();
-        }
-
-        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
-            return symbol.name == name;
-        });
-        if (it == mLocalSymbols.end())
-        {
-            it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
-                return symbol.name == name;
-            });
-        }
-
-        const ELFSymbol& symbol = *it;
-        
-        rela->write(getPosition(section) + offset);
-
-        bool inSameSection = true;
-        if (symbol.external || section != getSymbolSection(name)) inSameSection = false;
-        std::uint64_t info = inSameSection ? 0x1 : 0x2;
-
-        if (location == "plt")
-        {
-            info = 0x4;
-        }
-        else if (location == "got")
-        {
-            info = 0x9;
-        }
-        info |= static_cast<std::uint64_t>(symbol.index) << 32;
-        rela->write(info);
-        rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(offset + addend));
+        mRelocations.push_back({name, location, section, offset, addend});
     }
 
     void ELFFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
@@ -416,6 +362,8 @@ namespace codegen
 
     void ELFFormat::print(std::ostream& stream)
     {
+        doRelocations();
+
         WriteELF(stream, ELF_MAGIC, 4);
         WriteELF(stream, ELF_64);
         WriteELF(stream, ELF_LITTLE_ENDIAN);
@@ -566,5 +514,67 @@ namespace codegen
         }
 
         mGlobalSymbols.swap(newGlobalSymbols);
+    }
+
+    void ELFFormat::doRelocations()
+    {
+        for (auto& reloc : mRelocations)
+        {
+            ELFSection* sect = getOrCreateSection(reloc.section);
+            ELFSection* rela = getElfSection(".rela" + sect->mName);
+            if (!rela)
+            {
+                size_t symtabIndex;
+                size_t sectionIndex = 0;
+                for (symtabIndex = 0; symtabIndex < mSections.size(); symtabIndex++)
+                {
+                    if (mSections[symtabIndex].mName == ".symtab")
+                    {
+                        break;
+                    }
+                }
+                for (sectionIndex = 0; sectionIndex < mSections.size(); sectionIndex++)
+                {
+                    if (mSections[sectionIndex].mName == sect->mName)
+                    {
+                        break;
+                    }
+                }
+
+                mSections.emplace_back(".rela" + sect->mName, TYPE_RELA, 0, symtabIndex, sectionIndex, 8, 24, Section::Other);
+
+                rela = &mSections.back();
+            }
+
+            auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&reloc](const ELFSymbol& symbol) {
+                return symbol.name == reloc.name;
+            });
+            if (it == mLocalSymbols.end())
+            {
+                it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&reloc](const ELFSymbol& symbol) {
+                    return symbol.name == reloc.name;
+                });
+            }
+
+            const ELFSymbol& symbol = *it;
+            
+            rela->write(getPosition(reloc.section) + reloc.offset);
+
+            bool inSameSection = true;
+            if (symbol.external || reloc.section != getSymbolSection(reloc.name)) inSameSection = false;
+            std::uint64_t info = inSameSection ? 0x1 : 0x2;
+
+            if (reloc.location == "plt")
+            {
+                info = 0x4;
+            }
+            else if (reloc.location == "got")
+            {
+                info = 0x9;
+            }
+            info |= static_cast<std::uint64_t>(symbol.index) << 32;
+            rela->write(info);
+            rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(reloc.offset + reloc.addend));
+        }
     }
 }
