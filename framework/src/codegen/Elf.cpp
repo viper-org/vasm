@@ -485,7 +485,7 @@ namespace codegen
         ELFSection* strtab = getElfSection(".strtab");
         ELFSection* symtab = getElfSection(".symtab");
 
-        mLocalSymbols.emplace(newSection->mName, strtab->mBuffer.size(), SYM_SECTION, SYM_DEFAULT, mSections.size() - 1, 0, 0, false, mLocalSymbols.size() - 1);
+        mLocalSymbols.emplace(newSection->mName, strtab->mBuffer.size(), SYM_SECTION, SYM_DEFAULT, mSections.size() - 1, 0, 0, false, mLocalSymbols.size());
         symtab->mInfo++;
         incrementGlobalSymbolIndex();
 
