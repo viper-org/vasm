@@ -45,4 +45,14 @@ namespace instruction
     {
         return std::make_unique<LabelOperand>(mName, mLocation);
     }
+
+    std::string_view LabelOperand::getName() const
+    {
+        return mName;
+    }
+
+    std::string_view LabelOperand::getLocation() const
+    {
+        return mLocation;
+    }
 }
