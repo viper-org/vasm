@@ -146,7 +146,7 @@ namespace instruction
                 regRhs = memRhs->getBase();
             }
 
-            if (imm->getSize() == codegen::OperandSize::Byte)
+            if (imm->imm8() < 0x7f)
             {
                 switch (lhs->getSize())
                 {
