@@ -17,12 +17,12 @@ false:
 
 _start:
     mov rax, 1
-    movsx rdi, eax
+    mov dil, al
     lea rsi, [rel message]
     mov rdx, 13
     syscall
     
-    mov rdi, 2
-    test rdi, 6
+    mov r11, 2
+    test r11, 6
     je true
     jmp false

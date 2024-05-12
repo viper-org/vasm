@@ -16,7 +16,19 @@ namespace codegen
 
     Instruction& Instruction::prefix(Prefix newPrefix)
     {
-        mPrefix = newPrefix;
+        if (!mPrefix)
+            mPrefix = newPrefix;
+        else
+            *mPrefix |= newPrefix;
+        return *this;
+    }
+
+    Instruction& Instruction::prefix(codegen::REX rex)
+    {
+        if (!mRex)
+            mRex = static_cast<Prefix>(rex);
+        else
+            *mRex |= static_cast<Prefix>(rex);
         return *this;
     }
 
@@ -109,9 +121,13 @@ namespace codegen
 
     void Instruction::emit()
     {
-        if (mPrefix)
+        if (mPrefix && *mPrefix != 0)
         {
             mOutputFormat->write(*mPrefix, mSection);
+        }
+        if (mRex && *mRex != 0)
+        {
+            mOutputFormat->write(*mRex, mSection);
         }
 
         std::visit(overloaded {
@@ -144,10 +160,13 @@ namespace codegen
             }
         }
 
-        std::visit(overloaded {
-            [this](auto arg) { mOutputFormat->write(arg, mSection); },
-            [](std::monostate) {}
-        }, mImmediate);
+        if (mImmediate.index() != 0)
+        {
+            std::visit(overloaded {
+                [this](auto arg) { mOutputFormat->write(arg, mSection); },
+                [](std::monostate) {}
+            }, mImmediate);
+        }
 
         if (mString)
         {

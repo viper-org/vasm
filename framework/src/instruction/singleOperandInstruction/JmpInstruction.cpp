@@ -22,6 +22,6 @@ namespace instruction
                 label->reloc(builder, section, codegen::OperandSize::Byte, -1);
             }
         }
-        // TODO: Add call r/m
+        // TODO: Add jmp r/m
     }
 }

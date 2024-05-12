@@ -23,6 +23,7 @@ namespace codegen
     public:
 
         Instruction& prefix(Prefix newPrefix);
+        Instruction& prefix(codegen::REX rex);
 
         Instruction& opcode(codegen::ByteOpcodes byteOpcode);
         Instruction& opcode(codegen::WordOpcodes wordOpcode);
@@ -47,6 +48,7 @@ namespace codegen
         Instruction(codegen::IOutputFormat* outputFormat, codegen::Section section);
 
         std::optional<Prefix> mPrefix;
+        std::optional<Prefix> mRex;
         std::variant<std::monostate, codegen::ByteOpcodes, codegen::WordOpcodes> mOpcode;
         std::optional<ModRM> mModRM;
         std::optional<SIB> mSIB;

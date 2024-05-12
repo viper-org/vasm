@@ -22,13 +22,20 @@ namespace instruction
         {
             // Assume lhs is a register for now
             Register* lhs = static_cast<Register*>(instruction.getLeft().get());
+            codegen::REX rex = codegen::REX::None;
+            rex |= lhs->getRex();
+            if (lhs->isExtended()) rex |= codegen::REX::B;
 
             if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
             {
+                rex |= rhs->getRex();
+                if (rhs->isExtended()) rex |= codegen::REX::R;
+
                 switch (lhs->getSize())
                 {
                     case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
@@ -36,19 +43,21 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
+                                .prefix(rex)
                                 .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
                             break;
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
-                                .prefix(codegen::REX::W)
+                                .prefix(rex)
                                 .opcode(static_cast<codegen::ByteOpcodes>(ModRM * 8 + 1))
                                 .modrm(codegen::AddressingMode::RegisterDirect, rhs->getID(), lhs->getID())
                                 .emit();
@@ -63,6 +72,7 @@ namespace instruction
                     {
                         case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::LOGICAL_REG8_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
@@ -71,6 +81,7 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
+                                .prefix(rex)
                                 .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
@@ -78,6 +89,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())
@@ -85,7 +97,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
-                                .prefix(codegen::REX::W)
+                                .prefix(rex)
                                 .opcode(codegen::LOGICAL_REG_IMM8)
                                 .immediate(rhs->imm8())
                                 .modrm(codegen::AddressingMode::RegisterDirect, ModRM, lhs->getID())

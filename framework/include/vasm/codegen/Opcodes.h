@@ -7,13 +7,22 @@
 
 namespace codegen
 {
-    enum REX : unsigned char
+    enum class REX : unsigned char
     {
+        None = 0,
+
         B = 0b01000001,
         X = 0b01000010,
         R = 0b01000100,
         W = 0b01001000,
+        REX = 0b01000000,
     };
+
+    inline constexpr REX& operator|=(REX& a, REX b)
+    {
+        a = static_cast<REX>(static_cast<unsigned char>(a) | static_cast<unsigned char>(b));
+        return a;
+    }
 
     enum class OperandSize
     {
@@ -172,6 +181,19 @@ namespace codegen
         "ch"sv, "bp"sv, "ebp"sv, "rbp"sv,
         "dh"sv, "si"sv, "esi"sv, "rsi"sv,
         "bh"sv, "di"sv, "edi"sv, "rdi"sv,
+    };
+    constexpr std::array const ByteRegisters = {
+        "spl"sv, "bpl"sv, "sil"sv, "dil"sv
+    };
+    constexpr std::array const ExtendedRegisters = {
+        "r8b"sv, "r8w"sv, "r8d"sv, "r8"sv,
+        "r9b"sv, "r9w"sv, "r9d"sv, "r9"sv,
+        "r10b"sv, "r10w"sv, "r10d"sv, "r10"sv,
+        "r11b"sv, "r11w"sv, "r11d"sv, "r11"sv,
+        "r12b"sv, "r12w"sv, "r12d"sv, "r12"sv,
+        "r13b"sv, "r13w"sv, "r13d"sv, "r13"sv,
+        "r14b"sv, "r14w"sv, "r14d"sv, "r14"sv,
+        "r15b"sv, "r15w"sv, "r15d"sv, "r15"sv,
     };
 
     constexpr unsigned char SIZE_PREFIX = 0x66;

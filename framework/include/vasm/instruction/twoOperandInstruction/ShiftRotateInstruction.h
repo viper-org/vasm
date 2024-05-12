@@ -27,6 +27,8 @@ namespace instruction
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
             codegen::SIB sib;
             std::optional<int> displacement;
+            codegen::REX rex = codegen::REX::None;
+            codegen::OperandSize size;
 
             if (Memory* mem = dynamic_cast<Memory*>(instruction.getLeft().get()))
             {
@@ -34,11 +36,17 @@ namespace instruction
                 addressingMode = mem->getAddressingMode();
                 displacement = mem->getDisplacement();
                 sib = mem->getSIB();
+                size = instruction.getSize();
+                rex |= mem->getRex();
             }
             else
             {
                 lhs = static_cast<Register*>(instruction.getLeft().get());
+                size = lhs->getSize();
+                if (lhs->isExtended()) rex |= codegen::REX::B;
+                rex |= lhs->getRex();
             }
+            if (size == codegen::OperandSize::Quad) rex |= codegen::REX::W;
 
             if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
             {
@@ -48,37 +56,40 @@ namespace instruction
                 {
                     case codegen::OperandSize::Byte:
                         builder.createInstruction(section)
-                               .opcode(codegen::SHIFT_ROTATE_RM8_CL)
-                               .modrm(addressingMode, ModRM, lhs->getID())
-                                .sib(sib)
-                               .displacement(displacement)
-                               .emit();
+                            .prefix(rex)
+                            .opcode(codegen::SHIFT_ROTATE_RM8_CL)
+                            .modrm(addressingMode, ModRM, lhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .emit();
                         break;
                     case codegen::OperandSize::Word:
                         builder.createInstruction(section)
-                               .prefix(codegen::SIZE_PREFIX)
-                               .opcode(codegen::SHIFT_ROTATE_RM_CL)
-                               .modrm(addressingMode, ModRM, lhs->getID())
-                                .sib(sib)
-                               .displacement(displacement)
-                               .emit();
+                            .prefix(codegen::SIZE_PREFIX)
+                            .prefix(rex)
+                            .opcode(codegen::SHIFT_ROTATE_RM_CL)
+                            .modrm(addressingMode, ModRM, lhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .emit();
                         break;
                     case codegen::OperandSize::Long:
                         builder.createInstruction(section)
-                               .opcode(codegen::SHIFT_ROTATE_RM_CL)
-                               .modrm(addressingMode, ModRM, lhs->getID())
-                                .sib(sib)
-                               .displacement(displacement)
-                               .emit();
+                            .prefix(rex)
+                            .opcode(codegen::SHIFT_ROTATE_RM_CL)
+                            .modrm(addressingMode, ModRM, lhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .emit();
                         break;
                     case codegen::OperandSize::Quad:
                         builder.createInstruction(section)
-                               .prefix(codegen::REX::W)
-                               .opcode(codegen::SHIFT_ROTATE_RM_CL)
-                               .modrm(addressingMode, ModRM, lhs->getID())
-                                .sib(sib)
-                               .displacement(displacement)
-                               .emit();
+                            .prefix(rex)
+                            .opcode(codegen::SHIFT_ROTATE_RM_CL)
+                            .modrm(addressingMode, ModRM, lhs->getID())
+                            .sib(sib)
+                            .displacement(displacement)
+                            .emit();
                         break;
                 }
             }
@@ -90,6 +101,7 @@ namespace instruction
                     {
                         case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM8_1)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -98,6 +110,7 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_1)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -105,6 +118,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_1)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -112,7 +126,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
-                                .prefix(codegen::REX::W)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_1)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -126,6 +140,7 @@ namespace instruction
                     {
                         case codegen::OperandSize::Byte:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM8_IMM)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -135,6 +150,7 @@ namespace instruction
                         case codegen::OperandSize::Word:
                             builder.createInstruction(section)
                                 .prefix(codegen::SIZE_PREFIX)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_IMM)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -143,6 +159,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Long:
                             builder.createInstruction(section)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_IMM)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)
@@ -151,7 +168,7 @@ namespace instruction
                             break;
                         case codegen::OperandSize::Quad:
                             builder.createInstruction(section)
-                                .prefix(codegen::REX::W)
+                                .prefix(rex)
                                 .opcode(codegen::SHIFT_ROTATE_RM_IMM)
                                 .modrm(addressingMode, ModRM, lhs->getID())
                                 .displacement(displacement)

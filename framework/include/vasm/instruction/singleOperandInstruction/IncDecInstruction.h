@@ -21,34 +21,40 @@ namespace instruction
         {
             // Assume register for now
             Register* operand = static_cast<Register*>(instruction.getOperand().get());
+            codegen::REX rex = codegen::REX::None;
+            if (operand->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
+            if (operand->isExtended()) rex |= codegen::REX::B;
 
             switch (operand->getSize())
             {
                 case codegen::OperandSize::Byte:
                     builder.createInstruction(section)
-                           .opcode(codegen::INC_DEC_REG8)
-                           .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
-                           .emit();
+                        .prefix(rex)
+                        .opcode(codegen::INC_DEC_REG8)
+                        .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
+                        .emit();
                     break;
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
-                           .prefix(codegen::SIZE_PREFIX)
-                           .opcode(codegen::INC_DEC_REG)
-                           .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
-                           .emit();
+                        .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
+                        .opcode(codegen::INC_DEC_REG)
+                        .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
+                        .emit();
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
-                           .opcode(codegen::INC_DEC_REG)
-                           .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
-                           .emit();
+                        .prefix(rex)
+                        .opcode(codegen::INC_DEC_REG)
+                        .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
+                        .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                           .prefix(codegen::REX::W)
-                           .opcode(codegen::INC_DEC_REG)
-                           .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
-                           .emit();
+                        .prefix(rex)
+                        .opcode(codegen::INC_DEC_REG)
+                        .modrm(codegen::AddressingMode::RegisterDirect, modrm, operand->getID())
+                        .emit();
                     break;
             }
         }

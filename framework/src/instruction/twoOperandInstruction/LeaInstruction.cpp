@@ -28,6 +28,9 @@ namespace instruction
 
             int displacement = relRhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize + relRhs->getDisplacement().value_or(0);
 
+            codegen::REX rex = lhs->getRex();
+            if (lhs->isExtended()) rex |= codegen::REX::R;
+
             switch(lhs->getSize())
             {
                 case codegen::OperandSize::Byte:
@@ -36,6 +39,7 @@ namespace instruction
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
                         .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
                         .opcode(codegen::LEA)
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
@@ -44,13 +48,14 @@ namespace instruction
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
                         .opcode(codegen::LEA)
+                        .prefix(rex)
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
                         .emit();
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                        .prefix(codegen::REX::W)
+                        .prefix(rex)
                         .opcode(codegen::LEA)
                         .modrm(codegen::AddressingMode::RegisterIndirect, lhs->getID(), 0b101)
                         .displacement(displacement, true)
@@ -67,6 +72,10 @@ namespace instruction
             return;
         }
 
+        codegen::REX rex = lhs->getRex();
+        if (lhs->isExtended()) rex |= codegen::REX::R;
+        rex |= rhs->getRex();
+
         codegen::AddressingMode addressingMode = rhs->getAddressingMode();
 
         switch (lhs->getSize())
@@ -76,29 +85,31 @@ namespace instruction
                 break;
             case codegen::OperandSize::Word:
                 builder.createInstruction(section)
-                       .prefix(codegen::SIZE_PREFIX)
-                       .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
-                       .sib(rhs->getSIB())
-                       .displacement(rhs->getDisplacement())
-                       .emit();
+                        .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
+                        .opcode(codegen::LEA)
+                        .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                        .sib(rhs->getSIB())
+                        .displacement(rhs->getDisplacement())
+                        .emit();
                 break;
             case codegen::OperandSize::Long:
                 builder.createInstruction(section)
-                       .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
-                       .sib(rhs->getSIB())
-                       .displacement(rhs->getDisplacement())
-                       .emit();
+                        .prefix(rex)
+                        .opcode(codegen::LEA)
+                        .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                        .sib(rhs->getSIB())
+                        .displacement(rhs->getDisplacement())
+                        .emit();
                 break;
             case codegen::OperandSize::Quad:
                 builder.createInstruction(section)
-                       .prefix(codegen::REX::W)
-                       .opcode(codegen::LEA)
-                       .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
-                       .sib(rhs->getSIB())
-                       .displacement(rhs->getDisplacement())
-                       .emit();
+                        .prefix(rex)
+                        .opcode(codegen::LEA)
+                        .modrm(addressingMode, lhs->getID(), rhs->getBase()->getID())
+                        .sib(rhs->getSIB())
+                        .displacement(rhs->getDisplacement())
+                        .emit();
                 break;
             default:
                 break; // Unreachable

@@ -25,6 +25,7 @@ namespace instruction
             codegen::SIB sib;
             std::optional<int> displacement;
             codegen::OperandSize size;
+            codegen::REX rex = codegen::REX::None;
 
             if (Memory* mem = dynamic_cast<Memory*>(instruction.getOperand().get()))
             {
@@ -33,17 +34,21 @@ namespace instruction
                 displacement = mem->getDisplacement();
                 sib = mem->getSIB();
                 size = instruction.getSize();
+                rex |= mem->getRex();
             }
             else
             {
                 operand = static_cast<Register*>(instruction.getOperand().get());
                 size = operand->getSize();
+                if (operand->isExtended()) rex |= codegen::REX::B;
             }
+            if (size == codegen::OperandSize::Quad) rex |= codegen::REX::W;
 
             switch(size)
             {
                 case codegen::OperandSize::Byte:
                     builder.createInstruction(section)
+                        .prefix(rex)
                         .opcode(codegen::GRP4_RM8)
                         .modrm(addressingMode, ModRM, operand->getID())
                         .sib(sib)
@@ -53,6 +58,7 @@ namespace instruction
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
                         .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
                         .opcode(codegen::GRP4_RM)
                         .modrm(addressingMode, ModRM, operand->getID())
                         .sib(sib)
@@ -61,6 +67,7 @@ namespace instruction
                     break;
                 case codegen::OperandSize::Long:
                     builder.createInstruction(section)
+                        .prefix(rex)
                         .opcode(codegen::GRP4_RM)
                         .modrm(addressingMode, ModRM, operand->getID())
                         .displacement(displacement)
@@ -68,7 +75,7 @@ namespace instruction
                     break;
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
-                        .prefix(codegen::REX::W)
+                        .prefix(rex)
                         .opcode(codegen::GRP4_RM)
                         .modrm(addressingMode, ModRM, operand->getID())
                         .sib(sib)

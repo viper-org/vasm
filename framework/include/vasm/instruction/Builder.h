@@ -178,19 +178,7 @@ namespace instruction
 
         RegisterPtr parseRegister()
         {
-            constexpr int REGISTERS_PER_ENCODING = 4;
-
-            unsigned long long index;
-            for (index = 0; index < static_cast<unsigned long long>(codegen::Registers.size()); index++)
-            {
-                if (codegen::Registers[index] == current().getText())
-                {
-                    break;
-                }
-            }
-            consume();
-
-            return std::make_unique<Register>(index / REGISTERS_PER_ENCODING, static_cast<codegen::OperandSize>(index % REGISTERS_PER_ENCODING));
+            return Register::Get(consume().getText());
         }
 
         MemoryPtr parseMemory()

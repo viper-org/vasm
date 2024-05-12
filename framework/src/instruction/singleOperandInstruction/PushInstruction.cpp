@@ -16,6 +16,9 @@ namespace instruction
     {
         if (Register* reg = dynamic_cast<Register*>(instruction.getOperand().get()))
         {
+            codegen::REX rex = codegen::REX::None;
+            if (reg->isExtended()) rex = codegen::REX::B;
+
             switch (reg->getSize())
             {
                 case codegen::OperandSize::Byte:
@@ -24,12 +27,14 @@ namespace instruction
                 case codegen::OperandSize::Word:
                     builder.createInstruction(section)
                         .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
                         .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
                         .emit();
                     break;
                 case codegen::OperandSize::Long:
                 case codegen::OperandSize::Quad:
                     builder.createInstruction(section)
+                        .prefix(rex)
                         .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
                         .emit();
                     break;

@@ -3,6 +3,7 @@
 
 #include "vasm/codegen/Opcodes.h"
 
+#include <algorithm>
 #include <unordered_map>
 
 namespace lexing
@@ -178,13 +179,12 @@ namespace lexing
                 }
             }
 
-            for (std::string_view reg : codegen::Registers)
-            {
-                if (text == reg)
-                {
-                    return Token {startSourceLocation, TokenType::Register, std::move(text)};
-                }
-            }
+            if (std::find(codegen::Registers.begin(), codegen::Registers.end(), text) != codegen::Registers.end())
+                return Token {startSourceLocation, TokenType::Register, std::move(text)};
+            if (std::find(codegen::ByteRegisters.begin(), codegen::ByteRegisters.end(), text) != codegen::ByteRegisters.end())
+                return Token {startSourceLocation, TokenType::Register, std::move(text)};
+            if (std::find(codegen::ExtendedRegisters.begin(), codegen::ExtendedRegisters.end(), text) != codegen::ExtendedRegisters.end())
+                return Token {startSourceLocation, TokenType::Register, std::move(text)};
 
             if (auto it = directives.find(text); it != directives.end())
             {

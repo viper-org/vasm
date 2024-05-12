@@ -62,6 +62,16 @@ namespace instruction
         }
     }
 
+    codegen::REX Memory::getRex() const
+    {
+        codegen::REX ret = codegen::REX::None;
+
+        if (mBase->isExtended()) ret |= codegen::REX::B;
+        if (mIndex && mIndex->isExtended()) ret |= codegen::REX::X;
+
+        return ret;
+    }
+
     std::unique_ptr<Operand> Memory::clone()
     {
         Register* index = mIndex ? static_cast<Register*>(mIndex->clone().release()) : nullptr;

@@ -26,6 +26,7 @@ namespace instruction
         codegen::AddressingMode getAddressingMode() const;
 
         codegen::SIB getSIB() const;
+        codegen::REX getRex() const;
 
         std::unique_ptr<Operand> clone() override;
 

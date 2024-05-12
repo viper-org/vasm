@@ -1,6 +1,5 @@
 // Copyright 2023 solar-mist
 
-#include <memory>
 #ifndef VASM_INSTRUCTION_OPERAND_REGISTER_H
 #define VASM_INSTRUCTION_OPERAND_REGISTER_H 1
 
@@ -16,19 +15,24 @@ namespace instruction
     class Register : public Operand
     {
     public:
-        Register(unsigned char id, codegen::OperandSize size);
+        Register(unsigned char id, codegen::OperandSize size, bool rex = false, bool extended = false);
 
         unsigned char getID() const;
         codegen::OperandSize getSize() const;
+        bool isExtended() const;
 
         std::unique_ptr<Operand> clone() override;
         std::unique_ptr<Register> clone(codegen::OperandSize newSize);
+
+        codegen::REX getRex() const;
 
         static RegisterPtr Get(std::string_view name);
 
     private:
         unsigned char mID;
         codegen::OperandSize mSize;
+        bool mRex;
+        bool mExtended;
     };
 }
 
