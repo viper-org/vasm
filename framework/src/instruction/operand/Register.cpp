@@ -15,6 +15,9 @@ namespace instruction
     {
         if (mID >= 4 && mID <= 7 && mSize == codegen::OperandSize::Byte)
             rex = true;
+
+        if (mID >= 8)
+            mID -= 8;
     }
 
     unsigned char Register::getID() const
