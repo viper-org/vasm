@@ -240,6 +240,7 @@ namespace instruction
             rex |= rm->getRex();
             if (size == codegen::OperandSize::Quad) rex |= codegen::REX::W;
             if (regRhs->isExtended()) rex |= codegen::REX::R;
+            if (regLhs->isExtended()) rex |= codegen::REX::B;
             if (mem) rex |= mem->getRex();
 
             switch (size)
