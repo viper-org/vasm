@@ -14,7 +14,7 @@ namespace instruction
         , mExtended(extended)
     {
         if (mID >= 4 && mID <= 7 && mSize == codegen::OperandSize::Byte)
-            rex = true;
+            mRex = true;
 
         if (mID >= 8)
             mID -= 8;
