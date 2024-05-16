@@ -405,6 +405,7 @@ namespace instruction
 
         Register* lhs = static_cast<Register*>(instruction.getLeft().get());
         rex = lhs->getRex();
+        if (lhs->isExtended()) rex |= codegen::REX::R;
 
         Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
         Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
@@ -506,8 +507,8 @@ namespace instruction
         codegen::REX rex = codegen::REX::None;
 
         Register* lhs = static_cast<Register*>(instruction.getLeft().get());
-        if (lhs->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
         rex = lhs->getRex();
+        if (lhs->isExtended()) rex |= codegen::REX::R;
 
         Register* regRhs = dynamic_cast<Register*>(instruction.getRight().get());
         Memory*   memRhs = dynamic_cast<Memory*>(instruction.getRight().get());
