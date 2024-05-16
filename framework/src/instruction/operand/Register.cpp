@@ -17,7 +17,10 @@ namespace instruction
             mRex = true;
 
         if (mID >= 8)
+        {
             mID -= 8;
+            mExtended = true;
+        }
     }
 
     unsigned char Register::getID() const
