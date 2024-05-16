@@ -58,6 +58,10 @@ namespace instruction
         }
         else
         {
+            if (mBase->getID() == 4) //rsp
+            {
+                return codegen::SIB(0, 0b100, 0b100);
+            }
             return codegen::SIB(0xff, 0xff, 0xff);
         }
     }
