@@ -46,7 +46,6 @@ namespace instruction
         else if (Memory* mem = dynamic_cast<Memory*>(instruction.getOperand().get()))
         {
             codegen::REX rex = mem->getRex();
-            if (instruction.getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
             codegen::AddressingMode addressingMode = mem->getAddressingMode();
             
             switch (instruction.getSize())
