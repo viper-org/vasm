@@ -66,6 +66,7 @@ namespace codegen
 
         INC_DEC_REG8 = 0xFE,
         INC_DEC_REG = 0xFF,
+        PUSH_RM = 0xFF,
 
 
         XCHG_REG_REG8 = 0x86,

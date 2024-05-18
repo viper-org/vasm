@@ -4,6 +4,7 @@
 #include "vasm/instruction/singleOperandInstruction/PushInstruction.h"
 
 #include "vasm/instruction/operand/Register.h"
+#include "vasm/instruction/operand/Memory.h"
 #include "vasm/instruction/operand/Immediate.h"
 
 #include "vasm/codegen/Opcodes.h"
@@ -36,6 +37,45 @@ namespace instruction
                     builder.createInstruction(section)
                         .prefix(rex)
                         .opcode(static_cast<codegen::ByteOpcodes>(codegen::PUSH_REG + reg->getID()))
+                        .emit();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (Memory* mem = dynamic_cast<Memory*>(instruction.getOperand().get()))
+        {
+            codegen::REX rex = mem->getRex();
+            if (instruction.getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
+            codegen::AddressingMode addressingMode = mem->getAddressingMode();
+            
+            switch (instruction.getSize())
+            {
+                case codegen::OperandSize::Byte:
+                    break; // TODO: Error
+                case codegen::OperandSize::Word:
+                    builder.createInstruction(section)
+                        .prefix(codegen::SIZE_PREFIX)
+                        .prefix(rex)
+                        .opcode(codegen::PUSH_RM)
+                        .modrm(addressingMode, 6, mem->getBase()->getID())
+                        .sib(mem->getSIB())
+                        .emit();
+                    break;
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                        .prefix(rex)
+                        .opcode(codegen::PUSH_RM)
+                        .modrm(addressingMode, 6, mem->getBase()->getID())
+                        .sib(mem->getSIB())
+                        .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                        .prefix(rex)
+                        .opcode(codegen::PUSH_RM)
+                        .modrm(addressingMode, 6, mem->getBase()->getID())
+                        .sib(mem->getSIB())
                         .emit();
                     break;
                 default:
