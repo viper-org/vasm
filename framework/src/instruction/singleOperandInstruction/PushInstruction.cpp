@@ -59,6 +59,7 @@ namespace instruction
                         .opcode(codegen::PUSH_RM)
                         .modrm(addressingMode, 6, mem->getBase()->getID())
                         .sib(mem->getSIB())
+                        .displacement(mem->getDisplacement())
                         .emit();
                     break;
                 case codegen::OperandSize::Long:
@@ -67,6 +68,7 @@ namespace instruction
                         .opcode(codegen::PUSH_RM)
                         .modrm(addressingMode, 6, mem->getBase()->getID())
                         .sib(mem->getSIB())
+                        .displacement(mem->getDisplacement())
                         .emit();
                     break;
                 case codegen::OperandSize::Quad:
@@ -75,6 +77,7 @@ namespace instruction
                         .opcode(codegen::PUSH_RM)
                         .modrm(addressingMode, 6, mem->getBase()->getID())
                         .sib(mem->getSIB())
+                        .displacement(mem->getDisplacement())
                         .emit();
                     break;
                 default:
