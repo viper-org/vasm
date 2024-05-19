@@ -78,11 +78,11 @@ namespace instruction
 
     std::unique_ptr<Operand> Register::clone()
     {
-        return std::make_unique<Register>(mID, mSize);
+        return std::make_unique<Register>(mID, mSize, mRex, mExtended);
     }
 
     std::unique_ptr<Register> Register::clone(codegen::OperandSize newSize)
     {
-        return std::make_unique<Register>(mID, newSize);
+        return std::make_unique<Register>(mID, newSize, mRex, mExtended);
     }
 }
