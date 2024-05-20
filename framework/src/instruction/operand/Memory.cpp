@@ -14,6 +14,11 @@ namespace instruction
         , mIndex(std::move(index))
         , mScale(scale)
     {
+        if (mBase->getID() == 5 && mBase->isExtended())
+        {
+            if (!mDisplacement)
+                mDisplacement = 0;
+        }
     }
 
     Register* Memory::getBase() const
