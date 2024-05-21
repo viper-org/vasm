@@ -20,30 +20,33 @@ namespace codegen
     public:
         explicit ELFFormat(std::string_view fileName);
 
-        void write(std::uint8_t  data, Section section) override;
-        void write(std::uint16_t data, Section section) override;
-        void write(std::uint32_t data, Section section) override;
-        void write(std::uint64_t data, Section section) override;
+        void write(std::uint8_t  data, std::string section) override;
+        void write(std::uint16_t data, std::string section) override;
+        void write(std::uint32_t data, std::string section) override;
+        void write(std::uint64_t data, std::string section) override;
 
-        size_t getPosition(Section section) override;
-        size_t getSectionStart(Section section) override;
+        size_t getPosition(std::string section) override;
+        size_t getSectionStart(std::string section) override;
 
-        void addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal) override;
+        void addSymbol(const std::string& name, std::uint64_t value, std::string section, bool isGlobal) override;
         void addExternSymbol(const std::string& name) override;
         [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
-        virtual Section getSymbolSection(std::string_view name) const override;
-        virtual Section getSection(std::string_view name) override;
+
+        virtual std::string getSymbolSection(std::string_view name) const override;
+        virtual std::string getSection(std::string_view name) override;
+        virtual std::string getCodeSectionName() override;
+
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
-        void relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend) override;
-        void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
+        void relocSymbol(const std::string& name, const std::string& location, std::string section, int offset, int addend) override;
+        void patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin) override;
 
         void print(std::ostream& stream) override;
     private:
         class ELFSection
         {
         public:
-            ELFSection(std::string_view name, int type, long flags, int link, int info, long align, long entrySize, Section section);
-            explicit ELFSection(Section section);
+            ELFSection(std::string_view name, int type, long flags, int link, int info, long align, long entrySize);
+            explicit ELFSection(std::string_view section);
 
             void write(std::unsigned_integral auto data);
             void write(const char* data, size_t size);
@@ -59,7 +62,6 @@ namespace codegen
             int mInfo;
             long mAlign;
             long mEntrySize;
-            Section mSection;
 
             [[nodiscard]] size_t size() const;
 
@@ -99,7 +101,7 @@ namespace codegen
         {
             std::string name;
             std::string location;
-            Section section;
+            std::string section;
             int offset;
             int addend;
 
@@ -107,11 +109,10 @@ namespace codegen
         };
 
         ELFSection* getElfSection(std::string_view name);
-        ELFSection* getElfSection(Section section);
 
-        ELFSection* createSection(Section section);
+        ELFSection* createSection(std::string_view section);
 
-        ELFSection* getOrCreateSection(Section section);
+        ELFSection* getOrCreateSection(std::string section);
 
         void incrementGlobalSymbolIndex();
 

@@ -35,7 +35,7 @@ namespace codegen {
     {
     }
     
-    void PEFormat::write(std::uint8_t data, Section section)
+    void PEFormat::write(std::uint8_t data, std::string section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -45,7 +45,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(std::uint16_t data, Section section)
+    void PEFormat::write(std::uint16_t data, std::string section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -55,7 +55,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(std::uint32_t data, Section section)
+    void PEFormat::write(std::uint32_t data, std::string section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -65,7 +65,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    void PEFormat::write(std::uint64_t data, Section section)
+    void PEFormat::write(std::uint64_t data, std::string section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -75,7 +75,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
     }
     
-    size_t PEFormat::getPosition(Section section)
+    size_t PEFormat::getPosition(std::string section)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -85,7 +85,7 @@ namespace codegen {
         return peSection->mBuffer.size();
     }
     
-    size_t PEFormat::getSectionStart(Section)
+    size_t PEFormat::getSectionStart(std::string)
     {
         return 0;
     }
@@ -101,23 +101,23 @@ namespace codegen {
         return std::bit_width(align) << 20;
     }
     
-    PEFormat::PESection::PESection(Section section)
-        : mNameOffset {0}, mSection {section} {
-        switch (section)
+    PEFormat::PESection::PESection(std::string section)
+        : mNameOffset(0)
+        , mName(std::move(section))
+    {
+        if (mName == ".text")
         {
-            case Section::Text:
-                mName = ".text";
-                mAlign = 16;
-                mCharacteristics = IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_EXECUTE | alignToCharacteristic(mAlign);
-                break;
-            case Section::Data:
-                mName = ".data";
-                mAlign = 16;
-                mCharacteristics = IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | alignToCharacteristic(mAlign);
-                break;
-            case Section::Other:
-                break;
+            mName = ".text";
+            mAlign = 16;
+            mCharacteristics = IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_EXECUTE | alignToCharacteristic(mAlign);
         }
+        else if (mName == ".data")
+        {
+            mName = ".data";
+            mAlign = 16;
+            mCharacteristics = IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE | alignToCharacteristic(mAlign);
+        }
+        // TODO: Add above for other sections
     }
     
     void PEFormat::PESection::write(std::unsigned_integral auto data)
@@ -141,18 +141,23 @@ namespace codegen {
         }
     }
     
-    PEFormat::PESection* PEFormat::getSection(Section section) {
+    PEFormat::PESection* PEFormat::getSection(std::string section) {
         for (auto& sect : mSections)
         {
-            if (sect.mSection == section)
+            if (sect.mName == section)
             {
                 return &sect;
             }
         }
         return nullptr;
     }
+
+    std::string PEFormat::getCodeSectionName()
+    {
+        return ".text";
+    }
     
-    PEFormat::PESection* PEFormat::createSection(Section section) {
+    PEFormat::PESection* PEFormat::createSection(std::string section) {
         mSections.emplace_back(section);
         
         PESection* newSection = &mSections.back();
@@ -166,7 +171,7 @@ namespace codegen {
         return newSection;
     }
     
-    PEFormat::PESection* PEFormat::getOrCreateSection(Section section)
+    PEFormat::PESection* PEFormat::getOrCreateSection(std::string section)
     {
         PESection* sect = getSection(section);
         if (!sect)
@@ -179,14 +184,14 @@ namespace codegen {
         }
     }
     
-    void PEFormat::addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal)
+    void PEFormat::addSymbol(const std::string& name, std::uint64_t value, std::string section, bool isGlobal)
     {
         getOrCreateSection(section);
         
         size_t sectionIndex = 0;
         for (; sectionIndex < mSections.size(); ++sectionIndex)
         {
-            if (mSections[sectionIndex].mSection == section)
+            if (mSections[sectionIndex].mName == section)
             {
                 break;
             }
@@ -246,10 +251,10 @@ namespace codegen {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
 
-    Section PEFormat::getSymbolSection(std::string_view name) const
+    std::string PEFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
     }
-    Section PEFormat::getSection(std::string_view name)
+    std::string PEFormat::getSection(std::string_view name)
     { // TODO: Implement
     }
     
@@ -258,7 +263,7 @@ namespace codegen {
         return mSymbolIndices.contains(name);
     }
     
-    void PEFormat::relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend)
+    void PEFormat::relocSymbol(const std::string& name, const std::string& location, std::string section, int offset, int addend)
     {
         // TODO: Add location specification
         PESection* sect = getOrCreateSection(section);
@@ -273,7 +278,7 @@ namespace codegen {
         sect->mRelocations.push_back(reloc);
     }
 
-    void PEFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+    void PEFormat::patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin)
     {
         PESection* sect = getSection(section);
 

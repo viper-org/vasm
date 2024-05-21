@@ -18,22 +18,25 @@ namespace codegen
     public:
         BinaryFormat();
 
-        void write(std::uint8_t  data, Section section) override;
-        void write(std::uint16_t data, Section section) override;
-        void write(std::uint32_t data, Section section) override;
-        void write(std::uint64_t data, Section section) override;
+        void write(std::uint8_t  data, std::string section) override;
+        void write(std::uint16_t data, std::string section) override;
+        void write(std::uint32_t data, std::string section) override;
+        void write(std::uint64_t data, std::string section) override;
 
-        size_t getPosition(Section section) override;
-        size_t getSectionStart(Section section) override;
+        size_t getPosition(std::string section) override;
+        size_t getSectionStart(std::string section) override;
 
-        void addSymbol(const std::string& name, std::uint64_t value, Section section, bool isGlobal) override;
+        void addSymbol(const std::string& name, std::uint64_t value, std::string section, bool isGlobal) override;
         void addExternSymbol(const std::string& name) override;
         [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
-        virtual Section getSymbolSection(std::string_view name) const override;
-        virtual Section getSection(std::string_view name) override;
+
+        virtual std::string getSymbolSection(std::string_view name) const override;
+        virtual std::string getSection(std::string_view name) override;
+        virtual std::string getCodeSectionName() override;
+
         [[nodiscard]] bool hasSymbol(const std::string& name) const override;
-        void relocSymbol(const std::string& name, const std::string& location, Section section, int offset, int addend) override;
-        void patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin) override;
+        void relocSymbol(const std::string& name, const std::string& location, std::string section, int offset, int addend) override;
+        void patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin) override;
 
         void print(std::ostream& stream) override;
     private:

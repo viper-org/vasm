@@ -27,7 +27,7 @@ namespace codegen
         return mRM;
     }
 
-    void ModRM::emit(codegen::IOutputFormat* outputFormat, codegen::Section section)
+    void ModRM::emit(codegen::IOutputFormat* outputFormat, std::string section)
     {
         unsigned char byte = 0;
         byte |= (static_cast<unsigned char>(mAddressingMode) << 6);
@@ -51,7 +51,7 @@ namespace codegen
     {
     }
 
-    void SIB::emit(codegen::IOutputFormat* outputFormat, codegen::Section section)
+    void SIB::emit(codegen::IOutputFormat* outputFormat, std::string section)
     {
         unsigned char byte = 0;
         byte |= (static_cast<unsigned char>(mScale) << 6);

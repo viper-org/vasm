@@ -11,7 +11,7 @@ namespace codegen
     OpcodeBuilder::OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename)
         : mOutputFormat(outputFormat)
         , mFileName(filename)
-        , mSection(codegen::Section::Text)
+        , mSection(mOutputFormat->getCodeSectionName())
         , mHadError(false)
     {
     }

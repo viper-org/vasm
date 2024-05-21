@@ -31,7 +31,7 @@ namespace codegen
         static constexpr Register NullRegister = 0;
 
     private:
-        void emit(codegen::IOutputFormat* outputFormat, codegen::Section section);
+        void emit(codegen::IOutputFormat* outputFormat, std::string section);
 
         AddressingMode mAddressingMode;
 
@@ -48,7 +48,7 @@ namespace codegen
         SIB(unsigned char scale, Register index, Register base);
 
     private:
-        void emit(codegen::IOutputFormat* outputFormat, codegen::Section section);
+        void emit(codegen::IOutputFormat* outputFormat, std::string section);
 
         unsigned char mScale;
         Register mIndex;

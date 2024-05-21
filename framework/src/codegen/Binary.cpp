@@ -6,18 +6,18 @@ namespace codegen
         : mBuffer{}
     {}
 
-    void BinaryFormat::write(std::uint8_t data, Section)
+    void BinaryFormat::write(std::uint8_t data, std::string)
     {
         mBuffer.push_back(data);
     }
 
-    void BinaryFormat::write(std::uint16_t data, Section)
+    void BinaryFormat::write(std::uint16_t data, std::string)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
     }
 
-    void BinaryFormat::write(std::uint32_t data, Section)
+    void BinaryFormat::write(std::uint32_t data, std::string)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
@@ -25,7 +25,7 @@ namespace codegen
         mBuffer.push_back(data >> 24);
     }
 
-    void BinaryFormat::write(std::uint64_t data, Section)
+    void BinaryFormat::write(std::uint64_t data, std::string)
     {
         mBuffer.push_back(data);
         mBuffer.push_back(data >> 8);
@@ -38,17 +38,17 @@ namespace codegen
     }
 
 
-    size_t BinaryFormat::getPosition(Section)
+    size_t BinaryFormat::getPosition(std::string)
     {
         return mBuffer.size();
     }
 
-    size_t BinaryFormat::getSectionStart(Section)
+    size_t BinaryFormat::getSectionStart(std::string)
     {
         return 0;
     }
 
-    void BinaryFormat::addSymbol(const std::string& name, std::uint64_t value, Section const, bool)
+    void BinaryFormat::addSymbol(const std::string& name, std::uint64_t value, std::string const, bool)
     {
         mSymbols[name] = value;
     }
@@ -67,11 +67,16 @@ namespace codegen
         return std::make_pair(-1, false); // Forward symbol
     }
 
-    Section BinaryFormat::getSymbolSection(std::string_view name) const
-    { // TODO: Error
-    }
-    Section BinaryFormat::getSection(std::string_view name)
+    std::string BinaryFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
+    }
+    std::string BinaryFormat::getSection(std::string_view name)
+    { // TODO: Implement
+    }
+
+    std::string BinaryFormat::getCodeSectionName()
+    {
+        return "";
     }
     
     bool BinaryFormat::hasSymbol(const std::string& name) const
@@ -79,12 +84,12 @@ namespace codegen
         return mSymbols.contains(name);
     }
 
-    void BinaryFormat::relocSymbol(const std::string&, const std::string&, Section, int, int)
+    void BinaryFormat::relocSymbol(const std::string&, const std::string&, std::string, int, int)
     {
         // TODO: Error
     }
 
-    void BinaryFormat::patchForwardSymbol(const std::string& name, Section section, OperandSize size, int location, int origin)
+    void BinaryFormat::patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin)
     {
         // TODO: Implement
     }
