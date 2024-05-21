@@ -67,6 +67,10 @@ namespace codegen
         return std::make_pair(-1, false); // Forward symbol
     }
 
+    void BinaryFormat::createSection(SectionInfo* info)
+    { // TODO: Error
+    }
+
     std::string BinaryFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
     }

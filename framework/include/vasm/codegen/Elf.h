@@ -32,6 +32,7 @@ namespace codegen
         void addExternSymbol(const std::string& name) override;
         [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
 
+        virtual void createSection(SectionInfo* info) override;
         virtual std::string getSymbolSection(std::string_view name) const override;
         virtual std::string getSection(std::string_view name) override;
         virtual std::string getCodeSectionName() override;
@@ -126,7 +127,17 @@ namespace codegen
         std::vector<ELFRelocation> mRelocations;
 
         std::string_view mFileName;
+    };
 
+    struct ELFSectionInfo : public SectionInfo
+    {
+        std::string name;
+        int type;
+        long flags;
+        int link;
+        int info;
+        long align;
+        long entrySize;
     };
 }
 

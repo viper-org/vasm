@@ -251,6 +251,10 @@ namespace codegen {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
     }
 
+    void PEFormat::createSection(SectionInfo* info)
+    { // TODO: Implement
+    }
+
     std::string PEFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
     }

@@ -182,6 +182,19 @@ namespace codegen
         
         return std::make_pair(it->value, it->external);
     }
+    
+    void ELFFormat::createSection(SectionInfo* info)
+    {
+        ELFSectionInfo* sectionInfo = static_cast<ELFSectionInfo*>(info);
+        ELFSection* section = createSection(sectionInfo->name);
+
+        section->mType = sectionInfo->type;
+        section->mFlags = sectionInfo->flags;
+        section->mLink = sectionInfo->link;
+        section->mInfo = sectionInfo->info;
+        section->mAlign = sectionInfo->align;
+        section->mEntrySize = sectionInfo->entrySize;
+    }
 
     std::string ELFFormat::getSymbolSection(std::string_view name) const
     {

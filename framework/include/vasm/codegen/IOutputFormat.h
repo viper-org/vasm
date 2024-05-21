@@ -13,6 +13,11 @@ namespace codegen
 
     using Section = std::string;
 
+    struct SectionInfo
+    {
+        virtual ~SectionInfo() = default;
+    };
+
     class IOutputFormat
     {
     public:
@@ -31,6 +36,7 @@ namespace codegen
         [[nodiscard]] virtual bool hasSymbol(const std::string& name) const = 0;
         [[nodiscard]] virtual std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const = 0;
 
+        virtual void createSection(SectionInfo* info) = 0;
         virtual std::string getSymbolSection(std::string_view name) const = 0;
         virtual std::string getSection(std::string_view name) = 0;
         virtual std::string getCodeSectionName() = 0;
