@@ -577,4 +577,16 @@ namespace codegen
             rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(reloc.offset + reloc.addend));
         }
     }
+
+
+    ELFSectionInfo::ELFSectionInfo(std::string name, int type, long flags, int link, int info, long align, long entrySize)
+        : name(std::move(name))
+        , type(type)
+        , flags(flags)
+        , link(link)
+        , info(info)
+        , align(align)
+        , entrySize(entrySize)
+    {
+    }
 }

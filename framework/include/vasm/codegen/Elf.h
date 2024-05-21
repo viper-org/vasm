@@ -131,6 +131,8 @@ namespace codegen
 
     struct ELFSectionInfo : public SectionInfo
     {
+        ELFSectionInfo(std::string name, int type, long flags, int link, int info, long align, long entrySize);
+
         std::string name;
         int type;
         long flags;
