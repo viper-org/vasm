@@ -1,6 +1,7 @@
 #include "vasm/codegen/Elf.h"
 
 #include <algorithm>
+#include <cassert>
 
 namespace codegen
 {
@@ -126,6 +127,38 @@ namespace codegen
 
     void ELFFormat::addSymbol(const std::string& name, std::uint64_t value, std::string section, bool isGlobal)
     {
+        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](auto& symbol){
+            return symbol.name == name;
+        });
+        if (it == mLocalSymbols.end())
+        {
+            auto it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](auto& symbol){
+                return symbol.name == name;
+            });
+            if (it != mGlobalSymbols.end())
+            { // this is a bit awkward but we can't modify the symbol in-place
+                auto globalSymbol = *it;
+                mGlobalSymbols.erase(it);
+
+                assert(globalSymbol.external);
+                globalSymbol.external = false;
+                globalSymbol.value = value;
+
+                mGlobalSymbols.insert(globalSymbol);
+            }
+        }
+        else
+        {
+            auto localSymbol = *it;
+            mGlobalSymbols.erase(it);
+
+            assert(localSymbol.external);
+            localSymbol.external = false;
+            localSymbol.value = value;
+
+            mGlobalSymbols.insert(localSymbol);
+        }
+
         ELFSection* strtab = getElfSection(".strtab");
         std::uint32_t strtabIndex = strtab->size();
         strtab->write(name);
