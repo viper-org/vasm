@@ -174,6 +174,7 @@ namespace codegen
             {
                 mOutputFormat->write(ch, mSection);
             }
+            mOutputFormat->write(static_cast<unsigned char>('\0'), mSection);
         }
     }
 
