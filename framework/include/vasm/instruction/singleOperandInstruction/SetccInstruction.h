@@ -5,7 +5,8 @@
 
 #include "vasm/instruction/SingleOperandInstruction.h"
 
-#include "vasm/instruction/operand/Label.h"
+#include "vasm/instruction/operand/Register.h"
+#include "vasm/instruction/operand/Memory.h"
 
 namespace instruction
 {
