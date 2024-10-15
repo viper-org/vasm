@@ -110,6 +110,9 @@ namespace codegen
 
 
         CALL_REL32 = 0xE8,
+        CALL_RM16 = 0xFF,
+        CALL_RM32 = 0xFF,
+        CALL_RM64 = 0xFF,
 
 
         RET = 0xC3,

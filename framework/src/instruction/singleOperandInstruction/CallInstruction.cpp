@@ -3,8 +3,11 @@
 
 #include "vasm/instruction/singleOperandInstruction/CallInstruction.h"
 
-#include "vasm/codegen/Opcodes.h"
 #include "vasm/instruction/operand/Label.h"
+#include "vasm/instruction/operand/Memory.h"
+#include "vasm/instruction/operand/Register.h"
+
+#include "vasm/codegen/Opcodes.h"
 
 namespace instruction
 {
@@ -22,6 +25,55 @@ namespace instruction
                 label->reloc(builder, section, codegen::OperandSize::Long, -4);
             }
         }
-        // TODO: Add call r/m
+        else
+        {
+            codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
+            codegen::SIB sib;
+            std::optional<int> displacement;
+            codegen::OperandSize size = instruction.getSize();
+
+            Register* reg = dynamic_cast<Register*>(instruction.getOperand().get());
+            Memory*   mem = dynamic_cast<Memory*>(instruction.getOperand().get());
+            if (mem)
+            {
+                addressingMode = mem->getAddressingMode();
+                displacement = mem->getDisplacement();
+                reg = mem->getBase();
+                sib = mem->getSIB();
+            }
+            else
+            {
+                size = reg->getSize();
+            }
+
+            switch(size)
+            {
+                case codegen::OperandSize::Byte:
+                    break; // TODO: Error
+                case codegen::OperandSize::Word:
+                    builder.createInstruction(section)
+                        .opcode(codegen::CALL_RM16)
+                        .modrm(addressingMode, 2, reg->getID())
+                        .displacement(displacement)
+                        .emit();
+                    break;
+                case codegen::OperandSize::Long:
+                    builder.createInstruction(section)
+                        .opcode(codegen::CALL_RM32)
+                        .modrm(addressingMode, 2, reg->getID())
+                        .displacement(displacement)
+                        .emit();
+                    break;
+                case codegen::OperandSize::Quad:
+                    builder.createInstruction(section)
+                        .opcode(codegen::CALL_RM64)
+                        .modrm(addressingMode, 2, reg->getID())
+                        .displacement(displacement)
+                        .emit();
+                    break;
+                case codegen::OperandSize::None:
+                    break;
+            }
+        }
     }
 }

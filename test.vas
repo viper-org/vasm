@@ -13,7 +13,8 @@ true:
 false:
     mov rax, 0
     xchg rdi, rax
-    call return
+    lea rbx, [rel return]
+    call rbx
 
 _start:
     mov rax, 1
