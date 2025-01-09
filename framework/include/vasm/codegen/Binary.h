@@ -3,6 +3,7 @@
 
 #include "vasm/codegen/IOutputFormat.h"
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -40,6 +41,7 @@ namespace codegen
         void patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin) override;
 
         void print(std::ostream& stream) override;
+        std::unique_ptr<unsigned char> loadjit();
     private:
         std::vector<unsigned char> mBuffer;
         std::unordered_map<std::string, std::uint64_t> mSymbols;

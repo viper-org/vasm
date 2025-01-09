@@ -95,11 +95,46 @@ namespace codegen
 
     void BinaryFormat::patchForwardSymbol(const std::string& name, std::string section, OperandSize size, int location, int origin)
     {
-        // TODO: Implement
+        std::uint64_t symbol = getSymbol(name).first - origin;
+        switch (size)
+        {
+            case OperandSize::Byte:
+                mBuffer[location] = symbol;
+                break;
+            case OperandSize::Word:
+                mBuffer[location] = symbol;
+                mBuffer[location + 1] = symbol >> 8;
+                break;
+            case OperandSize::Long:
+                mBuffer[location] = symbol;
+                mBuffer[location + 1] = symbol >> 8;
+                mBuffer[location + 2] = symbol >> 16;
+                mBuffer[location + 3] = symbol >> 24;
+                break;
+            case OperandSize::Quad:
+                mBuffer[location] = symbol;
+                mBuffer[location + 1] = symbol >> 8;
+                mBuffer[location + 2] = symbol >> 16;
+                mBuffer[location + 3] = symbol >> 24;
+                mBuffer[location + 4] = symbol >> 32;
+                mBuffer[location + 5] = symbol >> 40;
+                mBuffer[location + 6] = symbol >> 48;
+                mBuffer[location + 7] = symbol >> 56;
+                break;
+            case OperandSize::None:
+                break;
+        }
     }
 
     void BinaryFormat::print(std::ostream& stream)
     {
         stream.write(reinterpret_cast<const char*>(mBuffer.data()), static_cast<std::streamsize>(mBuffer.size()));
+    }
+
+    std::unique_ptr<unsigned char> BinaryFormat::loadjit()
+    {
+        std::unique_ptr<unsigned char> ret = std::make_unique<unsigned char>(mBuffer.size());
+        std::copy(mBuffer.begin(), mBuffer.end(), ret.get());
+        return ret;
     }
 }
