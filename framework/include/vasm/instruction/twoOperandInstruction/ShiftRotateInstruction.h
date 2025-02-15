@@ -13,15 +13,15 @@
 
 namespace instruction
 {
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct ShiftRotateInstructionImpl;
-    template <auto... Ts>
-    using ShiftRotateInstruction = TwoOperandInstructionTemplate<ShiftRotateInstructionImpl<Ts...>>;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using ShiftRotateInstruction = TwoOperandInstructionTemplate<ShiftRotateInstructionImpl<Name, Ts...>, Name>;
 
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct ShiftRotateInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, ShiftRotateInstruction<ModRM>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, ShiftRotateInstruction<Name, ModRM>& instruction)
         {
             Register* lhs;
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
@@ -181,14 +181,14 @@ namespace instruction
         }
     };
 
-    using RolInstruction = ShiftRotateInstruction<0>;
-    using RorInstruction = ShiftRotateInstruction<1>;
-    using RclInstruction = ShiftRotateInstruction<2>;
-    using RcrInstruction = ShiftRotateInstruction<3>;
-    using ShlInstruction = ShiftRotateInstruction<4>;
-    using ShrInstruction = ShiftRotateInstruction<5>;
-    using SalInstruction = ShiftRotateInstruction<6>;
-    using SarInstruction = ShiftRotateInstruction<7>;
+    using RolInstruction = ShiftRotateInstruction<"rol", 0>;
+    using RorInstruction = ShiftRotateInstruction<"ror", 1>;
+    using RclInstruction = ShiftRotateInstruction<"rcl", 2>;
+    using RcrInstruction = ShiftRotateInstruction<"rcr", 3>;
+    using ShlInstruction = ShiftRotateInstruction<"shl", 4>;
+    using ShrInstruction = ShiftRotateInstruction<"shr", 5>;
+    using SalInstruction = ShiftRotateInstruction<"sal", 6>;
+    using SarInstruction = ShiftRotateInstruction<"sar", 7>;
 }
 
 #endif

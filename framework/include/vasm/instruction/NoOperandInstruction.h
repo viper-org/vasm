@@ -22,7 +22,7 @@ namespace instruction
         int mLineNumber;
     };
 
-    template <OpcodeT auto Opcode>
+    template <OpcodeT auto Opcode, InstructionStringBuilder Name>
     class NoOperandInstructionTemplate : public NoOperandInstruction
     {
     public:
@@ -34,12 +34,16 @@ namespace instruction
                    .opcode(Opcode)
                    .emit();
         }
+        void print(std::ostream& stream) override
+        {
+            stream << '\t' << Name.mValue;
+        }
     };
 
-    using RetInstruction     = NoOperandInstructionTemplate<codegen::RET>;
-    using LeaveInstruction   = NoOperandInstructionTemplate<codegen::LEAVE>;
-    using SyscallInstruction = NoOperandInstructionTemplate<codegen::SYSCALL>;
-    using NopInstruction     = NoOperandInstructionTemplate<codegen::NOP>;
+    using RetInstruction     = NoOperandInstructionTemplate<codegen::RET, "ret">;
+    using LeaveInstruction   = NoOperandInstructionTemplate<codegen::LEAVE, "leave">;
+    using SyscallInstruction = NoOperandInstructionTemplate<codegen::SYSCALL, "syscall">;
+    using NopInstruction     = NoOperandInstructionTemplate<codegen::NOP, "nop">;
 }
 
 #endif

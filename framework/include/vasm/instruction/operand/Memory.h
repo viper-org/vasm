@@ -30,6 +30,8 @@ namespace instruction
 
         std::unique_ptr<Operand> clone() override;
 
+        std::string toString() override;
+
     private:
         RegisterPtr mBase;
         std::optional<int> mDisplacement;

@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct CallInstructionImpl;
-    using CallInstruction = SingleOperandInstructionTemplate<CallInstructionImpl>;
+    using CallInstruction = SingleOperandInstructionTemplate<CallInstructionImpl, "call">;
 
     struct CallInstructionImpl
     {

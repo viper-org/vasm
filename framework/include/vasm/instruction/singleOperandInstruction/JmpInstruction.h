@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct JmpInstructionImpl;
-    using JmpInstruction = SingleOperandInstructionTemplate<JmpInstructionImpl>;
+    using JmpInstruction = SingleOperandInstructionTemplate<JmpInstructionImpl, "jmp">;
 
     struct JmpInstructionImpl
     {

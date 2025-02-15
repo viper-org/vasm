@@ -5,6 +5,7 @@
 #include "vasm/instruction/operand/Register.h"
 
 #include <cmath>
+#include <format>
 
 namespace instruction
 {
@@ -85,5 +86,24 @@ namespace instruction
     {
         Register* index = mIndex ? static_cast<Register*>(mIndex->clone().release()) : nullptr;
         return std::make_unique<Memory>(RegisterPtr(static_cast<Register*>(mBase->clone().release())), mDisplacement, RegisterPtr(index), mScale);
+    }
+
+    std::string Memory::toString()
+    {
+        std::string ret = "[";
+        ret += mBase->toString();
+        if (mIndex)
+        {
+            ret += std::format("+{}", mIndex->toString());
+            if (mScale)
+            {
+                ret += std::format("*{}", *mScale);
+            }
+        }
+        if (mDisplacement)
+        {
+            ret += std::format("+{}", *mDisplacement);
+        }
+        return ret + "]";
     }
 }

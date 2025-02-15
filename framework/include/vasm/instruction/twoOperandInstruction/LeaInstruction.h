@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct LeaInstructionImpl;
-    using LeaInstruction = TwoOperandInstructionTemplate<LeaInstructionImpl>;
+    using LeaInstruction = TwoOperandInstructionTemplate<LeaInstructionImpl, "lea">;
 
     struct LeaInstructionImpl
     {

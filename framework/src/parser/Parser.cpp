@@ -162,10 +162,10 @@ namespace parsing
             { "nop",      [this]() -> InstructionPtr { return Builder<NopInstruction>()    .parse(mTokenStream); } },
 
 
-            { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte>>().parse( mTokenStream); } },
-            { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word>>().parse( mTokenStream); } },
-            { "dd",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Long>>().parse( mTokenStream); } },
-            { "dq",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Quad>>().parse( mTokenStream); } },
+            { "db",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Byte, "db">>().parse( mTokenStream); } },
+            { "dw",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Word, "dw">>().parse( mTokenStream); } },
+            { "dd",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Long, "dl">>().parse( mTokenStream); } },
+            { "dq",       [this]() -> InstructionPtr { return Builder<DeclInstruction<codegen::OperandSize::Quad, "dq">>().parse( mTokenStream); } },
         };
     }
 

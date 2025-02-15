@@ -6,6 +6,8 @@
 #include "vasm/instruction/Instruction.h"
 #include "vasm/instruction/Operand.h"
 
+#include <format>
+
 namespace instruction
 {
     class SingleOperandInstruction : public Instruction
@@ -28,7 +30,7 @@ namespace instruction
         int mLineNumber;
     };
 
-    template <typename T>
+    template <typename T, InstructionStringBuilder Name>
     class SingleOperandInstructionTemplate : public SingleOperandInstruction
     {
     public:
@@ -37,6 +39,11 @@ namespace instruction
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
             T::emit(builder, section, *this);
+        }
+        
+        void print(std::ostream& stream) override
+        {
+            stream << '\t' << std::format("{} {}", Name.mValue, mOperand->toString());
         }
 
         OperandPtr& getOperand()

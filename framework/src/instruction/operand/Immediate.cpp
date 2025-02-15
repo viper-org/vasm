@@ -54,4 +54,9 @@ namespace instruction
     {
         return std::make_unique<Immediate>(mValue);
     }
+
+    std::string Immediate::toString()
+    {
+        return std::to_string(mValue);
+    }
 }

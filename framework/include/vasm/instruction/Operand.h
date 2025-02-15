@@ -13,6 +13,8 @@ namespace instruction
         virtual ~Operand() { }
 
         virtual std::unique_ptr<Operand> clone() = 0;
+
+        virtual std::string toString() = 0;
     };
 
     using OperandPtr = std::unique_ptr<Operand>;

@@ -10,15 +10,15 @@
 
 namespace instruction
 {
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct Grp4InstructionImpl;
-    template <auto... Ts>
-    using Grp4Instruction = SingleOperandInstructionTemplate<Grp4InstructionImpl<Ts...> >;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using Grp4Instruction = SingleOperandInstructionTemplate<Grp4InstructionImpl<Name, Ts...>, Name>;
 
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct Grp4InstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, Grp4Instruction<ModRM>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, Grp4Instruction<Name, ModRM>& instruction)
         {
             Register* operand; 
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
@@ -88,11 +88,11 @@ namespace instruction
         }
     };
 
-    using NotInstruction  = Grp4Instruction<2>;
-    using NegInstruction  = Grp4Instruction<3>;
-    using MulInstruction  = Grp4Instruction<4>;
-    using DivInstruction  = Grp4Instruction<6>;
-    using IDivInstruction = Grp4Instruction<7>;
+    using NotInstruction  = Grp4Instruction<"not",  2>;
+    using NegInstruction  = Grp4Instruction<"neg",  3>;
+    using MulInstruction  = Grp4Instruction<"mul",  4>;
+    using DivInstruction  = Grp4Instruction<"div",  6>;
+    using IDivInstruction = Grp4Instruction<"idiv", 7>;
 }
 
 #endif

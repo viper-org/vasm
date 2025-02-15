@@ -6,6 +6,7 @@
 #include "vasm/codegen/builder/OpcodeBuilder.h"
 
 #include <memory>
+#include <ostream>
 
 namespace instruction
 {
@@ -15,6 +16,7 @@ namespace instruction
         virtual ~Value() { }
 
         virtual void emit(codegen::OpcodeBuilder& builder, codegen::Section section) = 0;
+        virtual void print(std::ostream& stream) = 0;
     };
 
     using ValuePtr = std::unique_ptr<Value>;

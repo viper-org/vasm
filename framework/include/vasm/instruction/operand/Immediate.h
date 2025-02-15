@@ -25,6 +25,8 @@ namespace instruction
 
         std::unique_ptr<Operand> clone() override;
 
+        std::string toString() override;
+
     private:
         std::uint64_t mValue;
     };

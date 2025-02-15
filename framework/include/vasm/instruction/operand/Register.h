@@ -24,6 +24,8 @@ namespace instruction
         std::unique_ptr<Operand> clone() override;
         std::unique_ptr<Register> clone(codegen::OperandSize newSize);
 
+        std::string toString() override;
+
         codegen::REX getRex() const;
 
         static RegisterPtr Get(std::string_view name);

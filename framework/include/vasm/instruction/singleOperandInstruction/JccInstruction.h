@@ -9,16 +9,16 @@
 
 namespace instruction
 {
-    template <OpcodeT auto Opcode>
+    template <InstructionStringBuilder Name, OpcodeT auto Opcode>
     struct JccInstructionImpl;
-    template <auto... Ts>
-    using JccInstruction = SingleOperandInstructionTemplate<JccInstructionImpl<Ts...>>;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using JccInstruction = SingleOperandInstructionTemplate<JccInstructionImpl<Name, Ts...>, Name>;
 
 
-    template <OpcodeT auto Opcode>
+    template <InstructionStringBuilder Name, OpcodeT auto Opcode>
     struct JccInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, JccInstruction<Opcode>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, JccInstruction<Name, Opcode>& instruction)
         {
             if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getOperand().get()))
             {
@@ -49,38 +49,38 @@ namespace instruction
         }
     };
 
-    using JaInstruction    = JccInstruction<codegen::JA_REL8>;
-    using JaeInstruction   = JccInstruction<codegen::JAE_REL8>;
-    using JbInstruction    = JccInstruction<codegen::JB_REL8>;
-    using JbeInstruction   = JccInstruction<codegen::JBE_REL8>;
-    using JcxzInstruction  = JccInstruction<codegen::JCXZ_REL8>;
-    using JecxzInstruction = JccInstruction<codegen::JECXZ_REL8>;
-    using JrcxzInstruction = JccInstruction<codegen::JRCXZ_REL8>;
-    using JeInstruction    = JccInstruction<codegen::JE_REL8>;
-    using JgInstruction    = JccInstruction<codegen::JG_REL8>;
-    using JgeInstruction   = JccInstruction<codegen::JGE_REL8>;
-    using JlInstruction    = JccInstruction<codegen::JL_REL8>;
-    using JleInstruction   = JccInstruction<codegen::JLE_REL8>;
-    using JnaInstruction   = JccInstruction<codegen::JNA_REL8>;
-    using JnaeInstruction  = JccInstruction<codegen::JNAE_REL8>;
-    using JnbInstruction   = JccInstruction<codegen::JNB_REL8>;
-    using JnbeInstruction  = JccInstruction<codegen::JNBE_REL8>;
-    using JncInstruction   = JccInstruction<codegen::JNC_REL8>;
-    using JneInstruction   = JccInstruction<codegen::JNE_REL8>;
-    using JngInstruction   = JccInstruction<codegen::JNG_REL8>;
-    using JngeInstruction  = JccInstruction<codegen::JNGE_REL8>;
-    using JnlInstruction   = JccInstruction<codegen::JNL_REL8>;
-    using JnleInstruction  = JccInstruction<codegen::JNLE_REL8>;
-    using JnoInstruction   = JccInstruction<codegen::JNO_REL8>;
-    using JnpInstruction   = JccInstruction<codegen::JNP_REL8>;
-    using JnsInstruction   = JccInstruction<codegen::JNS_REL8>;
-    using JnzInstruction   = JccInstruction<codegen::JNZ_REL8>;
-    using JoInstruction    = JccInstruction<codegen::JO_REL8>;
-    using JpInstruction    = JccInstruction<codegen::JP_REL8>;
-    using JpeInstruction   = JccInstruction<codegen::JPE_REL8>;
-    using JpoInstruction   = JccInstruction<codegen::JPO_REL8>;
-    using JsInstruction    = JccInstruction<codegen::JS_REL8>;
-    using JzInstruction    = JccInstruction<codegen::JZ_REL8>;
+    using JaInstruction    = JccInstruction<"ja",    codegen::JA_REL8>;
+    using JaeInstruction   = JccInstruction<"jae",   codegen::JAE_REL8>;
+    using JbInstruction    = JccInstruction<"jb",    codegen::JB_REL8>;
+    using JbeInstruction   = JccInstruction<"jbe",   codegen::JBE_REL8>;
+    using JcxzInstruction  = JccInstruction<"jcxz",  codegen::JCXZ_REL8>;
+    using JecxzInstruction = JccInstruction<"jecxz", codegen::JECXZ_REL8>;
+    using JrcxzInstruction = JccInstruction<"jrcxz", codegen::JRCXZ_REL8>;
+    using JeInstruction    = JccInstruction<"je",    codegen::JE_REL8>;
+    using JgInstruction    = JccInstruction<"jg",    codegen::JG_REL8>;
+    using JgeInstruction   = JccInstruction<"jge",   codegen::JGE_REL8>;
+    using JlInstruction    = JccInstruction<"jl",    codegen::JL_REL8>;
+    using JleInstruction   = JccInstruction<"jle",   codegen::JLE_REL8>;
+    using JnaInstruction   = JccInstruction<"jna",   codegen::JNA_REL8>;
+    using JnaeInstruction  = JccInstruction<"jnae",  codegen::JNAE_REL8>;
+    using JnbInstruction   = JccInstruction<"jnb",   codegen::JNB_REL8>;
+    using JnbeInstruction  = JccInstruction<"jnbe",  codegen::JNBE_REL8>;
+    using JncInstruction   = JccInstruction<"jnc",   codegen::JNC_REL8>;
+    using JneInstruction   = JccInstruction<"jne",   codegen::JNE_REL8>;
+    using JngInstruction   = JccInstruction<"jng",   codegen::JNG_REL8>;
+    using JngeInstruction  = JccInstruction<"jnge",  codegen::JNGE_REL8>;
+    using JnlInstruction   = JccInstruction<"jnl",   codegen::JNL_REL8>;
+    using JnleInstruction  = JccInstruction<"jnle",  codegen::JNLE_REL8>;
+    using JnoInstruction   = JccInstruction<"jno",   codegen::JNO_REL8>;
+    using JnpInstruction   = JccInstruction<"jnp",   codegen::JNP_REL8>;
+    using JnsInstruction   = JccInstruction<"jns",   codegen::JNS_REL8>;
+    using JnzInstruction   = JccInstruction<"jnz",   codegen::JNZ_REL8>;
+    using JoInstruction    = JccInstruction<"jo",    codegen::JO_REL8>;
+    using JpInstruction    = JccInstruction<"jp",    codegen::JP_REL8>;
+    using JpeInstruction   = JccInstruction<"jpe",   codegen::JPE_REL8>;
+    using JpoInstruction   = JccInstruction<"jpo",   codegen::JPO_REL8>;
+    using JsInstruction    = JccInstruction<"js",    codegen::JS_REL8>;
+    using JzInstruction    = JccInstruction<"jz",    codegen::JZ_REL8>;
 }
 
 #endif

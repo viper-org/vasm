@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct XchgInstructionImpl;
-    using XchgInstruction = TwoOperandInstructionTemplate<XchgInstructionImpl>;
+    using XchgInstruction = TwoOperandInstructionTemplate<XchgInstructionImpl, "xchg">;
 
     struct XchgInstructionImpl
     {

@@ -14,7 +14,9 @@ namespace instruction
     public:
         Label(std::string name, bool isGlobal);
 
-        void emit(codegen::OpcodeBuilder& builder, codegen::Section);
+        void emit(codegen::OpcodeBuilder& builder, codegen::Section) override;
+
+        void print(std::ostream& stream) override;
 
     private:
         std::string mName;

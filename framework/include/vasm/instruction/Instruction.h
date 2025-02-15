@@ -12,6 +12,17 @@
 
 namespace instruction
 {
+    template <size_t N>
+    struct InstructionStringBuilder
+    {
+        consteval InstructionStringBuilder(const char(&str)[N])
+        {
+            std::copy(str, str + N, mValue);
+        }
+        consteval operator const char*() { return mValue; }
+        char mValue[N];
+    };
+
     template <typename T>
     concept OpcodeT = std::is_same_v<codegen::ByteOpcodes, T> || std::is_same_v<codegen::WordOpcodes, T>;
 

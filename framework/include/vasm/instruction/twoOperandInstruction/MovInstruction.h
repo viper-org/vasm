@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct MovInstructionImpl;
-    using MovInstruction = TwoOperandInstructionTemplate<MovInstructionImpl>;
+    using MovInstruction = TwoOperandInstructionTemplate<MovInstructionImpl, "mov">;
 
     struct MovInstructionImpl
     {
@@ -17,7 +17,7 @@ namespace instruction
 
 
     struct MovZXInstructionImpl;
-    using MovZXInstruction = TwoOperandInstructionTemplate<MovZXInstructionImpl>;
+    using MovZXInstruction = TwoOperandInstructionTemplate<MovZXInstructionImpl, "movzx">;
 
     struct MovZXInstructionImpl
     {
@@ -25,7 +25,7 @@ namespace instruction
     };
 
     struct MovSXInstructionImpl;
-    using MovSXInstruction = TwoOperandInstructionTemplate<MovSXInstructionImpl>;
+    using MovSXInstruction = TwoOperandInstructionTemplate<MovSXInstructionImpl, "movsx">;
 
     struct MovSXInstructionImpl
     {

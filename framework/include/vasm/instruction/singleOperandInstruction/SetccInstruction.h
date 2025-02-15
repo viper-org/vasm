@@ -10,16 +10,16 @@
 
 namespace instruction
 {
-    template <OpcodeT auto Opcode>
+    template <InstructionStringBuilder Name, OpcodeT auto Opcode>
     struct SetccInstructionImpl;
-    template <auto... Ts>
-    using SetccInstruction = SingleOperandInstructionTemplate<SetccInstructionImpl<Ts...>>;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using SetccInstruction = SingleOperandInstructionTemplate<SetccInstructionImpl<Name, Ts...>, Name>;
 
 
-    template <OpcodeT auto Opcode>
+    template <InstructionStringBuilder Name, OpcodeT auto Opcode>
     struct SetccInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, SetccInstruction<Opcode>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, SetccInstruction<Name, Opcode>& instruction)
         {
             codegen::AddressingMode addressingMode = codegen::AddressingMode::RegisterDirect;
             codegen::SIB sib;
@@ -53,36 +53,36 @@ namespace instruction
         }
     };
 
-    using SetaInstruction = SetccInstruction<codegen::SETA>;
-    using SetaeInstruction = SetccInstruction<codegen::SETAE>;
-    using SetbInstruction = SetccInstruction<codegen::SETB>;
-    using SetbeInstruction = SetccInstruction<codegen::SETBE>;
-    using SetcInstruction = SetccInstruction<codegen::SETC>;
-    using SeteInstruction = SetccInstruction<codegen::SETE>;
-    using SetgInstruction = SetccInstruction<codegen::SETG>;
-    using SetgeInstruction = SetccInstruction<codegen::SETGE>;
-    using SetlInstruction = SetccInstruction<codegen::SETL>;
-    using SetleInstruction = SetccInstruction<codegen::SETLE>;
-    using SetnaInstruction = SetccInstruction<codegen::SETNA>;
-    using SetnaeInstruction = SetccInstruction<codegen::SETNAE>;
-    using SetnbInstruction = SetccInstruction<codegen::SETNB>;
-    using SetnbeInstruction = SetccInstruction<codegen::SETNBE>;
-    using SetncInstruction = SetccInstruction<codegen::SETNC>;
-    using SetneInstruction = SetccInstruction<codegen::SETNE>;
-    using SetngInstruction = SetccInstruction<codegen::SETNG>;
-    using SetngeInstruction = SetccInstruction<codegen::SETNGE>;
-    using SetnlInstruction = SetccInstruction<codegen::SETNL>;
-    using SetnleInstruction = SetccInstruction<codegen::SETNLE>;
-    using SetnoInstruction = SetccInstruction<codegen::SETNO>;
-    using SetnpInstruction = SetccInstruction<codegen::SETNP>;
-    using SetnsInstruction = SetccInstruction<codegen::SETNS>;
-    using SetnzInstruction = SetccInstruction<codegen::SETNZ>;
-    using SetoInstruction = SetccInstruction<codegen::SETO>;
-    using SetpInstruction = SetccInstruction<codegen::SETP>;
-    using SetpeInstruction = SetccInstruction<codegen::SETPE>;
-    using SetpoInstruction = SetccInstruction<codegen::SETPO>;
-    using SetsInstruction = SetccInstruction<codegen::SETS>;
-    using SetzInstruction = SetccInstruction<codegen::SETZ>;
+    using SetaInstruction   = SetccInstruction<"seta",   codegen::SETA>;
+    using SetaeInstruction  = SetccInstruction<"setae",  codegen::SETAE>;
+    using SetbInstruction   = SetccInstruction<"setb",   codegen::SETB>;
+    using SetbeInstruction  = SetccInstruction<"setbe",  codegen::SETBE>;
+    using SetcInstruction   = SetccInstruction<"setc",   codegen::SETC>;
+    using SeteInstruction   = SetccInstruction<"sete",   codegen::SETE>;
+    using SetgInstruction   = SetccInstruction<"setg",   codegen::SETG>;
+    using SetgeInstruction  = SetccInstruction<"setge",  codegen::SETGE>;
+    using SetlInstruction   = SetccInstruction<"setl",   codegen::SETL>;
+    using SetleInstruction  = SetccInstruction<"setle",  codegen::SETLE>;
+    using SetnaInstruction  = SetccInstruction<"setna",  codegen::SETNA>;
+    using SetnaeInstruction = SetccInstruction<"setnae", codegen::SETNAE>;
+    using SetnbInstruction  = SetccInstruction<"setnb",  codegen::SETNB>;
+    using SetnbeInstruction = SetccInstruction<"setnbe", codegen::SETNBE>;
+    using SetncInstruction  = SetccInstruction<"setnc",  codegen::SETNC>;
+    using SetneInstruction  = SetccInstruction<"setne",  codegen::SETNE>;
+    using SetngInstruction  = SetccInstruction<"setng",  codegen::SETNG>;
+    using SetngeInstruction = SetccInstruction<"setnge", codegen::SETNGE>;
+    using SetnlInstruction  = SetccInstruction<"setnl",  codegen::SETNL>;
+    using SetnleInstruction = SetccInstruction<"setnle", codegen::SETNLE>;
+    using SetnoInstruction  = SetccInstruction<"setno",  codegen::SETNO>;
+    using SetnpInstruction  = SetccInstruction<"setnp",  codegen::SETNP>;
+    using SetnsInstruction  = SetccInstruction<"setns",  codegen::SETNS>;
+    using SetnzInstruction  = SetccInstruction<"setnz",  codegen::SETNZ>;
+    using SetoInstruction   = SetccInstruction<"seto",   codegen::SETO>;
+    using SetpInstruction   = SetccInstruction<"setp",   codegen::SETP>;
+    using SetpeInstruction  = SetccInstruction<"setpe",  codegen::SETPE>;
+    using SetpoInstruction  = SetccInstruction<"seto",   codegen::SETPO>;
+    using SetsInstruction   = SetccInstruction<"sets",   codegen::SETS>;
+    using SetzInstruction   = SetccInstruction<"setz",   codegen::SETZ>;
 }
 
 #endif // VASM_INSTRUCTION_SINGLE_OPERAND_INSTRUCTION_SETCC_H

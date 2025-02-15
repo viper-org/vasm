@@ -10,15 +10,15 @@
 
 namespace instruction
 {
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct LogicalInstructionImpl;
-    template <auto... Ts>
-    using LogicalInstruction = TwoOperandInstructionTemplate<LogicalInstructionImpl<Ts...>>;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using LogicalInstruction = TwoOperandInstructionTemplate<LogicalInstructionImpl<Name, Ts...>, Name>;
 
-    template <unsigned char ModRM>
+    template <InstructionStringBuilder Name, unsigned char ModRM>
     struct LogicalInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<ModRM>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, LogicalInstruction<Name, ModRM>& instruction)
         {
             // Assume lhs is a register for now
             Register* lhs = static_cast<Register*>(instruction.getLeft().get());
@@ -140,14 +140,14 @@ namespace instruction
         }
     };
 
-    using AddInstruction = LogicalInstruction<0>;
-    using AdcInstruction = LogicalInstruction<1>;
-    using SbbInstruction = LogicalInstruction<2>;
-    using OrInstruction  = LogicalInstruction<1>;
-    using AndInstruction = LogicalInstruction<4>;
-    using SubInstruction = LogicalInstruction<5>;
-    using XorInstruction = LogicalInstruction<6>;
-    using CmpInstruction = LogicalInstruction<7>;
+    using AddInstruction = LogicalInstruction<"add", 0>;
+    using AdcInstruction = LogicalInstruction<"adc", 1>;
+    using SbbInstruction = LogicalInstruction<"sbb", 2>;
+    using OrInstruction  = LogicalInstruction<"or",  1>;
+    using AndInstruction = LogicalInstruction<"and", 4>;
+    using SubInstruction = LogicalInstruction<"sub", 5>;
+    using XorInstruction = LogicalInstruction<"xor", 6>;
+    using CmpInstruction = LogicalInstruction<"cmp", 7>;
 }
 
 #endif

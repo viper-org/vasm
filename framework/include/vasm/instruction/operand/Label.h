@@ -21,6 +21,8 @@ namespace instruction
 
         std::unique_ptr<Operand> clone() override;
 
+        std::string toString() override;
+
         std::string_view getName() const;
         std::string_view getLocation() const;
 

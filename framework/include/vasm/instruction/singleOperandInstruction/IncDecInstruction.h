@@ -9,15 +9,15 @@
 
 namespace instruction
 {
-    template <unsigned char modrm>
+    template <InstructionStringBuilder Name, unsigned char modrm>
     struct IncDecInstructionImpl;
-    template<auto... Ts>
-    using IncDecInstruction = SingleOperandInstructionTemplate<IncDecInstructionImpl<Ts...>>;
+    template<InstructionStringBuilder Name, auto... Ts>
+    using IncDecInstruction = SingleOperandInstructionTemplate<IncDecInstructionImpl<Name, Ts...>, Name>;
 
-    template <unsigned char modrm>
+    template <InstructionStringBuilder Name, unsigned char modrm>
     struct IncDecInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, IncDecInstruction<modrm>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, IncDecInstruction<Name, modrm>& instruction)
         {
             // Assume register for now
             Register* operand = static_cast<Register*>(instruction.getOperand().get());
@@ -60,8 +60,8 @@ namespace instruction
         }
     };
 
-    using IncInstruction = IncDecInstruction<0>;
-    using DecInstruction = IncDecInstruction<1>;
+    using IncInstruction = IncDecInstruction<"inc", 0>;
+    using DecInstruction = IncDecInstruction<"dec", 1>;
 }
 
 #endif

@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct PopInstructionImpl;
-    using PopInstruction = SingleOperandInstructionTemplate<PopInstructionImpl>;
+    using PopInstruction = SingleOperandInstructionTemplate<PopInstructionImpl, "pop">;
     
     struct PopInstructionImpl
     {

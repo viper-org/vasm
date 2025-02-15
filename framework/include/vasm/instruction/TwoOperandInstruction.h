@@ -8,6 +8,8 @@
 
 #include "vasm/codegen/Opcodes.h"
 
+#include <format>
+
 namespace instruction
 {
     class TwoOperandInstruction : public Instruction
@@ -31,7 +33,7 @@ namespace instruction
         int mLineNumber;
     };
 
-    template <typename T>
+    template <typename T, InstructionStringBuilder Name>
     class TwoOperandInstructionTemplate : public TwoOperandInstruction
     {
     public:
@@ -40,6 +42,11 @@ namespace instruction
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
             T::emit(builder, section, *this);
+        }
+
+        void print(std::ostream& stream) override
+        {
+            stream << '\t' << std::format("{} {}, {}", Name.mValue, mLeft->toString(), mRight->toString());
         }
 
         OperandPtr& getLeft()

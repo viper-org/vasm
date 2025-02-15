@@ -15,6 +15,11 @@ namespace instruction
         builder.addExtern(mName);
     }
 
+    void ExternDirective::print(std::ostream& stream)
+    {
+        stream << "extern " << mName;
+    }
+
     SectionDirective::SectionDirective(const std::string& name)
         : mName(name)
     {
@@ -23,5 +28,10 @@ namespace instruction
     void SectionDirective::emit(codegen::OpcodeBuilder& builder, codegen::Section)
     {
         builder.setSection(builder.getSectionByName(mName));
+    }
+
+    void SectionDirective::print(std::ostream& stream)
+    {
+        stream << "section " << mName;
     }
 }

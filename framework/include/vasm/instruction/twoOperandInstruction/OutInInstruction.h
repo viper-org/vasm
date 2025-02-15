@@ -12,15 +12,15 @@
 
 namespace instruction
 {
-    template <OpcodeT auto Imm8AL, OpcodeT auto Imm8AX, OpcodeT auto DXAL, OpcodeT auto DXEAX>
+    template <InstructionStringBuilder Name, OpcodeT auto Imm8AL, OpcodeT auto Imm8AX, OpcodeT auto DXAL, OpcodeT auto DXEAX>
     struct InOutInstructionImpl;
-    template <auto... Ts>
-    using InOutInstruction = TwoOperandInstructionTemplate<InOutInstructionImpl<Ts...>>;
+    template <InstructionStringBuilder Name, auto... Ts>
+    using InOutInstruction = TwoOperandInstructionTemplate<InOutInstructionImpl<Name, Ts...>, Name>;
 
-    template <OpcodeT auto Imm8AL, OpcodeT auto Imm8AX, OpcodeT auto DXAL, OpcodeT auto DXEAX>
+    template <InstructionStringBuilder Name, OpcodeT auto Imm8AL, OpcodeT auto Imm8AX, OpcodeT auto DXAL, OpcodeT auto DXEAX>
     struct InOutInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, InOutInstruction<Imm8AL, Imm8AX, DXAL, DXEAX>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, InOutInstruction<Name, Imm8AL, Imm8AX, DXAL, DXEAX>& instruction)
         {
             if (Register* lhs = dynamic_cast<Register*>(instruction.getLeft().get()))
             {
@@ -54,8 +54,8 @@ namespace instruction
         }
     };
 
-    using OutInstruction = InOutInstruction<codegen::OUT_IMM8_AL, codegen::OUT_IMM8_AX, codegen::OUT_DX_AL, codegen::OUT_DX_AX>;
-    using InInstruction  = InOutInstruction<codegen::IN_AL_IMM8,  codegen::IN_AX_IMM8,  codegen::IN_AL_DX,  codegen::IN_AX_DX>;
+    using OutInstruction = InOutInstruction<"out", codegen::OUT_IMM8_AL, codegen::OUT_IMM8_AX, codegen::OUT_DX_AL, codegen::OUT_DX_AX>;
+    using InInstruction  = InOutInstruction<"in",  codegen::IN_AL_IMM8,  codegen::IN_AX_IMM8,  codegen::IN_AL_DX,  codegen::IN_AX_DX>;
 }
 
 #endif

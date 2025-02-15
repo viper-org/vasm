@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct IMulInstructionImpl;
-    using IMulInstruction = VariableOperandInstructionTemplate<IMulInstructionImpl>;
+    using IMulInstruction = VariableOperandInstructionTemplate<IMulInstructionImpl, "imul">;
 
     struct IMulInstructionImpl
     {

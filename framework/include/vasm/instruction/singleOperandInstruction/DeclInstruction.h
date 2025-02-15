@@ -10,15 +10,15 @@
 
 namespace instruction
 {
-    template <codegen::OperandSize Size>
+    template <codegen::OperandSize Size, InstructionStringBuilder Name>
     struct DeclInstructionImpl;
-    template <codegen::OperandSize Size>
-    using DeclInstruction = SingleOperandInstructionTemplate<DeclInstructionImpl<Size>>;
+    template <codegen::OperandSize Size, InstructionStringBuilder Name>
+    using DeclInstruction = SingleOperandInstructionTemplate<DeclInstructionImpl<Size, Name>, Name>;
 
-    template <codegen::OperandSize Size>
+    template <codegen::OperandSize Size, InstructionStringBuilder Name>
     struct DeclInstructionImpl
     {
-        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, DeclInstruction<Size>& instruction)
+        static void emit(codegen::OpcodeBuilder& builder, codegen::Section section, DeclInstruction<Size, Name>& instruction)
         {
             if (Immediate* imm = dynamic_cast<Immediate*>(instruction.getOperand().get()))
             {

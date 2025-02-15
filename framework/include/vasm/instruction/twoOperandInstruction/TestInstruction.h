@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct TestInstructionImpl;
-    using TestInstruction = TwoOperandInstructionTemplate<TestInstructionImpl>;
+    using TestInstruction = TwoOperandInstructionTemplate<TestInstructionImpl, "test">;
 
     struct TestInstructionImpl
     {

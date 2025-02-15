@@ -85,4 +85,17 @@ namespace instruction
     {
         return std::make_unique<Register>(mID, newSize, mRex, mExtended);
     }
+
+    std::string Register::toString()
+    {
+        if (mRex)
+        {
+            return std::string(codegen::ByteRegisters[mID-4]);
+        }
+        if (mExtended)
+        {
+            return std::string(codegen::ExtendedRegisters[mID * 4 + static_cast<int>(mSize)]);
+        }
+        return std::string(codegen::Registers[mID * 4 + static_cast<int>(mSize)]);
+    }
 }

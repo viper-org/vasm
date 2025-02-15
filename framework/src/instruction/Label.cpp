@@ -15,4 +15,9 @@ namespace instruction
     {
         builder.addLabel(mName, section, mIsGlobal);
     }
+
+    void Label::print(std::ostream& stream)
+    {
+        stream << mName << ":";
+    }
 }

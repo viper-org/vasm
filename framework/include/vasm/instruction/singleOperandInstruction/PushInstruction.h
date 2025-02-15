@@ -8,7 +8,7 @@
 namespace instruction
 {
     struct PushInstructionImpl;
-    using PushInstruction = SingleOperandInstructionTemplate<PushInstructionImpl>;
+    using PushInstruction = SingleOperandInstructionTemplate<PushInstructionImpl, "push">;
 
     struct PushInstructionImpl
     {

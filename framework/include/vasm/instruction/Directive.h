@@ -15,6 +15,8 @@ namespace instruction
         ExternDirective(const std::string& name);
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override;
+        
+        void print(std::ostream& stream) override;
 
     private:
         std::string mName;
@@ -26,6 +28,8 @@ namespace instruction
         SectionDirective(const std::string& name);
 
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override;
+        
+        void print(std::ostream& stream) override;
 
     private:
         std::string mName;

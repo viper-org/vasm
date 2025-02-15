@@ -33,7 +33,7 @@ namespace instruction
         int mLineNumber;
     };
 
-    template <typename T>
+    template <typename T, InstructionStringBuilder Name>
     class VariableOperandInstructionTemplate : public VariableOperandInstruction
     {
     public:
@@ -47,6 +47,23 @@ namespace instruction
         void emit(codegen::OpcodeBuilder& builder, codegen::Section section) override
         {
             T::emit(builder, section, *this);
+        }
+
+        void print(std::ostream& stream) override
+        {
+            stream << '\t' << Name.mValue << " ";
+            if (mLeft)
+            {
+                stream << mLeft->toString();
+            }
+            if (mRight)
+            {
+                stream << ", " << mRight->toString();
+            }
+            if (mThird)
+            {
+                stream << ", " << mThird->toString();
+            }
         }
 
         OperandPtr& getLeft()
