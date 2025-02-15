@@ -54,6 +54,11 @@ namespace instruction
             }
         }
     };
+
+    using DbInstruction = DeclInstruction<codegen::OperandSize::Byte, "db">;
+    using DwInstruction = DeclInstruction<codegen::OperandSize::Word, "dw">;
+    using DlInstruction = DeclInstruction<codegen::OperandSize::Long, "dl">;
+    using DqInstruction = DeclInstruction<codegen::OperandSize::Quad, "dq">;
 }
 
 #endif
