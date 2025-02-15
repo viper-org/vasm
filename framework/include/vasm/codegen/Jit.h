@@ -27,7 +27,7 @@ namespace codegen
         }
 
     private:
-        std::unique_ptr<unsigned char> mBuffer;
+        std::unique_ptr<unsigned char[]> mBuffer;
     };
 }
 

@@ -131,9 +131,9 @@ namespace codegen
         stream.write(reinterpret_cast<const char*>(mBuffer.data()), static_cast<std::streamsize>(mBuffer.size()));
     }
 
-    std::unique_ptr<unsigned char> BinaryFormat::loadjit()
+    std::unique_ptr<unsigned char[]> BinaryFormat::loadjit()
     {
-        std::unique_ptr<unsigned char> ret = std::make_unique<unsigned char>(mBuffer.size());
+        std::unique_ptr<unsigned char[]> ret = std::make_unique<unsigned char[]>(mBuffer.size());
         std::copy(mBuffer.begin(), mBuffer.end(), ret.get());
         return ret;
     }
