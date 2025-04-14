@@ -24,11 +24,13 @@ namespace instruction
             Register* lhs = static_cast<Register*>(instruction.getLeft().get());
             codegen::REX rex = codegen::REX::None;
             rex |= lhs->getRex();
+            if (lhs->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
             if (lhs->isExtended()) rex |= codegen::REX::B;
 
             if (Register* rhs = dynamic_cast<Register*>(instruction.getRight().get()))
             {
                 rex |= rhs->getRex();
+                if (rhs->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
                 if (rhs->isExtended()) rex |= codegen::REX::R;
 
                 switch (lhs->getSize())

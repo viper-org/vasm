@@ -71,7 +71,7 @@ namespace instruction
         codegen::REX rex = codegen::REX::None;
 
         if (mRex) rex |= codegen::REX::REX;
-        if (mSize == codegen::OperandSize::Quad) rex |= codegen::REX::W;
+        //if (mSize == codegen::OperandSize::Quad) rex |= codegen::REX::W;
 
         return rex;
     }
