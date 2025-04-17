@@ -112,14 +112,15 @@ namespace codegen
     }
 
 
-    Instruction& Instruction::string(std::string_view str)
+    Instruction& Instruction::string(std::string_view str, bool nullterm)
     {
         mString = str;
+        mNullTerm = nullterm;
         return *this;
     }
 
 
-    void Instruction::emit()
+    void Instruction::emit(std::uint64_t offset)
     {
         if (mPrefix && *mPrefix != 0)
         {
@@ -163,7 +164,7 @@ namespace codegen
         if (mImmediate.index() != 0)
         {
             std::visit(overloaded {
-                [this](auto arg) { mOutputFormat->write(arg, mSection); },
+                [this, offset](auto arg) { mOutputFormat->write(arg, mSection, offset); },
                 [](std::monostate) {}
             }, mImmediate);
         }
@@ -173,6 +174,10 @@ namespace codegen
             for (unsigned char ch : *mString)
             {
                 mOutputFormat->write(ch, mSection);
+            }
+            if (mNullTerm)
+            {
+                mOutputFormat->write((uint8_t)0, mSection);
             }
         }
     }

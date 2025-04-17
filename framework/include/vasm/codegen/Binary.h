@@ -19,10 +19,10 @@ namespace codegen
     public:
         BinaryFormat();
 
-        void write(std::uint8_t  data, std::string section) override;
-        void write(std::uint16_t data, std::string section) override;
-        void write(std::uint32_t data, std::string section) override;
-        void write(std::uint64_t data, std::string section) override;
+        void write(std::uint8_t  data, std::string section, std::uint64_t offset) override;
+        void write(std::uint16_t data, std::string section, std::uint64_t offset) override;
+        void write(std::uint32_t data, std::string section, std::uint64_t offset) override;
+        void write(std::uint64_t data, std::string section, std::uint64_t offset) override;
 
         size_t getPosition(std::string section) override;
         size_t getSectionStart(std::string section) override;
@@ -30,6 +30,7 @@ namespace codegen
         void addSymbol(const std::string& name, std::uint64_t value, std::string section, bool isGlobal) override;
         void addExternSymbol(const std::string& name) override;
         [[nodiscard]] std::pair<std::uint64_t, bool> getSymbol(const std::string& name) const override;
+        std::string getSymbolAfter(const std::string& name) const override;
 
         virtual void createSection(SectionInfo* info) override;
         virtual std::string getSymbolSection(std::string_view name) const override;

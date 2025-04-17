@@ -6,35 +6,38 @@ namespace codegen
         : mBuffer{}
     {}
 
-    void BinaryFormat::write(std::uint8_t data, std::string)
+    void BinaryFormat::write(std::uint8_t data, std::string, std::uint64_t offset)
     {
-        mBuffer.push_back(data);
+        if (offset != -1)
+            mBuffer.insert(mBuffer.begin() + offset, data);
+        else
+            mBuffer.push_back(data);
     }
 
-    void BinaryFormat::write(std::uint16_t data, std::string)
+    void BinaryFormat::write(std::uint16_t data, std::string, std::uint64_t offset)
     {
-        mBuffer.push_back(data);
-        mBuffer.push_back(data >> 8);
+        write((std::uint8_t)data, "", offset);
+        write((std::uint8_t)(data >> 8), "", offset + 1);
     }
 
-    void BinaryFormat::write(std::uint32_t data, std::string)
+    void BinaryFormat::write(std::uint32_t data, std::string, std::uint64_t offset)
     {
-        mBuffer.push_back(data);
-        mBuffer.push_back(data >> 8);
-        mBuffer.push_back(data >> 16);
-        mBuffer.push_back(data >> 24);
+        write((std::uint8_t)data, "", offset);
+        write((std::uint8_t)(data >> 8), "", offset + 1);
+        write((std::uint8_t)(data >> 16), "", offset + 2);
+        write((std::uint8_t)(data >> 24), "", offset + 3);
     }
 
-    void BinaryFormat::write(std::uint64_t data, std::string)
+    void BinaryFormat::write(std::uint64_t data, std::string, std::uint64_t offset)
     {
-        mBuffer.push_back(data);
-        mBuffer.push_back(data >> 8);
-        mBuffer.push_back(data >> 16);
-        mBuffer.push_back(data >> 24);
-        mBuffer.push_back(data >> 32);
-        mBuffer.push_back(data >> 40);
-        mBuffer.push_back(data >> 48);
-        mBuffer.push_back(data >> 56);
+        write((std::uint8_t)data, "", offset);
+        write((std::uint8_t)(data >> 8), "", offset + 1);
+        write((std::uint8_t)(data >> 16), "", offset + 2);
+        write((std::uint8_t)(data >> 24), "", offset + 3);
+        write((std::uint8_t)(data >> 32), "", offset + 4);
+        write((std::uint8_t)(data >> 40), "", offset + 5);
+        write((std::uint8_t)(data >> 48), "", offset + 6);
+        write((std::uint8_t)(data >> 56), "", offset + 7);
     }
 
 
@@ -65,6 +68,10 @@ namespace codegen
             return std::make_pair(mSymbols.at(name), false);
         }
         return std::make_pair(-1, false); // Forward symbol
+    }
+
+    std::string BinaryFormat::getSymbolAfter(const std::string& name) const
+    { // TODO: Implement
     }
 
     void BinaryFormat::createSection(SectionInfo* info)

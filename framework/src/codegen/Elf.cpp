@@ -69,44 +69,44 @@ namespace codegen
     }
 
 
-    void ELFFormat::write(std::uint8_t data, std::string section)
+    void ELFFormat::write(std::uint8_t data, std::string section, std::uint64_t offset)
     {
         ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
 
-    void ELFFormat::write(std::uint16_t data, std::string section)
+    void ELFFormat::write(std::uint16_t data, std::string section, std::uint64_t offset)
     {
         ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
 
-    void ELFFormat::write(std::uint32_t data, std::string section)
+    void ELFFormat::write(std::uint32_t data, std::string section, std::uint64_t offset)
     {
         ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
 
-    void ELFFormat::write(std::uint64_t data, std::string section)
+    void ELFFormat::write(std::uint64_t data, std::string section, std::uint64_t offset)
     {
         ELFSection* elfSection = getElfSection(section);
         if (!elfSection)
         {
             elfSection = createSection(section);
         }
-        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        elfSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
 
 
@@ -214,6 +214,33 @@ namespace codegen
         }
         
         return std::make_pair(it->value, it->external);
+    }
+
+    std::string ELFFormat::getSymbolAfter(const std::string& name) const
+    {
+        int index = -1;
+        auto it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [&name](const ELFSymbol& symbol) {
+            return symbol.name == name;
+        });
+        if (it != mLocalSymbols.end()) index = it->index;
+        else
+        {
+            auto it = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const ELFSymbol& symbol) {
+                return symbol.name == name;
+            });
+            if (it != mGlobalSymbols.end()) index = it->index;
+            else return "";
+        }
+
+        it = std::find_if(mLocalSymbols.begin(), mLocalSymbols.end(), [index](const ELFSymbol& symbol) {
+            return symbol.index > index;
+        });
+        auto it2 = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [index](const ELFSymbol& symbol) {
+            return symbol.index > index;
+        });
+
+        if (it->index > it2->index) return it->name;
+        return it2->name;
     }
     
     void ELFFormat::createSection(SectionInfo* info)
@@ -370,10 +397,16 @@ namespace codegen
         }
     }
 
-    void ELFFormat::ELFSection::write(const char* data, size_t size)
+    void ELFFormat::ELFSection::write(const char* data, size_t size, std::uint64_t offset)
     {
         for (; size; --size) {
-            mBuffer.push_back(*data++);
+            if (offset != -1)
+            {
+                mBuffer.insert(mBuffer.begin() + offset, *data++);
+                ++offset;
+            }
+            else
+                mBuffer.push_back(*data++);
         }
     }
 

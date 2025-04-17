@@ -54,6 +54,11 @@ namespace codegen
         return mOutputFormat->getSymbol(name);
     }
 
+    std::string OpcodeBuilder::getLabelAfter(std::string name)
+    {
+        return mOutputFormat->getSymbolAfter(name);
+    }
+
     Section OpcodeBuilder::getLabelSection(std::string_view name)
     {
         return mOutputFormat->getSymbolSection(name);

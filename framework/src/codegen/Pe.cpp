@@ -35,44 +35,44 @@ namespace codegen {
     {
     }
     
-    void PEFormat::write(std::uint8_t data, std::string section)
+    void PEFormat::write(std::uint8_t data, std::string section, std::uint64_t offset)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint16_t data, std::string section)
+    void PEFormat::write(std::uint16_t data, std::string section, std::uint64_t offset)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint32_t data, std::string section)
+    void PEFormat::write(std::uint32_t data, std::string section, std::uint64_t offset)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint64_t data, std::string section)
+    void PEFormat::write(std::uint64_t data, std::string section, std::uint64_t offset)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
         {
             peSection = createSection(section);
         }
-        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data));
+        peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
     size_t PEFormat::getPosition(std::string section)
@@ -127,10 +127,16 @@ namespace codegen {
         }
     }
 
-    void PEFormat::PESection::write(const char* data, size_t size)
+    void PEFormat::PESection::write(const char* data, size_t size, std::uint64_t offset)
     {
         for (; size; --size) {
-            mBuffer.push_back(*data++);
+            if (offset != -1)
+            {
+                mBuffer.insert(mBuffer.begin() + offset, *data++);
+                ++offset;
+            }
+            else
+                mBuffer.push_back(*data++);
         }
     }
 
@@ -249,6 +255,10 @@ namespace codegen {
     [[nodiscard]] std::pair<std::uint64_t, bool> PEFormat::getSymbol(const std::string& name) const
     {
         return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
+    }
+
+    std::string PEFormat::getSymbolAfter(const std::string& name) const
+    { // TODO: Implement
     }
 
     void PEFormat::createSection(SectionInfo* info)

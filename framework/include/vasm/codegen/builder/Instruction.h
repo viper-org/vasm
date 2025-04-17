@@ -40,9 +40,9 @@ namespace codegen
         Instruction& immediate(std::uint32_t imm32);
         Instruction& immediate(std::uint64_t imm64);
 
-        Instruction& string(std::string_view str);
+        Instruction& string(std::string_view str, bool nullterm = false);
 
-        void emit();
+        void emit(std::uint64_t offset = -1);
 
     private:
         Instruction(codegen::IOutputFormat* outputFormat, codegen::Section section);
@@ -56,6 +56,7 @@ namespace codegen
         bool mDisplacementSizeOverride;
         std::variant<std::monostate, std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t> mImmediate;
         std::optional<std::string_view> mString;
+        bool mNullTerm;
 
         codegen::IOutputFormat* mOutputFormat;
         codegen::Section mSection;

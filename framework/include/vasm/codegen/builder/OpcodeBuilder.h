@@ -13,6 +13,7 @@ namespace codegen
     class OpcodeBuilder
     {
     public:
+        OpcodeBuilder() = default;
         OpcodeBuilder(codegen::IOutputFormat* outputFormat, const std::string& filename);
 
         void patchForwardLabels();
@@ -26,6 +27,7 @@ namespace codegen
         void addExtern(const std::string& name);
 
         std::pair<std::uint64_t, bool> getLabel(std::string name);
+        std::string getLabelAfter(std::string name);
         Section getLabelSection(std::string_view name);
         std::uint64_t getPosition(codegen::Section section);
         bool hadErrors() const;
