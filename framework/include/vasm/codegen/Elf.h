@@ -58,12 +58,12 @@ namespace codegen
 
             std::string mName;
             int mNameIdx;
-            int mType;
+            int mType { 1 };
             long mFlags;
             int mLink;
             int mInfo;
             long mAlign;
-            long mEntrySize;
+            long mEntrySize { 0 };
 
             [[nodiscard]] size_t size() const;
 
