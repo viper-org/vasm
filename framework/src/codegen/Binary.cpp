@@ -6,38 +6,39 @@ namespace codegen
         : mBuffer{}
     {}
 
-    void BinaryFormat::write(std::uint8_t data, std::string, std::uint64_t offset)
+    void BinaryFormat::write(std::uint8_t data, std::string, std::uint64_t offset, bool overwrite)
     {
+        // TODO: Overwrite handling
         if (offset != -1)
             mBuffer.insert(mBuffer.begin() + offset, data);
         else
             mBuffer.push_back(data);
     }
 
-    void BinaryFormat::write(std::uint16_t data, std::string, std::uint64_t offset)
+    void BinaryFormat::write(std::uint16_t data, std::string, std::uint64_t offset, bool overwrite)
     {
-        write((std::uint8_t)data, "", offset);
-        write((std::uint8_t)(data >> 8), "", offset + 1);
+        write((std::uint8_t)data, "", offset, overwrite);
+        write((std::uint8_t)(data >> 8), "", offset + 1, overwrite);
     }
 
-    void BinaryFormat::write(std::uint32_t data, std::string, std::uint64_t offset)
+    void BinaryFormat::write(std::uint32_t data, std::string, std::uint64_t offset, bool overwrite)
     {
-        write((std::uint8_t)data, "", offset);
-        write((std::uint8_t)(data >> 8), "", offset + 1);
-        write((std::uint8_t)(data >> 16), "", offset + 2);
-        write((std::uint8_t)(data >> 24), "", offset + 3);
+        write((std::uint8_t)data, "", offset, overwrite);
+        write((std::uint8_t)(data >> 8), "", offset + 1, overwrite);
+        write((std::uint8_t)(data >> 16), "", offset + 2, overwrite);
+        write((std::uint8_t)(data >> 24), "", offset + 3, overwrite);
     }
 
-    void BinaryFormat::write(std::uint64_t data, std::string, std::uint64_t offset)
+    void BinaryFormat::write(std::uint64_t data, std::string, std::uint64_t offset, bool overwrite)
     {
-        write((std::uint8_t)data, "", offset);
-        write((std::uint8_t)(data >> 8), "", offset + 1);
-        write((std::uint8_t)(data >> 16), "", offset + 2);
-        write((std::uint8_t)(data >> 24), "", offset + 3);
-        write((std::uint8_t)(data >> 32), "", offset + 4);
-        write((std::uint8_t)(data >> 40), "", offset + 5);
-        write((std::uint8_t)(data >> 48), "", offset + 6);
-        write((std::uint8_t)(data >> 56), "", offset + 7);
+        write((std::uint8_t)data, "", offset, overwrite);
+        write((std::uint8_t)(data >> 8), "", offset + 1, overwrite);
+        write((std::uint8_t)(data >> 16), "", offset + 2, overwrite);
+        write((std::uint8_t)(data >> 24), "", offset + 3, overwrite);
+        write((std::uint8_t)(data >> 32), "", offset + 4, overwrite);
+        write((std::uint8_t)(data >> 40), "", offset + 5, overwrite);
+        write((std::uint8_t)(data >> 48), "", offset + 6, overwrite);
+        write((std::uint8_t)(data >> 56), "", offset + 7, overwrite);
     }
 
 

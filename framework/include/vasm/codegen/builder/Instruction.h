@@ -42,7 +42,7 @@ namespace codegen
 
         Instruction& string(std::string_view str, bool nullterm = false);
 
-        void emit(std::uint64_t offset = -1);
+        void emit(std::uint64_t offset = -1, bool overwrite = false);
 
     private:
         Instruction(codegen::IOutputFormat* outputFormat, codegen::Section section);

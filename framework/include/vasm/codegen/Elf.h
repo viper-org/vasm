@@ -20,10 +20,10 @@ namespace codegen
     public:
         explicit ELFFormat(std::string_view fileName);
 
-        void write(std::uint8_t  data, std::string section, std::uint64_t offset) override;
-        void write(std::uint16_t data, std::string section, std::uint64_t offset) override;
-        void write(std::uint32_t data, std::string section, std::uint64_t offset) override;
-        void write(std::uint64_t data, std::string section, std::uint64_t offset) override;
+        void write(std::uint8_t  data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint16_t data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint32_t data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint64_t data, std::string section, std::uint64_t offset, bool overwrite) override;
 
         size_t getPosition(std::string section) override;
         size_t getSectionStart(std::string section) override;
@@ -51,7 +51,7 @@ namespace codegen
             explicit ELFSection(std::string_view section);
 
             void write(std::unsigned_integral auto data);
-            void write(const char* data, size_t size, std::uint64_t offset = -1);
+            void write(const char* data, size_t size, std::uint64_t offset = -1, bool overwrite = false);
             void write(std::string_view data);
 
             std::vector<char> mBuffer;
@@ -59,10 +59,10 @@ namespace codegen
             std::string mName;
             int mNameIdx;
             int mType { 1 };
-            long mFlags;
-            int mLink;
-            int mInfo;
-            long mAlign;
+            long mFlags{ 0 };
+            int mLink { 0 };
+            int mInfo{ 0 };
+            long mAlign{ 0 };
             long mEntrySize { 0 };
 
             [[nodiscard]] size_t size() const;

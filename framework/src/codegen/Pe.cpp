@@ -35,7 +35,7 @@ namespace codegen {
     {
     }
     
-    void PEFormat::write(std::uint8_t data, std::string section, std::uint64_t offset)
+    void PEFormat::write(std::uint8_t data, std::string section, std::uint64_t offset, bool overwrite)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -45,7 +45,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint16_t data, std::string section, std::uint64_t offset)
+    void PEFormat::write(std::uint16_t data, std::string section, std::uint64_t offset, bool overwrite)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -55,7 +55,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint32_t data, std::string section, std::uint64_t offset)
+    void PEFormat::write(std::uint32_t data, std::string section, std::uint64_t offset, bool overwrite)
     {
         PESection* peSection = getSection(section);
         if (!peSection)
@@ -65,7 +65,7 @@ namespace codegen {
         peSection->write(reinterpret_cast<const char*>(&data), sizeof(data), offset);
     }
     
-    void PEFormat::write(std::uint64_t data, std::string section, std::uint64_t offset)
+    void PEFormat::write(std::uint64_t data, std::string section, std::uint64_t offset, bool overwrite)
     {
         PESection* peSection = getSection(section);
         if (!peSection)

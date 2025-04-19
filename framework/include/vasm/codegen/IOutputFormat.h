@@ -23,10 +23,10 @@ namespace codegen
     public:
         virtual ~IOutputFormat() = default;
 
-        virtual void write(std::uint8_t  data, std::string section, std::uint64_t offset = -1) = 0;
-        virtual void write(std::uint16_t data, std::string section, std::uint64_t offset = -1) = 0;
-        virtual void write(std::uint32_t data, std::string section, std::uint64_t offset = -1) = 0;
-        virtual void write(std::uint64_t data, std::string section, std::uint64_t offset = -1) = 0;
+        virtual void write(std::uint8_t  data, std::string section, std::uint64_t offset = -1, bool overwrite = false) = 0;
+        virtual void write(std::uint16_t data, std::string section, std::uint64_t offset = -1, bool overwrite = false) = 0;
+        virtual void write(std::uint32_t data, std::string section, std::uint64_t offset = -1, bool overwrite = false) = 0;
+        virtual void write(std::uint64_t data, std::string section, std::uint64_t offset = -1, bool overwrite = false) = 0;
 
         virtual size_t getPosition(std::string section) = 0;
         virtual size_t getSectionStart(std::string section) = 0;

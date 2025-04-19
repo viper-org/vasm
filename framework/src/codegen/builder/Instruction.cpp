@@ -120,7 +120,7 @@ namespace codegen
     }
 
 
-    void Instruction::emit(std::uint64_t offset)
+    void Instruction::emit(std::uint64_t offset, bool overwrite)
     {
         if (mPrefix && *mPrefix != 0)
         {
@@ -164,7 +164,7 @@ namespace codegen
         if (mImmediate.index() != 0)
         {
             std::visit(overloaded {
-                [this, offset](auto arg) { mOutputFormat->write(arg, mSection, offset); },
+                [this, offset, overwrite](auto arg) { mOutputFormat->write(arg, mSection, offset, overwrite); },
                 [](std::monostate) {}
             }, mImmediate);
         }

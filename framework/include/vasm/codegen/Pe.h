@@ -20,10 +20,11 @@ namespace codegen
     public:
         explicit PEFormat(std::string_view fileName);
 
-        void write(std::uint8_t  data, std::string section, std::uint64_t offset) override;
-        void write(std::uint16_t data, std::string section, std::uint64_t offset) override;
-        void write(std::uint32_t data, std::string section, std::uint64_t offset) override;
-        void write(std::uint64_t data, std::string section, std::uint64_t offset) override;
+        // TODO: Overwrite handling
+        void write(std::uint8_t  data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint16_t data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint32_t data, std::string section, std::uint64_t offset, bool overwrite) override;
+        void write(std::uint64_t data, std::string section, std::uint64_t offset, bool overwrite) override;
 
         size_t getPosition(std::string section) override;
         size_t getSectionStart(std::string section) override;
