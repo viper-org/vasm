@@ -18,7 +18,6 @@ namespace instruction
         if (Register* reg = dynamic_cast<Register*>(instruction.getOperand().get()))
         {
             codegen::REX rex = codegen::REX::None;
-            //if (reg->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
             if (reg->isExtended()) rex = codegen::REX::B;
 
             switch (reg->getSize())

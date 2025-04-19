@@ -238,7 +238,10 @@ namespace codegen
         auto it2 = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [index](const ELFSymbol& symbol) {
             return symbol.index > index;
         });
-
+        
+        if (it == mLocalSymbols.end() && it2 == mGlobalSymbols.end()) return "";
+        if (it == mLocalSymbols.end()) return it2->name;
+        if (it2 == mGlobalSymbols.end()) return it->name;
         if (it->index > it2->index) return it->name;
         return it2->name;
     }
