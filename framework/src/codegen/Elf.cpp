@@ -648,6 +648,10 @@ namespace codegen
             {
                 info = 0x1; // This is very hacky
             }
+            else if (reloc.location == "dwarf32")
+            {
+                info = 0xa; // This is very hacky
+            }
             info |= static_cast<std::uint64_t>(symbol.index) << 32;
             rela->write(info);
             rela->write(inSameSection ? 0UL : static_cast<std::uint64_t>(reloc.offset + reloc.addend));

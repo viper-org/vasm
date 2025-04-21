@@ -347,6 +347,7 @@ namespace instruction
             else
             {
                 codegen::REX rex = regLhs->getRex();
+                if (regLhs->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
                 if (regLhs->isExtended()) rex |= codegen::REX::B;
 
                 switch (regLhs->getSize())
