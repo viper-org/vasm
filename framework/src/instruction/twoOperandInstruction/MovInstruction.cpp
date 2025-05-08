@@ -294,6 +294,7 @@ namespace instruction
             if (memLhs)
             {
                 rex |= memLhs->getRex();
+                if (instruction.getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
                 switch (instruction.getSize())
                 {
                     case codegen::OperandSize::Byte:
