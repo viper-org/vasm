@@ -24,6 +24,8 @@ namespace codegen {
     constexpr uint8_t IMAGE_SYM_CLASS_LABEL = 6;
     
     constexpr uint16_t IMAGE_REL_AMD64_ADDR64 = 1;
+    constexpr uint16_t IMAGE_REL_AMD64_ADDR32 = 2;
+    constexpr uint16_t IMAGE_REL_AMD64_REL32  = 4;
     
     constexpr size_t COFF_HEADER_SIZE = 20;
     constexpr size_t SECTION_HEADER_SIZE = 40;
@@ -211,7 +213,9 @@ namespace codegen {
              .mSectionNumber = static_cast<int16_t>(sectionIndex + 1),
              .mType = 0,
              .mStorageClass = IMAGE_SYM_CLASS_EXTERNAL,
-             .mNumberOfAuxSymbols = 0
+             .mNumberOfAuxSymbols = 0,
+
+             .mExternal = false,
         };
         if (name.size() < 8)
         {
@@ -220,7 +224,7 @@ namespace codegen {
         else
         {
             symbol.mShortName.offset.zeros = 0;
-            symbol.mShortName.offset.offset = mStringTable.size();
+            symbol.mShortName.offset.offset = mStringTable.size() + 4;
             mStringTable += name + '\0';
         }
         
@@ -235,7 +239,9 @@ namespace codegen {
             .mSectionNumber = IMAGE_SYM_UNDEFINED,
             .mType = 0,
             .mStorageClass = IMAGE_SYM_CLASS_EXTERNAL,
-            .mNumberOfAuxSymbols = 0
+            .mNumberOfAuxSymbols = 0,
+
+            .mExternal = true,
         };
         if (name.size() < 8)
         {
@@ -244,7 +250,7 @@ namespace codegen {
         else
         {
             symbol.mShortName.offset.zeros = 0;
-            symbol.mShortName.offset.offset = mStringTable.size();
+            symbol.mShortName.offset.offset = mStringTable.size() + 4;
             mStringTable += name + '\0';
         }
         
@@ -254,11 +260,13 @@ namespace codegen {
     
     [[nodiscard]] std::pair<std::uint64_t, bool> PEFormat::getSymbol(const std::string& name) const
     {
-        return std::make_pair(mSymbolTable[mSymbolIndices.at(name)].mValue, false);
+        auto& sym = mSymbolTable[mSymbolIndices.at(name)];
+        return std::make_pair(sym.mValue, sym.mExternal);
     }
 
     std::string PEFormat::getSymbolAfter(const std::string& name) const
     { // TODO: Implement
+        return "";
     }
 
     void PEFormat::createSection(SectionInfo* info)
@@ -267,9 +275,11 @@ namespace codegen {
 
     std::string PEFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
+        return "";
     }
     std::string PEFormat::getSection(std::string_view name)
     { // TODO: Implement
+        return "";
     }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const
@@ -287,7 +297,7 @@ namespace codegen {
         PESection::Relocation reloc {
             .mVirtualAddress = static_cast<uint32_t>(getPosition(section) + offset),
             .mSymbolTableIndex = symbolIndex,
-            .mType = IMAGE_REL_AMD64_ADDR64
+            .mType = IMAGE_REL_AMD64_REL32,
         };
         sect->mRelocations.push_back(reloc);
     }
@@ -326,7 +336,7 @@ namespace codegen {
                 break;
         }
     }
-    
+
     template<typename T>
     static inline void PEWrite(std::ostream& stream, T data)
     {
@@ -340,7 +350,7 @@ namespace codegen {
 
     void PEFormat::print(std::ostream& stream)
     {
-        size_t symbolTableOffset = COFF_HEADER_SIZE + mSections.size() * SECTION_HEADER_SIZE;
+        size_t symbolTableOffset = mSymbolTable.size() ? (COFF_HEADER_SIZE + mSections.size() * SECTION_HEADER_SIZE) : 0;
         size_t symbolTableSize = mSymbolTable.size() * SYMBOL_SIZE;
         
         // COFF header
@@ -359,7 +369,7 @@ namespace codegen {
         // Characteristics (large address aware -> can handle addresses higher than 2gb)
         PEWrite(stream, IMAGE_FILE_LARGE_ADDRESS_AWARE);
         
-        size_t usableStart = symbolTableOffset + symbolTableSize + mStringTable.size();
+        size_t usableStart = symbolTableOffset + symbolTableSize + mStringTable.size() + 4;
         
         char null_char = 0;
         for (auto& sect : mSections)
@@ -427,6 +437,7 @@ namespace codegen {
             PEWrite(stream, sym.mNumberOfAuxSymbols);
         }
         
+        PEWrite(stream, static_cast<uint32_t>(4 + mStringTable.size()));
         PEWrite(stream, mStringTable.c_str(), mStringTable.size());
         
         for (const auto& sect : mSections) {

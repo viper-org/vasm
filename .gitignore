@@ -1,5 +1,7 @@
 .cache/
 CMakeFiles/
+out/
+.vs/
 
 *.cmake
 *.o

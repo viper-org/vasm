@@ -22,7 +22,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::optional<std::string> inputFile;
+    std::optional<std::string> inputFile = "test.vas";
     std::optional<std::string> outputFile;
 
     std::optional<std::string> outputType;
@@ -126,8 +126,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::string inPath = argv[1];
-    std::ifstream inFile(inPath);
+    std::ifstream inFile(*inputFile);
     std::stringstream buffer;
     buffer << inFile.rdbuf();
     std::string text = buffer.str();
@@ -137,10 +136,10 @@ int main(int argc, char** argv)
 
     std::unique_ptr<error::IErrorReporter> errorReporter = std::make_unique<error::ErrorReporter>();
 
-    parsing::Parser parser(inPath, tokens, *errorReporter);
+    parsing::Parser parser(*inputFile, tokens, *errorReporter);
 
     auto values = parser.parse();
-    codegen::OpcodeBuilder builder(outputFormat.get(), inPath);
+    codegen::OpcodeBuilder builder(outputFormat.get(), *inputFile);
     for (auto&& value : values)
     {
         value->emit(builder, builder.getSection());

@@ -4,6 +4,7 @@
 #define VASM_INSTRUCTION_OPERAND_H 1
 
 #include <memory>
+#include <string>
 
 namespace instruction
 {

@@ -27,6 +27,8 @@ namespace instruction
             if (lhs->getSize() == codegen::OperandSize::Long) instructionSize = 6;
 
             int displacement = relRhs->getLabel()->getValue(builder, section).first - builder.getPosition(section) - instructionSize + relRhs->getDisplacement().value_or(0);
+            codegen::Section labelSection = relRhs->getLabel()->getSection(builder);
+            if (labelSection != section) displacement = 0;
 
             codegen::REX rex = lhs->getRex();
             if (lhs->getSize() == codegen::OperandSize::Quad) rex |= codegen::REX::W;
@@ -67,7 +69,6 @@ namespace instruction
             }
 
 
-            codegen::Section labelSection = relRhs->getLabel()->getSection(builder);
             if (labelSection != section)
                 relRhs->getLabel()->reloc(builder, section, codegen::OperandSize::Long, -4, relRhs->getDisplacement().value_or(0));
             return;

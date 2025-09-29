@@ -73,6 +73,7 @@ namespace codegen
 
     std::string BinaryFormat::getSymbolAfter(const std::string& name) const
     { // TODO: Implement
+        return "";
     }
 
     void BinaryFormat::createSection(SectionInfo* info)
@@ -81,9 +82,11 @@ namespace codegen
 
     std::string BinaryFormat::getSymbolSection(std::string_view name) const
     { // TODO: Implement
+        return "";
     }
     std::string BinaryFormat::getSection(std::string_view name)
     { // TODO: Implement
+        return "";
     }
 
     std::string BinaryFormat::getCodeSectionName()

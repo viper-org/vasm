@@ -16,9 +16,12 @@ namespace instruction
         if (LabelOperand* label = dynamic_cast<LabelOperand*>(instruction.getOperand().get()))
         {
             auto value = label->getValue(builder, section);
+            uint32_t trueValue = value.first - builder.getPosition(section) - 5;
+            if (value.second || value.first == -1) trueValue = 0;
+
             builder.createInstruction(section)
                    .opcode(codegen::CALL_REL32)
-                   .immediate(static_cast<unsigned int>(value.first - builder.getPosition(section) - 5))
+                   .immediate(trueValue)
                    .emit();
             if (value.second || value.first == -1)
             {

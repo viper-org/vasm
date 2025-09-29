@@ -85,6 +85,8 @@ namespace codegen
             uint16_t mType;
             uint8_t mStorageClass;
             uint8_t mNumberOfAuxSymbols;
+
+            bool mExternal;
         };
         
         PESection* getSection(std::string section);
