@@ -290,8 +290,7 @@ namespace codegen {
 
         if (it != mSections.end()) return it->mName;
 
-        throw std::runtime_error("Not implemented");
-        // TODO: Create section
+        return createSection(std::string{ name })->mName;
     }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const
