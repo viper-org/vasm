@@ -35,7 +35,7 @@ namespace codegen
         std::string getSymbolAfter(const std::string& name) const override;
 
         virtual void createSection(SectionInfo* info) override;
-        virtual std::string getSymbolSection(std::string_view name) const override;
+        virtual std::string getSymbolSection(std::string_view name) override;
         virtual std::string getSection(std::string_view name) override;
         virtual std::string getCodeSectionName() override;
 

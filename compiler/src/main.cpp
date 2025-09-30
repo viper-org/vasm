@@ -22,7 +22,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::optional<std::string> inputFile = "test.vas";
+    std::optional<std::string> inputFile;
     std::optional<std::string> outputFile;
 
     std::optional<std::string> outputType;

@@ -149,7 +149,8 @@ namespace codegen {
         }
     }
     
-    PEFormat::PESection* PEFormat::getSection(std::string section) {
+    PEFormat::PESection* PEFormat::getSection(std::string section)
+    {
         for (auto& sect : mSections)
         {
             if (sect.mName == section)
@@ -266,20 +267,31 @@ namespace codegen {
 
     std::string PEFormat::getSymbolAfter(const std::string& name) const
     { // TODO: Implement
+        throw std::runtime_error("Not implemented");
         return "";
     }
 
     void PEFormat::createSection(SectionInfo* info)
     { // TODO: Implement
+        throw std::runtime_error("Not implemented");
     }
 
-    std::string PEFormat::getSymbolSection(std::string_view name) const
-    { // TODO: Implement
-        return "";
+    std::string PEFormat::getSymbolSection(std::string_view name)
+    {
+        auto index = mSymbolIndices.at(std::string{ name });
+		auto& sym = mSymbolTable[index];
+		return mSections[sym.mSectionNumber - 1].mName;
     }
     std::string PEFormat::getSection(std::string_view name)
-    { // TODO: Implement
-        return "";
+    {
+        auto it = std::find_if(mSections.begin(), mSections.end(), [&name](const PESection& section) {
+            return section.mName == name;
+		});
+
+        if (it != mSections.end()) return it->mName;
+
+        throw std::runtime_error("Not implemented");
+        // TODO: Create section
     }
     
     [[nodiscard]] bool PEFormat::hasSymbol(const std::string& name) const

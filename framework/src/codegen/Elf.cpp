@@ -259,7 +259,7 @@ namespace codegen
         section->mEntrySize = sectionInfo->entrySize;
     }
 
-    std::string ELFFormat::getSymbolSection(std::string_view name) const
+    std::string ELFFormat::getSymbolSection(std::string_view name)
     {
         auto globalSymbol = std::find_if(mGlobalSymbols.begin(), mGlobalSymbols.end(), [&name](const auto& symbol) {
             return symbol.name == name;

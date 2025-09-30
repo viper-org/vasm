@@ -80,7 +80,7 @@ namespace codegen
     { // TODO: Error
     }
 
-    std::string BinaryFormat::getSymbolSection(std::string_view name) const
+    std::string BinaryFormat::getSymbolSection(std::string_view name)
     { // TODO: Implement
         return "";
     }

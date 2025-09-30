@@ -38,7 +38,7 @@ namespace codegen
         virtual std::string getSymbolAfter(const std::string& name) const = 0;
 
         virtual void createSection(SectionInfo* info) = 0;
-        virtual std::string getSymbolSection(std::string_view name) const = 0;
+        virtual std::string getSymbolSection(std::string_view name) = 0;
         virtual std::string getSection(std::string_view name) = 0;
         virtual std::string getCodeSectionName() = 0;
         
