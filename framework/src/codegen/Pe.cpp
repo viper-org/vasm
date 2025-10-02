@@ -347,16 +347,18 @@ namespace codegen {
                 break;
         }
     }
-
+    static int written = 0;
     template<typename T>
     static inline void PEWrite(std::ostream& stream, T data)
     {
         stream.write(reinterpret_cast<const char*>(&data), sizeof(T));
+        written += sizeof(T);
     }
     
     static inline void PEWrite(std::ostream& stream, const char* data, size_t size)
     {
         stream.write(data, static_cast<std::streamsize>(size));
+        written += size;
     }
 
     void PEFormat::print(std::ostream& stream)
@@ -414,7 +416,7 @@ namespace codegen {
             // VirtualAddress
             PEWrite(stream, static_cast<uint32_t>(0));
             // SizeOfRawData
-            PEWrite(stream, static_cast<uint32_t>(sect.mBuffer.size()));
+            PEWrite(stream, static_cast<uint32_t>((sect.mBuffer.size() + 15) & ~15));
             // PointerToRawData
             PEWrite(stream, static_cast<uint32_t>(usableStart));
             
@@ -463,5 +465,10 @@ namespace codegen {
                 PEWrite(stream, reloc.mType);
             }
         }
+
+        auto missingAlign = written % 16;
+        for (size_t i = 0; i < (16 - missingAlign) % 16; ++i) {
+            PEWrite(stream, null_char);
+		}
     }
 }
